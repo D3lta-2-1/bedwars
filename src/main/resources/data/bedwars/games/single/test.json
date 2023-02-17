@@ -1,0 +1,7 @@
+{
+  "type": "bedwars:bedwars",
+  "map":  {
+    "id": "bedwars:test"
+  },
+  "team_size" : 1
+}

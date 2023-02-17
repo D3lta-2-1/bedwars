@@ -1,0 +1,9 @@
+{
+  "type": "bedwars:bedwars",
+  "map":  {
+    "id": "bedwars:lighthouse"
+  },
+  "team_size" : 2,
+  "high_limit" : 150,
+  "down_limit" : 50
+}

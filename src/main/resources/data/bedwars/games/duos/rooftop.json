@@ -1,0 +1,7 @@
+{
+  "type": "bedwars:bedwars",
+  "map":  {
+    "id": "bedwars:rooftop"
+  },
+  "greeting": "Hello, World!"
+}

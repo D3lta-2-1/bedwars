@@ -1,0 +1,44 @@
+{
+  "gameType.bedwars.bedwars": "BedWars",
+
+  "warning.bedwars.cannotBreakOwnBed" : "You can't break your own bed !",
+
+  "sidebar.bedwars.title" : "BedWars",
+  "sidebar.bedwars.you" : "YOU",
+
+  "name.bedwars.RED" : "Red",
+  "name.bedwars.BLUE" : "Blue",
+  "name.bedwars.YELLOW" : "Yellow",
+  "name.bedwars.GREEN" : "Dark Green",
+  "name.bedwars.LIME" : "Green",
+  "name.bedwars.ORANGE" : "Orange",
+  "name.bedwars.LIGHT_BLUE" : "Light Blue",
+  "name.bedwars.PURPLE" : "Purple",
+  "name.bedwars.CYAN" : "Aqua",
+  "name.bedwars.MAGENTA" : "Magenta",
+  "name.bedwars.BROWN" : "Brown",
+  "name.bedwars.WHITE" : "White",
+  "name.bedwars.PINK" : "Pink",
+  "name.bedwars.GRAY" : "Gray",
+  "name.bedwars.BLACK" : "Black",
+
+  "prefix.bedwars.RED" : "R",
+  "prefix.bedwars.BLUE" : "B",
+  "prefix.bedwars.YELLOW" : "Y",
+  "prefix.bedwars.GREEN" : "?",
+  "prefix.bedwars.LIME" : "G",
+  "prefix.bedwars.ORANGE" : "O",
+  "prefix.bedwars.LIGHT_BLUE" : "?",
+  "prefix.bedwars.PURPLE" : "?",
+  "prefix.bedwars.CYAN" : "A",
+  "prefix.bedwars.MAGENTA" : "M",
+  "prefix.bedwars.BROWN" : "?",
+  "prefix.bedwars.WHITE" : "W",
+  "prefix.bedwars.PINK" : "P",
+  "prefix.bedwars.GRAY" : "S",
+  "prefix.bedwars.BLACK" : "B",
+
+  "death.bedwars.title" : "TOU DIED!",
+  "death.bedwars.subtitleBeginning" : "You will respawn in ",
+  "death.bedwars.subtitleEnd" : " seconds"
+}
