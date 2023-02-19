@@ -2,15 +2,18 @@
   "gameType.bedwars.bedwars": "BedWars",
 
   "warning.bedwars.cannotBreakOwnBed" : "You can't break your own bed !",
+  "warning.bedwars.buildLimit" : "Build limit reach",
+  "warning.bedwars.cannotPlaceBlockHere" : "you can't place blocks here",
+  "warning.bedwars.cannotBreakThisBlock" : "You can't break this block",
 
   "sidebar.bedwars.title" : "BedWars",
   "sidebar.bedwars.you" : "YOU",
 
   "name.bedwars.RED" : "Red",
   "name.bedwars.BLUE" : "Blue",
-  "name.bedwars.YELLOW" : "Yellow",
   "name.bedwars.GREEN" : "Dark Green",
   "name.bedwars.LIME" : "Green",
+  "name.bedwars.YELLOW" : "Yellow",
   "name.bedwars.ORANGE" : "Orange",
   "name.bedwars.LIGHT_BLUE" : "Light Blue",
   "name.bedwars.PURPLE" : "Purple",
@@ -38,7 +41,15 @@
   "prefix.bedwars.GRAY" : "S",
   "prefix.bedwars.BLACK" : "B",
 
-  "death.bedwars.title" : "TOU DIED!",
+  "death.bedwars.title" : "YOU DIED!",
+  "death.bedwars.respawn" : "RESPAWN!",
   "death.bedwars.subtitleBeginning" : "You will respawn in ",
-  "death.bedwars.subtitleEnd" : " seconds"
+  "death.bedwars.subtitleEnd" : " seconds",
+  "death.bedwars.finalKill" : "FINAL KILL!",
+
+  "bed.bedwars.bedBrokenTitle" : "BED DESTROYED!",
+  "bed.bedwars.bedBrokenSubtitle" : "You will no longer respawn!",
+  "bed.bedwars.bedDestruction" : "BED DESTRUCTION",
+  "bed.bedwars.generalBreakContent" : " bed was destroyed by ",
+  "bed.bedwars.personalBreakContent" : "Your bed got memed by "
 }
