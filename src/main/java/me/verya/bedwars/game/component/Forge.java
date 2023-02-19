@@ -2,6 +2,7 @@ package me.verya.bedwars.game.component;
 
 import me.verya.bedwars.game.behavior.ClaimManager;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -82,28 +83,30 @@ public class Forge {
         return time / speedupPercent;
     }
 
-    private boolean isNotFullOf(ItemStack item, int maxCount)
+    private boolean isFullOf(Item item, int maxCount)
     {
         int count = 0;
         var items = world.getEntitiesByClass(ItemEntity.class, bounds.asBox(), (itemEntity) -> {
             var stack = itemEntity.getStack();
-            return stack.isItemEqual(item) ;
+            if(!stack.getItem().equals(item)) return false;
+            if(!stack.hasNbt()) return false;
+            var nbt = stack.getNbt();
+            return (nbt.contains(SPLITTABLE_KEY) && nbt.getBoolean(SPLITTABLE_KEY));
         });
 
         for(var itemEntity :items)
         {
-            var stack = itemEntity.getStack();
-            if(stack.hasNbt() && stack.getNbt().contains(SPLITTABLE_KEY) && stack.getNbt().getBoolean(SPLITTABLE_KEY) )
-                count += itemEntity.getStack().getCount();
+            count += itemEntity.getStack().getCount();
         }
-        return count < maxCount;
+
+        return count >= maxCount;
     }
 
     private void tickIron()
     {
         if(timeBeforeNextIronSpawn <= 0)
         {
-            if(this.isNotFullOf(getSplittableIronIngot(), 48))
+            if(!isFullOf(Items.IRON_INGOT, 64))
                 this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getSplittableIronIngot(), 0,0,0));
             timeBeforeNextIronSpawn += getTimeToWaitForTier(config.ironSpawnTime(), tier);
         }
@@ -114,7 +117,7 @@ public class Forge {
     {
         if(timeBeforeNextGoldSpawn <= 0)
         {
-            if(this.isNotFullOf(getSplittableGoldIngot(), 12))
+            if(!isFullOf(Items.GOLD_INGOT, 16))
                 this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getSplittableGoldIngot(),0,0,0));
             timeBeforeNextGoldSpawn += getTimeToWaitForTier(config.goldSpawnTime(), tier);
         }
@@ -138,7 +141,6 @@ public class Forge {
         tickGold();
         tickEmerald();
     }
-
 
     private ActionResult onPickupItem(ServerPlayerEntity player, ItemEntity entity, ItemStack stack)
     {
