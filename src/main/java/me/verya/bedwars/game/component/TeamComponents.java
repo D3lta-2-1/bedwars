@@ -1,11 +1,8 @@
-package me.verya.bedwars.game;
+package me.verya.bedwars.game.component;
 
+import me.verya.bedwars.BedwarsConfig;
 import me.verya.bedwars.game.behavior.ClaimManager;
-import me.verya.bedwars.game.component.Bed;
-import me.verya.bedwars.game.component.Forge;
-import me.verya.bedwars.game.component.Spawn;
 import me.verya.bedwars.game.map.BedwarsMap;
-import me.verya.bedwars.mixin.BedwarsConfig;
 import net.minecraft.server.world.ServerWorld;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
@@ -17,7 +14,7 @@ public class TeamComponents
     public Forge forge;
     public Bed bed;
 
-    static class Builder
+    static public class Builder
     {
         private final TeamManager teamManager;
         private final GameActivity activity;
