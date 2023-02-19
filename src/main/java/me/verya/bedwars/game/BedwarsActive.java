@@ -2,12 +2,15 @@ package me.verya.bedwars.game;
 
 import com.google.common.collect.Multimap;
 import eu.pb4.sidebars.api.Sidebar;
+import me.verya.bedwars.Bedwars;
+import me.verya.bedwars.BedwarsConfig;
+import me.verya.bedwars.game.component.TeamComponents;
 import me.verya.bedwars.game.ui.BedwarsSideBar;
 import me.verya.bedwars.game.behavior.ClaimManager;
 import me.verya.bedwars.game.behavior.DeathManager;
 import me.verya.bedwars.game.map.BedwarsMap;
 
-import me.verya.bedwars.mixin.BedwarsConfig;
+import me.verya.bedwars.game.ui.Messager;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -30,6 +33,7 @@ public class BedwarsActive {
     final Map<GameTeamKey, TeamComponents> teamComponentsMap;
     final ClaimManager claim;
     final DeathManager deathManager;
+    final Messager messager;
     final Sidebar sidebar;
 
     BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, ServerPlayerEntity> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
@@ -42,11 +46,12 @@ public class BedwarsActive {
         setupGameRules();
         this.claim = new ClaimManager(gameMap, config, activity);
         this.teamManager = TeamManager.addTo(activity);
-        setupTeamAndPlayerData(teamPlayers);
-        this.teamComponentsMap = makeTeamComponents();
+        setupTeam(teamPlayers);
+        this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
         this.deathManager = new DeathManager(teamComponentsMap, teamManager, world, gameMap, activity);
         this.sidebar = BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder);
         addPlayerToSideBar();
+        this.messager = new Messager(teamManager, activity);
         destroySpawn();
         startGame();
     }
@@ -63,9 +68,11 @@ public class BedwarsActive {
         activity.deny(GameRuleType.UNSTABLE_TNT);
         activity.allow(GameRuleType.PLAYER_PROJECTILE_KNOCKBACK);
         activity.allow(GameRuleType.TRIDENTS_LOYAL_IN_VOID);
+        activity.deny(Bedwars.BED_INTERACTION);
+
     }
 
-    private void setupTeamAndPlayerData(Multimap<GameTeam, ServerPlayerEntity> teamPlayers)
+    private void setupTeam(Multimap<GameTeam, ServerPlayerEntity> teamPlayers)
     {
         for (GameTeam team : teamPlayers.keySet()) {
             //add players to their team

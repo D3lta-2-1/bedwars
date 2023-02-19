@@ -1,5 +1,6 @@
 package me.verya.bedwars.game.component;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import me.verya.bedwars.game.event.BedwarsEvents;
 import me.verya.bedwars.game.map.BedwarsMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -23,6 +24,7 @@ public class Bed {
     private boolean isBroken;
     private final GameTeam owner;
     private final TeamManager teamManager;
+    private final GameActivity activity;
 
     public Bed(BlockBounds bounds, BedwarsMap map, GameTeam owner, TeamManager teamManager, GameActivity activity)
     {
@@ -30,6 +32,7 @@ public class Bed {
         this.isBroken = false;
         this.owner = owner;
         this.teamManager = teamManager;
+        this.activity = activity;
         //replace all "bed blocks", this could be any block by air block in the template, like this the claim manager would allow them to be broken
         for(var blocks : bounds)
         {
@@ -39,13 +42,14 @@ public class Bed {
         activity.listen(ExplosionDetonatedEvent.EVENT, this::onExplosionDetonated);
     }
 
-    public void breakIt(ServerWorld world)
+    public void breakIt(ServerWorld world, ServerPlayerEntity breaker)
     {
         this.isBroken = true;
         for(var blocks : bounds)
         {
-            world.setBlockState(blocks, Blocks.AIR.getDefaultState(), Block.FORCE_STATE | Block.SKIP_DROPS);
+            world.setBlockState(blocks, Blocks.AIR.getDefaultState(), Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
         }
+        activity.invoker(BedwarsEvents.BED_BROKEN).onBreak(owner, breaker);
     }
 
     public boolean isBroken()
@@ -61,7 +65,7 @@ public class Bed {
             player.sendMessage(Text.translatable("warning.bedwars.cannotBreakOwnBed").setStyle(Style.EMPTY.withColor(Formatting.RED)));
             return ActionResult.FAIL;
         }
-        this.breakIt(world);
+        this.breakIt(world, player);
         return ActionResult.FAIL;
     }
 
