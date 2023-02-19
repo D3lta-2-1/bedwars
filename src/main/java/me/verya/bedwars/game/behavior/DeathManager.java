@@ -1,8 +1,9 @@
 package me.verya.bedwars.game.behavior;
 
 import me.verya.bedwars.TextUtilities;
-import me.verya.bedwars.game.TeamComponents;
+import me.verya.bedwars.game.component.TeamComponents;
 import me.verya.bedwars.game.TeleporterLogic;
+import me.verya.bedwars.game.event.BedwarsEvents;
 import me.verya.bedwars.game.map.BedwarsMap;
 import me.verya.bedwars.game.ui.PlayerPackets;
 import net.minecraft.entity.damage.DamageSource;
@@ -15,6 +16,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.game.GameActivity;
+import xyz.nucleoid.plasmid.game.GameSpacePlayers;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
@@ -30,7 +32,9 @@ public class DeathManager {
     private final Map<GameTeamKey, TeamComponents> teamComponentsMap;
     private final TeamManager teamManager;
     private final ServerWorld world;
-    private final BedwarsMap map;
+    private final GameSpacePlayers players;
+    private final GameActivity activity;
+    private final Vec3d respawnPos;
 
     static class DeadPlayer
     {
@@ -48,7 +52,9 @@ public class DeathManager {
         this.teamComponentsMap = teamComponentsMap;
         this.teamManager = teamManager;
         this.world = world;
-        this.map = map;
+        this.players = activity.getGameSpace().getPlayers();
+        this.activity = activity;
+        this.respawnPos = map.waiting().center();
         //register events
         activity.listen(PlayerDeathEvent.EVENT, this::onPlayerDeath);
         activity.listen(GameActivityEvents.TICK, this::tick);
@@ -58,12 +64,17 @@ public class DeathManager {
     {
         var teamKey = teamManager.teamFor(player);
         var bed = teamComponentsMap.get(teamKey).bed;
+        activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, source, bed.isBroken());
+
         if(bed.isBroken())
         {
+            //this is a final kill just remove it from the game
             teamManager.removePlayer(player);
         }
         else
         {
+            var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            PlayerPackets.showTitle(player, title, 0, 20 * 6, 1);
             deadPlayers.add(new DeadPlayer(player, world.getTime()));
         }
         spawnSpec(player);
@@ -72,6 +83,22 @@ public class DeathManager {
 
     private void tick()
     {
+        //kill all player under 0
+        extern :for(var player : players)
+        {
+            if(player.getPos().getY() > 0) continue;
+            for(var deadPlayer : deadPlayers)
+            {
+                if(deadPlayer.player == player)
+                {
+                    TeleporterLogic.spawnPlayer(player, respawnPos, world);
+                    continue extern;
+                }
+            }
+            onPlayerDeath(player, DamageSource.OUT_OF_WORLD);
+        }
+
+        //do the dead animation
         var iter = deadPlayers.listIterator();
         while(iter.hasNext())
         {
@@ -85,17 +112,28 @@ public class DeathManager {
             }
             //send a death message every second
             if(timeBeforeRespawn % 20 != 0) continue;
-            var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
+
             var subtitle = TextUtilities.concatenate(Text.translatable("death.bedwars.subtitleBeginning").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)),
                                                                     Text.literal(String.valueOf(timeBeforeRespawn / 20 )).setStyle(Style.EMPTY.withColor(Formatting.RED)),
                                                                     Text.translatable("death.bedwars.subtitleEnd").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
-            PlayerPackets.showTitle(deadPlayer.player, title, subtitle, 0, 20, 20);
+            PlayerPackets.changeSubtitle(deadPlayer.player, subtitle);
+            deadPlayer.player.sendMessage(subtitle);
         }
+    }
+
+    private boolean isAlive(ServerPlayerEntity player)
+    {
+        for(var deadPlayer : deadPlayers)
+        {
+            if(deadPlayer.player == player)
+                return true;
+        }
+        return false;
     }
 
     public void spawnSpec(ServerPlayerEntity player)
     {
-        TeleporterLogic.spawnPlayer(player, map.waiting().center(), world);
+        TeleporterLogic.spawnPlayer(player, respawnPos, world);
         player.changeGameMode(GameMode.SPECTATOR);
         player.setVelocity(Vec3d.ZERO);
         player.fallDistance = 0.0f;
@@ -104,10 +142,8 @@ public class DeathManager {
 
     public void respawnPlayer(ServerPlayerEntity player)
     {
-        player.changeGameMode(GameMode.SURVIVAL);
-        player.setVelocity(Vec3d.ZERO);
-        player.fallDistance = 0.0f;
-        player.setHealth(20.0f);
+        PlayerPackets.showTitle(player, Text.translatable("death.bedwars.respawn").setStyle(Style.EMPTY.withColor(Formatting.GREEN)), 0 ,20 ,20);
+        PlayerPackets.changeSubtitle(player, Text.empty());
         var teamKey = teamManager.teamFor(player);
         var spawn = teamComponentsMap.get(teamKey).spawn;
         spawn.spawnPlayer(player);
