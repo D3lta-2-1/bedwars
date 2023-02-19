@@ -1,6 +1,6 @@
 package me.verya.bedwars.game.map;
 
-import me.verya.bedwars.mixin.BedwarsConfig;
+import me.verya.bedwars.BedwarsConfig;
 import me.verya.bedwars.Constants;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;

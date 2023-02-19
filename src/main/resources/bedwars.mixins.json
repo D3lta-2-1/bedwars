@@ -4,8 +4,7 @@
   "package": "me.verya.bedwars.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-  ],
-  "client": [
+    "BedBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1
