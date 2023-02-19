@@ -2,7 +2,7 @@ package me.verya.bedwars.game.ui;
 
 import eu.pb4.sidebars.api.Sidebar;
 import me.verya.bedwars.TextUtilities;
-import me.verya.bedwars.game.TeamComponents;
+import me.verya.bedwars.game.component.TeamComponents;
 import me.verya.bedwars.game.component.Bed;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -51,7 +51,7 @@ public class BedwarsSideBar {
     {
         if(!bed.isBroken()) return TextUtilities.CHECKMARK;
         int alivePlayers = manager.playersIn(team.key()).size();
-        if(alivePlayers > 0) return Text.literal( String.valueOf(alivePlayers)).setStyle(Style.EMPTY.withColor(Formatting.GREEN).withStrikethrough(true));
+        if(alivePlayers > 0) return Text.literal( String.valueOf(alivePlayers)).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
         return TextUtilities.X;
     }
 }
