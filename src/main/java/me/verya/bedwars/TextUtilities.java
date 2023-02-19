@@ -10,6 +10,8 @@ public class TextUtilities {
     public static final MutableText X = Text.literal("✘").setStyle(Style.EMPTY.withColor(Formatting.RED));
     public static final MutableText SPACE = Text.literal(" ");
     public static final MutableText DOTS = Text.literal(":");
+    public static final MutableText GENERAL_PREFIX = Text.literal(">");
+    public static Style WARNING = Style.EMPTY.withColor(Formatting.RED);
 
     static public MutableText concatenate(MutableText... texts)
     {

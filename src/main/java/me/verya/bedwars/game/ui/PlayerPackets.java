@@ -22,4 +22,9 @@ public class PlayerPackets {
         player.networkHandler.sendPacket(new TitleFadeS2CPacket(fadeInTicks, stayTicks, fadeOutTicks));
         player.networkHandler.sendPacket(new TitleS2CPacket(title));
     }
+
+    static public void changeSubtitle(ServerPlayerEntity player, Text subtitle)
+    {
+        player.networkHandler.sendPacket(new SubtitleS2CPacket(subtitle));
+    }
 }
