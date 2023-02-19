@@ -2,12 +2,14 @@ package me.verya.bedwars.game.behavior;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.verya.bedwars.Constants;
+import me.verya.bedwars.TextUtilities;
 import me.verya.bedwars.game.map.BedwarsMap;
-import me.verya.bedwars.mixin.BedwarsConfig;
+import me.verya.bedwars.BedwarsConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.explosion.Explosion;
@@ -23,12 +25,13 @@ import java.util.List;
 //this claim is based on the Template map to know what block can be break, modifying it is basically change claimed blocks
 public class ClaimManager {
     List<BlockBounds> claimedRegions;
-    BedwarsMap map;
-    BedwarsConfig config;
+    final BedwarsMap map;
+    final BedwarsConfig config;
     public ClaimManager(BedwarsMap map, BedwarsConfig config, GameActivity activity)
     {
         this.claimedRegions = new ArrayList<>();
         this.map = map;
+        this.config = config;
         activity.listen(BlockBreakEvent.EVENT, this::blockBreakEvent);
         activity.listen(ExplosionDetonatedEvent.EVENT, this::onExplosionDetonated);
         activity.listen(BlockPlaceEvent.BEFORE, this::onPlace);
@@ -52,6 +55,7 @@ public class ClaimManager {
                     return ActionResult.PASS;
                 }
             }
+        player.sendMessage(Text.translatable("warning.bedwars.cannotBreakThisBlock"  ).setStyle(TextUtilities.WARNING));
         return ActionResult.FAIL;
     }
 
@@ -70,13 +74,29 @@ public class ClaimManager {
 
     public ActionResult onPlace(ServerPlayerEntity player, ServerWorld world, BlockPos pos, BlockState state, ItemUsageContext context)
     {
-        if(pos.getY() > config.highLimit() || pos.getY() < config.downLimit()) return ActionResult.FAIL;
+        if(pos.getY() > config.highLimit())
+        {
+            player.sendMessage(Text.translatable("warning.bedwars.buildLimit").setStyle(TextUtilities.WARNING));
+            return ActionResult.FAIL;
+        }
+        if(pos.getY() < config.downLimit())
+        {
+            player.sendMessage(Text.translatable("warning.bedwars.buildLimit").setStyle(TextUtilities.WARNING));
+            return ActionResult.FAIL;
+        }
         for(var region : claimedRegions)
         {
             if(region.contains(pos))
+            {
+                player.sendMessage(Text.translatable("warning.bedwars.cannotPlaceBlockHere").setStyle(TextUtilities.WARNING));
                 return ActionResult.FAIL;
+            }
         }
-        if(!map.template().containsBlock(pos)) return ActionResult.FAIL;
+        if(!map.template().getBounds().contains(pos))
+        {
+            player.sendMessage(Text.translatable("warning.bedwars.buildLimit").setStyle(TextUtilities.WARNING));
+            return ActionResult.FAIL;
+        }
         return ActionResult.PASS;
     }
 }
