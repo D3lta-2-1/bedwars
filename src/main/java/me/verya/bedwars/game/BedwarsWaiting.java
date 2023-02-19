@@ -2,8 +2,8 @@ package me.verya.bedwars.game;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import me.verya.bedwars.BedwarsConfig;
 import me.verya.bedwars.game.map.BedwarsMap;
-import me.verya.bedwars.mixin.BedwarsConfig;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -64,6 +64,7 @@ public class BedwarsWaiting {
                     GameTeamConfig.builder()
                             .setCollision(AbstractTeam.CollisionRule.PUSH_OWN_TEAM)
                             .setFriendlyFire(false)
+                            .setNameTagVisibility(AbstractTeam.VisibilityRule.ALWAYS)
                             .setColors(GameTeamConfig.Colors.from(mapTeamData.color))
                             .build()
             );
@@ -75,7 +76,7 @@ public class BedwarsWaiting {
         //make teams... without TeamAllocator because it auto delete empty teams and I prefer have a key associated with null for empty team
         Multimap<GameTeam, ServerPlayerEntity> teamPlayers = HashMultimap.create();
         var players = this.gameSpace.getPlayers().iterator();
-        Collections.shuffle(teams);
+        Collections.shuffle(teams, new Random());
         for(var team : teams)
         {
             for(int i = 0; i < config.teamSize(); i++)
