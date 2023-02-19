@@ -2,7 +2,7 @@
 initial commit
 
 This a bedwars mini game for plasmid, still in developpement, some features are already implemented :
--map loading
+-map loading \n
 -waiting
 -bed mecanics
 -respawn only available when you have a bed
