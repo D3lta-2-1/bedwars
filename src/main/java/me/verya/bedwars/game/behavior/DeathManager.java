@@ -64,11 +64,20 @@ public class DeathManager {
     {
         var teamKey = teamManager.teamFor(player);
         var bed = teamComponentsMap.get(teamKey).bed;
-        activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, source, bed.isBroken());
+        ServerPlayerEntity attacker = null;
+
+        if (source.getAttacker() != null) {
+            if (source.getAttacker() instanceof ServerPlayerEntity adversary) {
+                attacker = adversary;
+            }
+        } else if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary) {
+            attacker = adversary;
+        }
+        activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, source, attacker, bed.isBroken());
 
         if(bed.isBroken())
         {
-            //this is a final kill just remove it from the game
+            //this is a final kill just remove it from the game, this may need to be moved to a dedicated listener
             teamManager.removePlayer(player);
         }
         else
@@ -121,14 +130,14 @@ public class DeathManager {
         }
     }
 
-    private boolean isAlive(ServerPlayerEntity player)
+    public boolean isAlive(ServerPlayerEntity player)
     {
         for(var deadPlayer : deadPlayers)
         {
             if(deadPlayer.player == player)
-                return true;
+                return false;
         }
-        return false;
+        return true;
     }
 
     public void spawnSpec(ServerPlayerEntity player)
