@@ -5,6 +5,7 @@ import eu.pb4.sidebars.api.Sidebar;
 import me.verya.bedwars.Bedwars;
 import me.verya.bedwars.BedwarsConfig;
 import me.verya.bedwars.game.component.TeamComponents;
+import me.verya.bedwars.game.player.InventoryManager;
 import me.verya.bedwars.game.ui.BedwarsSideBar;
 import me.verya.bedwars.game.behavior.ClaimManager;
 import me.verya.bedwars.game.behavior.DeathManager;
@@ -30,11 +31,14 @@ public class BedwarsActive {
     final ServerWorld world;
     GameActivity activity;
     final TeamManager teamManager;
+    final Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap;
     final Map<GameTeamKey, TeamComponents> teamComponentsMap;
     final ClaimManager claim;
     final DeathManager deathManager;
+    final InventoryManager inventoryManager;
     final Messager messager;
     final Sidebar sidebar;
+
 
     BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, ServerPlayerEntity> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
     {
@@ -42,6 +46,7 @@ public class BedwarsActive {
         this.gameMap = gameMap;
         this.config = config;
         this.world = world;
+        this.teamPlayersMap = teamPlayers;
         gameSpace.setActivity(gameActivity -> this.activity = gameActivity);
         setupGameRules();
         this.claim = new ClaimManager(gameMap, config, activity);
@@ -49,6 +54,7 @@ public class BedwarsActive {
         setupTeam(teamPlayers);
         this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
         this.deathManager = new DeathManager(teamComponentsMap, teamManager, world, gameMap, activity);
+        this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, activity);
         this.sidebar = BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder);
         addPlayerToSideBar();
         this.messager = new Messager(teamManager, activity);
@@ -65,10 +71,11 @@ public class BedwarsActive {
         activity.allow(GameRuleType.FALL_DAMAGE);
         activity.allow(GameRuleType.BLOCK_DROPS);
         activity.allow(GameRuleType.THROW_ITEMS);
-        activity.deny(GameRuleType.UNSTABLE_TNT);
         activity.allow(GameRuleType.PLAYER_PROJECTILE_KNOCKBACK);
         activity.allow(GameRuleType.TRIDENTS_LOYAL_IN_VOID);
+        activity.deny(GameRuleType.MODIFY_ARMOR);
         activity.deny(Bedwars.BED_INTERACTION);
+        activity.deny(Bedwars.SATURATED_REGENERATION);
 
     }
 
