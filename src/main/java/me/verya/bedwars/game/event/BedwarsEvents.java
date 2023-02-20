@@ -17,10 +17,10 @@ public final class BedwarsEvents {
         }
     });
 
-    public static final StimulusEvent<PlayerDeath> PLAYER_DEATH = StimulusEvent.create(PlayerDeath.class, ctx -> (ServerPlayerEntity player, DamageSource source,boolean isFinal) -> {
+    public static final StimulusEvent<PlayerDeath> PLAYER_DEATH = StimulusEvent.create(PlayerDeath.class, ctx -> (ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer,boolean isFinal) -> {
         try {
             for (var listener : ctx.getListeners()) {
-                listener.onDeath(player, source, isFinal);
+                listener.onDeath(player, source, killer, isFinal);
             }
         } catch (Throwable t) {
             ctx.handleException(t);
@@ -44,7 +44,7 @@ public final class BedwarsEvents {
 
     public interface PlayerDeath
     {
-        void onDeath(ServerPlayerEntity player, DamageSource source, boolean isFinal);
+        void onDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer, boolean isFinal);
     }
 
     public interface PlayerRespawn
