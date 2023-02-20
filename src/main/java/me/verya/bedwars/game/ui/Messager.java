@@ -9,20 +9,17 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import xyz.nucleoid.plasmid.game.GameActivity;
-import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.GameSpacePlayers;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 
 public class Messager {
-    private GameActivity activity;
-    private GameSpacePlayers players;
-    private TeamManager teamManager;
+    final private GameSpacePlayers players;
+    final private TeamManager teamManager;
 
     public Messager(TeamManager teamManager, GameActivity activity)
     {
         this.teamManager = teamManager;
-        this.activity = activity;
         this.players = activity.getGameSpace().getPlayers();
         activity.listen(BedwarsEvents.BED_BROKEN, this::onBedBreak);
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
@@ -33,7 +30,7 @@ public class Messager {
 
         var messageMark = TextUtilities.concatenate(Text.translatable("bed.bedwars.bedDestruction"), TextUtilities.SPACE ,TextUtilities.GENERAL_PREFIX, TextUtilities.SPACE).setStyle(Style.EMPTY.withBold(true));
         var personalContent = Text.translatable("bed.bedwars.personalBreakContent").append(breaker.getDisplayName()).setStyle(Style.EMPTY.withBold(false));
-        var teamName = TextUtilities.getTranslation("name", owner.config().blockDyeColor().name()).setStyle(Style.EMPTY.withColor(owner.config().blockDyeColor().getSignColor()));
+        var teamName = TextUtilities.getTranslation("name", owner.config().blockDyeColor().name()).setStyle(Style.EMPTY.withFormatting(owner.config().chatFormatting()));
         var generalContent = TextUtilities.concatenate(teamName, Text.translatable("bed.bedwars.generalBreakContent"), breaker.getDisplayName().copy()).setStyle(Style.EMPTY.withBold(false));
         players.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL);
         players.sendMessage(Text.empty());
@@ -55,14 +52,8 @@ public class Messager {
         players.sendMessage(Text.empty());
     }
 
-    void onPlayerDeath(ServerPlayerEntity player, DamageSource source,boolean isFinal)
+    void onPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer,boolean isFinal)
     {
-
-        var killer = source.getAttacker() instanceof ServerPlayerEntity ? source.getAttacker() : null;
-        if(killer != null && source.isNeutral())
-        {
-            killer.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-        }
         players.sendMessage(getDeathMessage(player, source, isFinal));
     }
 

@@ -31,7 +31,8 @@ public class BedwarsSideBar {
                 b.add(player -> {
                     var bed = teamComponents.get(team.key()).bed;
                     var dyeColor = team.config().blockDyeColor();
-                    var prefix = TextUtilities.getTranslation("prefix", dyeColor.name()).setStyle(Style.EMPTY.withColor(dyeColor.getSignColor()));
+                    var config = team.config();
+                    var prefix = TextUtilities.getTranslation("prefix", dyeColor.name()).setStyle(Style.EMPTY.withFormatting(config.chatFormatting()));
                     var teamName = TextUtilities.getTranslation("name", dyeColor.name());
                     var mark =getMark(bed, manager, team);
                     var you = getYouMarker(player, team, manager);
