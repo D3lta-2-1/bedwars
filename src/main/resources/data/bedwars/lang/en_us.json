@@ -51,5 +51,8 @@
   "bed.bedwars.bedBrokenSubtitle" : "You will no longer respawn!",
   "bed.bedwars.bedDestruction" : "BED DESTRUCTION",
   "bed.bedwars.generalBreakContent" : " bed was destroyed by ",
-  "bed.bedwars.personalBreakContent" : "Your bed got memed by "
+  "bed.bedwars.personalBreakContent" : "Your bed got memed by ",
+
+  "item.bedwars.wool" : "Wool",
+  "item.bedwars.ladder" : "Ladder"
 }

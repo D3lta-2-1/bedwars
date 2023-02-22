@@ -15,9 +15,10 @@ import xyz.nucleoid.plasmid.game.world.generator.TemplateChunkGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBounds waiting, List<RawTeamData> teamData) {
+public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBounds waiting, List<RawTeamData> teamData, List<BlockBounds> ShopKeepers) {
     public static BedwarsMap loadMap(BedwarsConfig config, MinecraftServer server) throws GameOpenException {
         //load map
         MapTemplate template;
@@ -41,13 +42,14 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
             if(spawn == null || bed == null || forge == null) continue;
             dataList.add(new RawTeamData(color, spawn, bed, forge));
         }
+        //get shopkeepers
+        var shopkeepers = template.getMetadata().getRegionBounds(Constants.SHOPKEEPER).toList();
         //check if correctly load the map
         if(dataList.isEmpty())
             throw new GameOpenException(Text.literal("no team spawn found"));
         if(waitingSpawn == null)
             throw new GameOpenException(Text.literal("no waiting spawn found"));
-
-        return new BedwarsMap(template, server, waitingSpawn, dataList);
+        return new BedwarsMap(template, server, waitingSpawn, dataList, shopkeepers);
     }
 
     private ChunkGenerator asGenerator() {

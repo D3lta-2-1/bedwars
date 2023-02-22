@@ -27,12 +27,14 @@ public class Constants {
             DyeColor.WHITE,
             DyeColor.PINK,
             DyeColor.GRAY,
-            DyeColor.BLACK
+            DyeColor.BLACK,
+            DyeColor.LIGHT_GRAY
     ));
     //usage ex: "blue_spawn" and "blue_bed"
     static public final String SPAWN = "spawn";
     static public final String BED = "bed";
     static public final String FORGE = "forge";
+    static public final String SHOPKEEPER = "shopkeeper";
 
     //TODO : must be completed with other flowers and fluids
     static public final List<Block> BreakableBlocks = new ArrayList<>(Arrays.asList(

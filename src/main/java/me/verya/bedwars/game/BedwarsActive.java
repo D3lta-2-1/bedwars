@@ -6,6 +6,8 @@ import me.verya.bedwars.Bedwars;
 import me.verya.bedwars.BedwarsConfig;
 import me.verya.bedwars.game.component.TeamComponents;
 import me.verya.bedwars.game.player.InventoryManager;
+import me.verya.bedwars.game.shop.ShopKeeper;
+import me.verya.bedwars.game.shop.ShopMenu.ItemShopMenu;
 import me.verya.bedwars.game.ui.BedwarsSideBar;
 import me.verya.bedwars.game.behavior.ClaimManager;
 import me.verya.bedwars.game.behavior.DeathManager;
@@ -15,6 +17,7 @@ import me.verya.bedwars.game.ui.Messager;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
@@ -33,11 +36,13 @@ public class BedwarsActive {
     final TeamManager teamManager;
     final Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap;
     final Map<GameTeamKey, TeamComponents> teamComponentsMap;
+    final List<GameTeam> teamsInOrder;
     final ClaimManager claim;
     final DeathManager deathManager;
     final InventoryManager inventoryManager;
     final Messager messager;
     final Sidebar sidebar;
+    final Collection<ShopKeeper> shopKeepers;
 
 
     BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, ServerPlayerEntity> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
@@ -47,6 +52,7 @@ public class BedwarsActive {
         this.config = config;
         this.world = world;
         this.teamPlayersMap = teamPlayers;
+        this.teamsInOrder = teamsInOrder;
         gameSpace.setActivity(gameActivity -> this.activity = gameActivity);
         setupGameRules();
         this.claim = new ClaimManager(gameMap, config, activity);
@@ -58,6 +64,7 @@ public class BedwarsActive {
         this.sidebar = BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder);
         addPlayerToSideBar();
         this.messager = new Messager(teamManager, activity);
+        this.shopKeepers = addShopkeepers(gameMap.ShopKeepers());
         destroySpawn();
         startGame();
     }
@@ -116,6 +123,18 @@ public class BedwarsActive {
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
             gameMap.template().setBlockState(pos, Blocks.AIR.getDefaultState());
         }
+    }
+
+    private Collection<ShopKeeper> addShopkeepers(List<BlockBounds> shopkeepersBounds)
+    {
+        System.out.println("preparing shops");
+        var menu = new ItemShopMenu(teamManager, teamsInOrder);
+        var shopkeepers = new ArrayList<ShopKeeper>();
+        for(var shopkeeper : shopkeepersBounds)
+        {
+            shopkeepers.add(new ShopKeeper(world, shopkeeper.centerBottom(), menu, activity));
+        }
+        return shopkeepers;
     }
     private void startGame() {
         for(var team : teamManager) {
