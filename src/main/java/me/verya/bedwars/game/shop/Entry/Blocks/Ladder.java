@@ -15,7 +15,7 @@ public class Ladder implements ShopEntry {
     }
     public MutableText getTitle()
     {
-        return Text.translatable("item.bedwars.Ladder");
+        return Text.translatable("item.bedwars.ladder");
     }
 
     public Item getItem()
