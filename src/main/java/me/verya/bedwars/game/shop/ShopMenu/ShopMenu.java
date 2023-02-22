@@ -2,18 +2,24 @@ package me.verya.bedwars.game.shop.ShopMenu;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
+import me.verya.bedwars.game.event.BedwarsEvents;
 import me.verya.bedwars.game.shop.Entry.ShopEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import xyz.nucleoid.plasmid.game.GameActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public interface ShopMenu {
     void open(ServerPlayerEntity player);
-    default void purchase(ShopEntry entry, ClickType type, SlotGuiInterface gui)
+    default void purchase(ShopEntry entry, ClickType type, SlotGuiInterface gui, GameActivity activity)
     {
         var player = gui.getPlayer();
         var cost = entry.getCost();
@@ -53,6 +59,7 @@ public interface ShopMenu {
             }
             //Todo: make a shop event and add sound
             var boughStack = entry.onBuy(player);
+            activity.invoker(BedwarsEvents.PLAYER_BUY).onBuy(player, entry);
             if(boughStack.isEmpty()) return;
             if(type.numKey)
             {
@@ -65,8 +72,8 @@ public interface ShopMenu {
         }
         else
         {
-            //Todo: make a better error message and add sound
-            player.sendMessage(Text.literal("you don't have enough resources"));
+            player.sendMessage(Text.translatable("warning.bedwars.resourcesMissing").setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
+            player.playSound(SoundEvents.ENTITY_SILVERFISH_HURT, SoundCategory.PLAYERS, 1.f, 1.f);
         }
     }
 

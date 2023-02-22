@@ -1,12 +1,15 @@
 package me.verya.bedwars.game.event;
 
+import me.verya.bedwars.game.shop.Entry.ShopEntry;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.stimuli.event.StimulusEvent;
 
 public final class BedwarsEvents {
-
+    /*
+    many internals events of the bedwars game
+     */
     public static final StimulusEvent<BedBroken> BED_BROKEN = StimulusEvent.create(BedBroken.class, ctx -> (owner, breaker) -> {
         try {
             for (var listener : ctx.getListeners()) {
@@ -37,6 +40,16 @@ public final class BedwarsEvents {
         }
     });
 
+    public static final StimulusEvent<PlayerBuy> PLAYER_BUY = StimulusEvent.create(PlayerBuy.class, ctx -> (ServerPlayerEntity player, ShopEntry entry) -> {
+        try {
+            for (var listener : ctx.getListeners()) {
+                listener.onBuy(player, entry);
+            }
+        } catch (Throwable t) {
+            ctx.handleException(t);
+        }
+    });
+
     public interface BedBroken
     {
         void onBreak(GameTeam owner, ServerPlayerEntity breaker);
@@ -50,5 +63,10 @@ public final class BedwarsEvents {
     public interface PlayerRespawn
     {
         void onRespawn(ServerPlayerEntity player);
+    }
+
+    public interface PlayerBuy
+    {
+        void onBuy(ServerPlayerEntity player, ShopEntry entry);
     }
 }

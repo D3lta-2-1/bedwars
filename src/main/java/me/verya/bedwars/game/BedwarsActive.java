@@ -128,7 +128,7 @@ public class BedwarsActive {
     private Collection<ShopKeeper> addShopkeepers(List<BlockBounds> shopkeepersBounds)
     {
         System.out.println("preparing shops");
-        var menu = new ItemShopMenu(teamManager, teamsInOrder);
+        var menu = new ItemShopMenu(teamManager, teamsInOrder, activity);
         var shopkeepers = new ArrayList<ShopKeeper>();
         for(var shopkeeper : shopkeepersBounds)
         {

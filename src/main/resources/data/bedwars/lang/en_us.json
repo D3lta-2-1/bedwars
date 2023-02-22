@@ -5,6 +5,7 @@
   "warning.bedwars.buildLimit" : "Build limit reach",
   "warning.bedwars.cannotPlaceBlockHere" : "you can't place blocks here",
   "warning.bedwars.cannotBreakThisBlock" : "You can't break this block",
+  "warning.bedwars.resourcesMissing" : "you don't have enough resources !",
 
   "sidebar.bedwars.title" : "BedWars",
   "sidebar.bedwars.you" : "YOU",
@@ -52,6 +53,8 @@
   "bed.bedwars.bedDestruction" : "BED DESTRUCTION",
   "bed.bedwars.generalBreakContent" : " bed was destroyed by ",
   "bed.bedwars.personalBreakContent" : "Your bed got memed by ",
+
+  "shop.bedwars.youPurchase" : "you purchase ",
 
   "item.bedwars.wool" : "Wool",
   "item.bedwars.ladder" : "Ladder"

@@ -2,8 +2,10 @@ package me.verya.bedwars.game.ui;
 
 import me.verya.bedwars.TextUtilities;
 import me.verya.bedwars.game.event.BedwarsEvents;
+import me.verya.bedwars.game.shop.Entry.ShopEntry;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -23,6 +25,7 @@ public class Messager {
         this.players = activity.getGameSpace().getPlayers();
         activity.listen(BedwarsEvents.BED_BROKEN, this::onBedBreak);
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
+        activity.listen(BedwarsEvents.PLAYER_BUY, this::onBuy);
     }
 
     void onBedBreak(GameTeam owner, ServerPlayerEntity breaker)
@@ -54,6 +57,7 @@ public class Messager {
 
     void onPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer,boolean isFinal)
     {
+        player.playSound(SoundEvents.ENTITY_SQUID_DEATH, SoundCategory.PLAYERS, 1.f, 1.f);
         players.sendMessage(getDeathMessage(player, source, isFinal));
     }
 
@@ -64,5 +68,13 @@ public class Messager {
             deathMessage.append(TextUtilities.SPACE).append(Text.translatable("death.bedwars.finalKill").setStyle(Style.EMPTY.withColor(Formatting.AQUA).withBold(true)));
         }
         return deathMessage;
+    }
+
+    private void onBuy(ServerPlayerEntity player, ShopEntry entry)
+    {
+        var text1 = Text.translatable("shop.bedwars.youPurchase").setStyle(Style.EMPTY.withFormatting(Formatting.GREEN));
+        var text2 = entry.getTitle().setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
+        player.sendMessage(text1.append(text2));
+        player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.f, 1.f);
     }
 }
