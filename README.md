@@ -1,5 +1,4 @@
 # bedwars
-initial commit
 
 This a bedwars mini game for plasmid, still in developpement, some features are already implemented :
 -map loading  
@@ -10,4 +9,5 @@ This a bedwars mini game for plasmid, still in developpement, some features are 
 -claim (you can only breaks blocks placed by a player, builds limits are done)  
 -various sound and messages feedback  
 -colored armors  
--old regeneration
+-old regeneration  
+-primitive shops with num_key support 
