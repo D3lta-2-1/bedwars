@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 
@@ -20,12 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemShopMenu implements ShopMenu{
-    List<ShopEntry> ItemsInShop = new ArrayList<>();
+    final private List<ShopEntry> ItemsInShop = new ArrayList<>();
+    final private GameActivity activity;
 
-    public ItemShopMenu(TeamManager teamManager, List<GameTeam> teamsInOrder)
+    public ItemShopMenu(TeamManager teamManager, List<GameTeam> teamsInOrder, GameActivity activity)
     {
         ItemsInShop.add(new Wool(teamManager, teamsInOrder));
         ItemsInShop.add(new Ladder());
+        this.activity = activity;
     }
     public void open(ServerPlayerEntity player)
     {
@@ -58,7 +61,7 @@ public class ItemShopMenu implements ShopMenu{
             lore.add(Text.empty());
             lore.add(Text.literal("Click to purchase").setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)));
             guiElement.setLore(lore);
-            guiElement.setCallback( (index, type, action, guiInterface) -> purchase(article, type, guiInterface));
+            guiElement.setCallback( (index, type, action, guiInterface) -> purchase(article, type, guiInterface, activity));
             gui.setSlot(i, guiElement);
             i++;
         }
