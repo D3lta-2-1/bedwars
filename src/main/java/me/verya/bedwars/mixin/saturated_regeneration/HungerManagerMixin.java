@@ -1,4 +1,4 @@
-package me.verya.bedwars.mixin;
+package me.verya.bedwars.mixin.saturated_regeneration;
 
 import me.verya.bedwars.Bedwars;
 import org.objectweb.asm.Opcodes;
@@ -11,14 +11,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import xyz.nucleoid.plasmid.game.manager.GameSpaceManager;
-import xyz.nucleoid.plasmid.game.manager.ManagedGameSpace;
 
 @Mixin(HungerManager.class)
 public class HungerManagerMixin {
     @Redirect(method = "update", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/HungerManager;saturationLevel:F", opcode = Opcodes.GETFIELD, ordinal = 2))
     private float attemptSaturatedRegeneration(HungerManager manager, PlayerEntity player) {
         if (player instanceof ServerPlayerEntity) {
-            ManagedGameSpace gameSpace = GameSpaceManager.get().byPlayer(player);
+            var gameSpace = GameSpaceManager.get().byPlayer(player);
             if (gameSpace != null && gameSpace.getBehavior().testRule(Bedwars.SATURATED_REGENERATION) == ActionResult.FAIL) {
                 return 0;
             }

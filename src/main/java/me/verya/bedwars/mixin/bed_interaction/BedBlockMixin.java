@@ -1,4 +1,4 @@
-package me.verya.bedwars.mixin;
+package me.verya.bedwars.mixin.bed_interaction;
 
 import me.verya.bedwars.Bedwars;
 import net.minecraft.block.BedBlock;
