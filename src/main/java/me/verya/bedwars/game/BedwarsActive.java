@@ -83,6 +83,7 @@ public class BedwarsActive {
         activity.deny(GameRuleType.MODIFY_ARMOR);
         activity.deny(Bedwars.BED_INTERACTION);
         activity.deny(Bedwars.SATURATED_REGENERATION);
+        activity.allow(Bedwars.OLD_KNOCKBACK);
 
     }
 
