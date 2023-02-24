@@ -11,3 +11,4 @@ This a bedwars mini game for plasmid, still in developpement, some features are 
 -colored armors  
 -old regeneration  
 -primitive shops with num_key support 
+-add modded sword which emulate the old pvp, with old damage set
