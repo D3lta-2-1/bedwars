@@ -106,7 +106,7 @@ public class Forge {
     {
         if(timeBeforeNextIronSpawn <= 0)
         {
-            if(!isFullOf(Items.IRON_INGOT, 64))
+            if(!isFullOf(Items.IRON_INGOT, 48))
                 this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getSplittableIronIngot(), 0,0,0));
             timeBeforeNextIronSpawn += getTimeToWaitForTier(config.ironSpawnTime(), tier);
         }

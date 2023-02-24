@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public record ForgeConfig (int ironSpawnTime, int goldSpawnTime, int emeraldSpawnTime)
 {
     //default Value
-    public static final int IRON_SPAWN_TIME = 20;
+    public static final int IRON_SPAWN_TIME = 40;
     public static final int GOLD_SPAWN_TIME = 15 * 20;
     public static final int EMERALD_SPAWN_TIME = 60 * 20;
     public static final Codec<ForgeConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
