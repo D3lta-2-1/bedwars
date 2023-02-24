@@ -15,9 +15,9 @@ public class Constants {
     static public final List<DyeColor> TEAM_COLORS = new ArrayList<>(Arrays.asList(
             DyeColor.RED,
             DyeColor.BLUE,
-            DyeColor.YELLOW,
             DyeColor.GREEN,
             DyeColor.LIME,
+            DyeColor.YELLOW,
             DyeColor.ORANGE,
             DyeColor.LIGHT_BLUE,
             DyeColor.PURPLE,
