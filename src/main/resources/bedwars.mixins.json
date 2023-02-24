@@ -5,9 +5,12 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "bed_interaction.BedBlockMixin",
-    "saturated_regeneration.HungerManagerMixin",
     "old_knocback.LivingEntityMixin",
-    "old_knocback.PlayerEntityMixin"
+    "old_knocback.PlayerEntityMixin",
+    "attack_sound.PlayerEntityMixin",
+    "SwordItemMixin",
+    "itemThrowEvent.ScreenHandlerMixin",
+    "itemThrowEvent.ServerPlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
