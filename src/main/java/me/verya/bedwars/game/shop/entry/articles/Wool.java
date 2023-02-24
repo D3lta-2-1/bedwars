@@ -1,6 +1,6 @@
-package me.verya.bedwars.game.shop.Entry.Blocks;
+package me.verya.bedwars.game.shop.entry.articles;
 
-import me.verya.bedwars.game.shop.Entry.ShopEntry;
+import me.verya.bedwars.game.shop.entry.ShopEntry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -56,7 +56,7 @@ public class Wool implements ShopEntry {
 
     public MutableText getTitle()
     {
-        return Text.translatable("item.bedwars.wool");
+        return Text.translatable("shop.bedwars.wool");
     }
 
     public Item getItem()
@@ -71,11 +71,14 @@ public class Wool implements ShopEntry {
         {
             if(team.key() == teamKey)
             {
-                var stack = DyeWoolMap.get(team.config().blockDyeColor());
-                stack.setCount(16);
-                return stack;
+                return DyeWoolMap.get(team.config().blockDyeColor());
             }
         }
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public int getCount() {
+        return 16;
     }
 }

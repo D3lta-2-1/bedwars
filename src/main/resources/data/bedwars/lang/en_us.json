@@ -56,6 +56,13 @@
 
   "shop.bedwars.youPurchase" : "you purchase ",
 
-  "item.bedwars.wool" : "Wool",
-  "item.bedwars.ladder" : "Ladder"
+  "shop.bedwars.wool" : "Wool",
+  "shop.bedwars.wood" : "Wood",
+
+  "item.bedwars.wooden_sword" : "Wooden Sword",
+  "item.bedwars.golden_sword" : "Golden Sword",
+  "item.bedwars.stone_sword" : "Stone Sword",
+  "item.bedwars.iron_sword" : "Iron Sword",
+  "item.bedwars.diamond_sword" : "Diamond Sword",
+  "item.bedwars.netherite_sword" : "Netherite Sword"
 }

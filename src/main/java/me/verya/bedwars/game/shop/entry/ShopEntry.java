@@ -1,4 +1,4 @@
-package me.verya.bedwars.game.shop.Entry;
+package me.verya.bedwars.game.shop.entry;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -6,7 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 
 public interface ShopEntry {
-    public class Cost
+    class Cost
     {
         public Cost(Item item, int count) { this.item = item; this.count = count; }
         public Item item;
@@ -17,4 +17,5 @@ public interface ShopEntry {
     MutableText getTitle();
     Item getItem();
     ItemStack onBuy(ServerPlayerEntity player);
+    default int getCount() { return 1; }
 }

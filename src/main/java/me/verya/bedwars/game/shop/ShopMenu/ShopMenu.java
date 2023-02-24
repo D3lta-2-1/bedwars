@@ -1,9 +1,11 @@
 package me.verya.bedwars.game.shop.ShopMenu;
 
 import eu.pb4.sgui.api.ClickType;
+import eu.pb4.sgui.api.elements.GuiElementBuilder;
+import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import me.verya.bedwars.game.event.BedwarsEvents;
-import me.verya.bedwars.game.shop.Entry.ShopEntry;
+import me.verya.bedwars.game.shop.entry.ShopEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,9 +19,30 @@ import xyz.nucleoid.plasmid.game.GameActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface ShopMenu {
-    void open(ServerPlayerEntity player);
-    default void purchase(ShopEntry entry, ClickType type, SlotGuiInterface gui, GameActivity activity)
+public abstract class ShopMenu {
+    final private GameActivity activity;
+
+    public ShopMenu(GameActivity activity)
+    {
+        this.activity = activity;
+    }
+    public abstract void open(ServerPlayerEntity player);
+    protected void add(SimpleGui gui, ShopEntry entry, int slot)
+    {
+        var guiElement = new GuiElementBuilder();
+        guiElement.setItem(entry.getItem());
+        int count = entry.getCount();
+        var multiplier = count != 1 ? Text.literal(" x" + count + " ").setStyle(Style.EMPTY.withFormatting(Formatting.GRAY).withItalic(true)): Text.empty();
+        guiElement.setName(entry.getTitle().append(multiplier));
+        var lore = new ArrayList<Text>();
+        lore.add(Text.literal("cost: " + entry.getCost().count + " ").append(Text.translatable(entry.getCost().item.getTranslationKey())).setStyle(Style.EMPTY.withFormatting(Formatting.GRAY)));
+        lore.add(Text.empty());
+        lore.add(Text.literal("Click to purchase").setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)));
+        guiElement.setLore(lore);
+        guiElement.setCallback( (index, type, action, guiInterface) -> purchase(entry, type, guiInterface, activity));
+        gui.setSlot(slot, guiElement);
+    }
+    private void purchase(ShopEntry entry, ClickType type, SlotGuiInterface gui, GameActivity activity)
     {
         var player = gui.getPlayer();
         var cost = entry.getCost();
@@ -57,8 +80,9 @@ public interface ShopMenu {
                     stackList.set(index, ItemStack.EMPTY);
                 }
             }
-            //Todo: make a shop event and add sound
             var boughStack = entry.onBuy(player);
+            boughStack.setCount(entry.getCount());
+
             activity.invoker(BedwarsEvents.PLAYER_BUY).onBuy(player, entry);
             if(boughStack.isEmpty()) return;
             if(type.numKey)
@@ -67,7 +91,7 @@ public interface ShopMenu {
             }
             else
             {
-                inventory.offerOrDrop(entry.onBuy(player));
+                inventory.offerOrDrop(boughStack);
             }
         }
         else

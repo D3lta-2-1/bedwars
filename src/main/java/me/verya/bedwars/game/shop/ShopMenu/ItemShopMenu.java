@@ -1,18 +1,14 @@
 package me.verya.bedwars.game.shop.ShopMenu;
 
 import eu.pb4.sgui.api.ClickType;
-import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import me.verya.bedwars.game.shop.Entry.Blocks.Ladder;
-import me.verya.bedwars.game.shop.Entry.Blocks.Wool;
-import me.verya.bedwars.game.shop.Entry.ShopEntry;
+import me.verya.bedwars.game.behavior.DefaultSword;
+import me.verya.bedwars.game.shop.entry.articles.*;
+import me.verya.bedwars.game.shop.entry.ShopEntry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
@@ -20,15 +16,17 @@ import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemShopMenu implements ShopMenu{
+public class ItemShopMenu extends ShopMenu{
     final private List<ShopEntry> ItemsInShop = new ArrayList<>();
-    final private GameActivity activity;
-
-    public ItemShopMenu(TeamManager teamManager, List<GameTeam> teamsInOrder, GameActivity activity)
+    public ItemShopMenu(TeamManager teamManager, List<GameTeam> teamsInOrder, DefaultSword defaultSwordManager, GameActivity activity)
     {
+        super(activity);
         ItemsInShop.add(new Wool(teamManager, teamsInOrder));
         ItemsInShop.add(new Ladder());
-        this.activity = activity;
+        ItemsInShop.add(new Wood());
+        ItemsInShop.add(new EndStone());
+        ItemsInShop.add(new StoneSword(defaultSwordManager));
+        ItemsInShop.add(new IronSword(defaultSwordManager));
     }
     public void open(ServerPlayerEntity player)
     {
@@ -53,16 +51,7 @@ public class ItemShopMenu implements ShopMenu{
         int i = 0;
         for(var article : ItemsInShop)
         {
-            var guiElement = new GuiElementBuilder();
-            guiElement.setItem(article.getItem());
-            guiElement.setName(article.getTitle());
-            var lore = new ArrayList<Text>();
-            lore.add(Text.literal("cost: " + article.getCost().count + " ").append(Text.translatable(article.getCost().item.getTranslationKey())).setStyle(Style.EMPTY.withFormatting(Formatting.GRAY)));
-            lore.add(Text.empty());
-            lore.add(Text.literal("Click to purchase").setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)));
-            guiElement.setLore(lore);
-            guiElement.setCallback( (index, type, action, guiInterface) -> purchase(article, type, guiInterface, activity));
-            gui.setSlot(i, guiElement);
+            this.add(gui, article, i);
             i++;
         }
     }

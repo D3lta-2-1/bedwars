@@ -1,6 +1,6 @@
-package me.verya.bedwars.game.shop.Entry.Blocks;
+package me.verya.bedwars.game.shop.entry.articles;
 
-import me.verya.bedwars.game.shop.Entry.ShopEntry;
+import me.verya.bedwars.game.shop.entry.ShopEntry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -8,24 +8,27 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
-public class Ladder implements ShopEntry {
+public class Wood  implements ShopEntry {
     public ShopEntry.Cost getCost()
     {
-        return new ShopEntry.Cost(Items.IRON_INGOT, 4);
+        return new ShopEntry.Cost(Items.GOLD_INGOT, 4);
     }
     public MutableText getTitle()
     {
-        return Text.translatable("item.bedwars.ladder");
+        return Text.translatable("shop.bedwars.wood");
     }
 
     public Item getItem()
     {
-        return Items.LADDER;
+        return Items.OAK_PLANKS;
     }
     public ItemStack onBuy(ServerPlayerEntity player)
     {
-        var stack =  Items.LADDER.getDefaultStack();
-        stack.setCount(16);
-        return stack;
+        return Items.OAK_PLANKS.getDefaultStack();
+    }
+
+    @Override
+    public int getCount() {
+        return 16;
     }
 }
