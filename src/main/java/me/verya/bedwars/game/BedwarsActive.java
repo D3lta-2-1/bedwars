@@ -4,6 +4,8 @@ import com.google.common.collect.Multimap;
 import eu.pb4.sidebars.api.Sidebar;
 import me.verya.bedwars.Bedwars;
 import me.verya.bedwars.BedwarsConfig;
+import me.verya.bedwars.game.behavior.DefaultSword;
+import me.verya.bedwars.game.behavior.OldAttackSpeed;
 import me.verya.bedwars.game.component.TeamComponents;
 import me.verya.bedwars.game.player.InventoryManager;
 import me.verya.bedwars.game.shop.ShopKeeper;
@@ -39,6 +41,8 @@ public class BedwarsActive {
     final List<GameTeam> teamsInOrder;
     final ClaimManager claim;
     final DeathManager deathManager;
+    final OldAttackSpeed attackSpeedRestorer;
+    final DefaultSword defaultSwordManager;
     final InventoryManager inventoryManager;
     final Messager messager;
     final Sidebar sidebar;
@@ -60,6 +64,8 @@ public class BedwarsActive {
         setupTeam(teamPlayers);
         this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
         this.deathManager = new DeathManager(teamComponentsMap, teamManager, world, gameMap, activity);
+        this.attackSpeedRestorer = new OldAttackSpeed(activity);
+        this.defaultSwordManager = new DefaultSword(activity);
         this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, activity);
         this.sidebar = BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder);
         addPlayerToSideBar();
@@ -81,8 +87,9 @@ public class BedwarsActive {
         activity.allow(GameRuleType.PLAYER_PROJECTILE_KNOCKBACK);
         activity.allow(GameRuleType.TRIDENTS_LOYAL_IN_VOID);
         activity.deny(GameRuleType.MODIFY_ARMOR);
+        activity.deny(GameRuleType.SATURATED_REGENERATION);
+        activity.deny(Bedwars.ATTACK_SOUND);
         activity.deny(Bedwars.BED_INTERACTION);
-        activity.deny(Bedwars.SATURATED_REGENERATION);
         activity.allow(Bedwars.OLD_KNOCKBACK);
 
     }
@@ -128,12 +135,11 @@ public class BedwarsActive {
 
     private Collection<ShopKeeper> addShopkeepers(List<BlockBounds> shopkeepersBounds)
     {
-        System.out.println("preparing shops");
-        var menu = new ItemShopMenu(teamManager, teamsInOrder, activity);
+        var menu = new ItemShopMenu(teamManager, teamsInOrder, defaultSwordManager, activity);
         var shopkeepers = new ArrayList<ShopKeeper>();
         for(var shopkeeper : shopkeepersBounds)
         {
-            shopkeepers.add(new ShopKeeper(world, shopkeeper.centerBottom(), menu, activity));
+            shopkeepers.add(new ShopKeeper(world, shopkeeper, claim, menu, activity));
         }
         return shopkeepers;
     }
