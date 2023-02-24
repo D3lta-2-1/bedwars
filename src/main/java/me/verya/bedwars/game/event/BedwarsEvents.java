@@ -1,6 +1,6 @@
 package me.verya.bedwars.game.event;
 
-import me.verya.bedwars.game.shop.Entry.ShopEntry;
+import me.verya.bedwars.game.shop.entry.ShopEntry;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
