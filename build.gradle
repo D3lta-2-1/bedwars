@@ -8,8 +8,11 @@ group = project.maven_group
 
 repositories {
     maven { url = 'https://maven.nucleoid.xyz/' }
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
+    maven { url = "https://jitpack.io/" }
+    maven {
+        // LuckPerms maven
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
@@ -22,8 +25,10 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-    modImplementation "xyz.nucleoid:plasmid:0.5+1.19.3-SNAPSHOT"
+    modImplementation "com.github.samolego.Taterzens:taterzens-fabric:${project.taterzen_version}"
+    modImplementation "com.github.D3lta-2-1:NotASword:${project.NotASword_version}"
+    modImplementation "com.github.D3lta-2-1:MiniGameSpec:${project.mini_game_spec}"
+    modImplementation "xyz.nucleoid:plasmid:${project.plasmid_version}"
 }
 
 processResources {

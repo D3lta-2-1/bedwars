@@ -1,11 +1,12 @@
-package me.verya.bedwars.game.behavior;
+package fr.delta.bedwars.game.behavior;
 
-import me.verya.bedwars.TextUtilities;
-import me.verya.bedwars.game.component.TeamComponents;
-import me.verya.bedwars.game.TeleporterLogic;
-import me.verya.bedwars.game.event.BedwarsEvents;
-import me.verya.bedwars.game.map.BedwarsMap;
-import me.verya.bedwars.game.ui.PlayerPackets;
+import fr.delta.bedwars.TextUtilities;
+import fr.delta.bedwars.game.TeleporterLogic;
+import fr.delta.bedwars.game.component.TeamComponents;
+import fr.delta.bedwars.game.event.BedwarsEvents;
+import fr.delta.bedwars.game.map.BedwarsMap;
+import fr.delta.bedwars.game.ui.PlayerPackets;
+import fr.delta.minigamespec.MiniGameSpec;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -14,7 +15,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpacePlayers;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
@@ -62,29 +62,33 @@ public class DeathManager {
 
     public ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source)
     {
-        var teamKey = teamManager.teamFor(player);
-        var bed = teamComponentsMap.get(teamKey).bed;
-        ServerPlayerEntity attacker = null;
+        if(isAlive(player))
+        {
+            var teamKey = teamManager.teamFor(player);
+            var bed = teamComponentsMap.get(teamKey).bed;
+            ServerPlayerEntity attacker = null;
 
-        if (source.getAttacker() != null) {
-            if (source.getAttacker() instanceof ServerPlayerEntity adversary) {
+            if (source.getAttacker() != null) {
+                if (source.getAttacker() instanceof ServerPlayerEntity adversary) {
+                    attacker = adversary;
+                }
+            } else if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary) {
                 attacker = adversary;
             }
-        } else if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary) {
-            attacker = adversary;
-        }
-        activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, source, attacker, bed.isBroken());
+            activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, source, attacker, bed.isBroken());
 
-        if(bed.isBroken())
-        {
-            //this is a final kill just remove it from the game, this may need to be moved to a dedicated listener
-            teamManager.removePlayer(player);
-        }
-        else
-        {
-            var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
-            PlayerPackets.showTitle(player, title, 0, 20 * 6, 1);
-            deadPlayers.add(new DeadPlayer(player, world.getTime()));
+            if(bed.isBroken()) {
+                //this is a final kill just remove it from the game, this may need to be moved to a dedicated listener
+                teamManager.removePlayer(player);
+                player.changeGameMode(MiniGameSpec.ADVENTURE_SPEC_MODE);
+            }
+            else {
+                var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
+                PlayerPackets.showTitle(player, title, 0, 20 * 6, 1);
+                deadPlayers.add(new DeadPlayer(player, world.getTime()));
+                player.changeGameMode(MiniGameSpec.OBSERVER_MODE); //go for observer to reduce player death advantage
+            }
+            activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, source, attacker, bed.isBroken());
         }
         spawnSpec(player);
         return ActionResult.FAIL;
@@ -93,17 +97,10 @@ public class DeathManager {
     private void tick()
     {
         //kill all player under 0
-        extern :for(var player : players)
+        for(var player : players)
         {
             if(player.getPos().getY() > 0) continue;
-            for(var deadPlayer : deadPlayers)
-            {
-                if(deadPlayer.player == player)
-                {
-                    TeleporterLogic.spawnPlayer(player, respawnPos, world);
-                    continue extern;
-                }
-            }
+
             onPlayerDeath(player, DamageSource.OUT_OF_WORLD);
         }
 
@@ -143,7 +140,6 @@ public class DeathManager {
     public void spawnSpec(ServerPlayerEntity player)
     {
         TeleporterLogic.spawnPlayer(player, respawnPos, world);
-        player.changeGameMode(GameMode.SPECTATOR);
         player.setVelocity(Vec3d.ZERO);
         player.fallDistance = 0.0f;
         player.setHealth(20.0f);

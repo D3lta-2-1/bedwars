@@ -1,14 +1,10 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "me.verya.bedwars.mixin",
+  "package": "fr.delta.bedwars.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "bed_interaction.BedBlockMixin",
-    "old_knocback.LivingEntityMixin",
-    "old_knocback.PlayerEntityMixin",
-    "attack_sound.PlayerEntityMixin",
-    "SwordItemMixin",
+    "bedInteraction.BedBlockMixin",
     "itemThrowEvent.ScreenHandlerMixin",
     "itemThrowEvent.ServerPlayerEntityMixin"
   ],
