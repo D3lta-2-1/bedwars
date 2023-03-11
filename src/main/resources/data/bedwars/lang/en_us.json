@@ -51,18 +51,18 @@
   "bed.bedwars.bedBrokenTitle" : "BED DESTROYED!",
   "bed.bedwars.bedBrokenSubtitle" : "You will no longer respawn!",
   "bed.bedwars.bedDestruction" : "BED DESTRUCTION",
+  "bed.bedwars.anonymousBreak" : " bed was destroyed",
   "bed.bedwars.generalBreakContent" : " bed was destroyed by ",
   "bed.bedwars.personalBreakContent" : "Your bed got memed by ",
 
   "shop.bedwars.youPurchase" : "you purchase ",
+  "shop.bedwars.itemShop" : "Item Shop",
 
   "shop.bedwars.wool" : "Wool",
   "shop.bedwars.wood" : "Wood",
+  "shop.bedwars.chainMailArmor" : "ChainMail Armor",
+  "shop.bedwars.IronArmor" : "Iron Armor",
 
-  "item.bedwars.wooden_sword" : "Wooden Sword",
-  "item.bedwars.golden_sword" : "Golden Sword",
-  "item.bedwars.stone_sword" : "Stone Sword",
-  "item.bedwars.iron_sword" : "Iron Sword",
-  "item.bedwars.diamond_sword" : "Diamond Sword",
-  "item.bedwars.netherite_sword" : "Netherite Sword"
+  "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one"
+
 }

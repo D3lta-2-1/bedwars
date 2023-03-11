@@ -9,15 +9,15 @@
   "license": "MIT",
   "environment": "server",
   "entrypoints": {
-    "main": [
-      "me.verya.bedwars.Bedwars"
+    "server": [
+      "fr.delta.bedwars.Bedwars"
     ]
   },
   "mixins": [
     "bedwars.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.10",
+    "fabricloader": ">=0.14.17",
     "fabric": "*",
     "minecraft": "1.19.3"
   }
