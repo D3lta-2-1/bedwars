@@ -1,22 +1,24 @@
 package fr.delta.bedwars.game.shop.ShopMenu;
 
 import eu.pb4.sgui.api.ClickType;
+import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.shop.articles.ShopEntry;
-import fr.delta.bedwars.game.shop.data.ShopConfig;
+import fr.delta.bedwars.game.shop.data.ItemShopConfig;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import xyz.nucleoid.plasmid.game.GameActivity;
 
 import java.util.List;
 
 public class ItemShopMenu extends ShopMenu{
-    final ShopConfig config;
+    final ItemShopConfig config;
 
-    public ItemShopMenu(BedwarsActive bedwarsActive, ShopConfig config, GameActivity activity)
+    public ItemShopMenu(BedwarsActive bedwarsActive, ItemShopConfig config, GameActivity activity)
     {
         super(bedwarsActive, activity);
         this.config = config;
@@ -35,23 +37,22 @@ public class ItemShopMenu extends ShopMenu{
             }
         };
         gui.setAutoUpdate(false);
-        buildMenu(gui, config.configs());
-        //addCategory(gui);
+        addCategory(gui);
         gui.open();
     }
 
     private void addCategory(SimpleGui gui)
     {
-        /*int slot = 0;
-        for(var category : ShopRegistries.ItemShopCategories)
+        int slot = 1;
+        for(var category : config.categories())
         {
             var builder = new GuiElementBuilder();
-            builder.setItem(category.display());
-            builder.setName(category.Name());
-            builder.setCallback( click -> buildMenu(gui, category.Entries()));
+            builder.setItem(category.icon());
+            builder.setName(Text.translatable(category.name()));
+            builder.setCallback( click -> buildMenu(gui, category.entries()));
             gui.setSlot(slot, builder);
             slot++;
-        }*/
+        }
     }
 
     private void buildMenu(SimpleGui gui, List<ShopEntry> entries)

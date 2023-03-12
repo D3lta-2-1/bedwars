@@ -19,7 +19,7 @@ import xyz.nucleoid.plasmid.registry.TinyRegistry;
 import java.io.IOException;
 
 public class ShopConfigs {
-    public static final TinyRegistry<ShopConfig> CONFIGS = TinyRegistry.create();
+    public static final TinyRegistry<ItemShopConfig> CONFIGS = TinyRegistry.create();
     private static final String path = "bedwars_shops";
 
     public static void register() {
@@ -41,7 +41,7 @@ public class ShopConfigs {
 
                             Identifier identifier = identifierFromPath(path);
 
-                            DataResult<ShopConfig> result = ShopConfig.CODEC.parse(ops, json);
+                            DataResult<ItemShopConfig> result = ItemShopConfig.CODEC.parse(ops, json);
 
                             result.result().ifPresent(game ->
                                 CONFIGS.register(identifier, game)
@@ -57,7 +57,7 @@ public class ShopConfigs {
                         Bedwars.LOGGER.error("Failed to parse game JSON at {}: {}", path, e);
                     }
                 });
-                Bedwars.LOGGER.info("shop configs loaded :");
+                Bedwars.LOGGER.info("shop categories loaded :");
                 CONFIGS.keySet().forEach(config -> Bedwars.LOGGER.info(config.toString()));
             }
         });

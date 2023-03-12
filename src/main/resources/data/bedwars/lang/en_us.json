@@ -59,9 +59,9 @@
   "shop.bedwars.itemShop" : "Item Shop",
 
   "shop.bedwars.wool" : "Wool",
-  "shop.bedwars.wood" : "Wood",
   "shop.bedwars.chainArmor" : "ChainMail Armor",
   "shop.bedwars.ironArmor" : "Iron Armor",
+  "shop.bedwars.diamondArmor" : "Iron Armor",
 
   "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one"
 

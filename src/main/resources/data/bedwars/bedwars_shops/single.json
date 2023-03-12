@@ -1,61 +1,102 @@
 {
-  "entries" : [
+  "categories" : [
     {
-      "type" : "bedwars:simple_entry",
-      "item" : "minecraft:end_stone",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 24},
-      "count" : 12
+      "name" : "blocks",
+      "icon" : "minecraft:orange_terracotta",
+      "entries" : [
+        {
+          "type" : "bedwars:colored_wool",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
+          "count" : 16
+        },
+        {
+          "type" : "bedwars:simple_entry",
+          "item" : "minecraft:end_stone",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 24},
+          "count" : 12
+        },
+        {
+          "type" : "bedwars:simple_entry",
+          "item" : "minecraft:oak_planks",
+          "cost" : { "item" : "minecraft:gold_ingot", "count": 4},
+          "count" : 16
+        },
+        {
+          "type" : "bedwars:simple_entry",
+          "item" : "minecraft:ladder",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
+          "count" : 16
+        }
+      ]
     },
     {
-      "type" : "bedwars:simple_entry",
-      "item" : "minecraft:golden_apple",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 3},
-      "count" : 1
+      "name" : "swords",
+      "icon" : "not_a_sword:golden_sword",
+      "entries" : [
+        {
+          "type" : "bedwars:sword_entry",
+          "item" : "not_a_sword:stone_sword",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 10}
+        },
+        {
+          "type" : "bedwars:sword_entry",
+          "item" : "not_a_sword:iron_sword",
+          "cost" : { "item" : "minecraft:gold_ingot", "count": 7}
+        },
+        {
+          "type" : "bedwars:sword_entry",
+          "item" : "not_a_sword:diamond_sword",
+          "cost" : { "item" : "minecraft:emerald", "count": 3}
+        }
+      ]
     },
     {
-      "type" : "bedwars:simple_entry",
-      "item" : "minecraft:ladder",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
-      "count" : 16
+      "name" : "armors",
+      "icon" : "minecraft:iron_chestplate",
+      "entries" : [
+        {
+          "type" : "bedwars:armor_entry",
+          "icon" : "minecraft:chainmail_boots",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 30},
+          "level" : "chain"
+        },
+        {
+          "type" : "bedwars:armor_entry",
+          "icon" : "minecraft:iron_boots",
+          "cost" : { "item" : "minecraft:gold_ingot", "count": 12},
+          "level" : "iron"
+        },
+        {
+          "type" : "bedwars:armor_entry",
+          "icon" : "minecraft:diamond_boots",
+          "cost" : { "item" : "minecraft:emerald", "count": 6},
+          "level" : "diamond"
+        }
+      ]
     },
     {
-      "type" : "bedwars:simple_entry",
-      "item" : "minecraft:tnt",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 4},
-      "count" : 1
-    },
-    {
-      "type" : "bedwars:colored_wool",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
-      "count" : 16
-    },
-    {
-      "type" : "bedwars:sword_entry",
-      "item" : "not_a_sword:stone_sword",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 10}
-    },
-    {
-      "type" : "bedwars:sword_entry",
-      "item" : "not_a_sword:iron_sword",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 7}
-    },
-    {
-      "type" : "bedwars:simple_entry",
-      "item" : "minecraft:slime_block",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
-      "count" : 8
-    },
-    {
-      "type" : "bedwars:armor_entry",
-      "icon" : "minecraft:chainmail_boots",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 30},
-      "level" : "chain"
-    },
-    {
-      "type" : "bedwars:armor_entry",
-      "icon" : "minecraft:iron_boots",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 12},
-      "level" : "iron"
+      "name" : "utilities",
+      "icon" : "minecraft:tnt",
+      "entries" : [
+        {
+          "type" : "bedwars:simple_entry",
+          "item" : "minecraft:tnt",
+          "cost" : { "item" : "minecraft:gold_ingot", "count": 4},
+          "count" : 1
+        },
+        {
+          "type" : "bedwars:simple_entry",
+          "item" : "minecraft:golden_apple",
+          "cost" : { "item" : "minecraft:gold_ingot", "count": 3},
+          "count" : 1
+        },
+        {
+          "type" : "bedwars:simple_entry",
+          "item" : "minecraft:slime_block",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
+          "count" : 8
+        }
+      ]
     }
   ]
 }

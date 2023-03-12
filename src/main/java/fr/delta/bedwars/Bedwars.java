@@ -17,6 +17,6 @@ public class Bedwars implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
         GameType.register(new Identifier(ID, "bedwars"), BedwarsConfig.CODEC, BedwarsWaiting::open);
-        ShopConfigs.register(); //load all shops configs
+        ShopConfigs.register(); //load all shops categories
     }
 }
