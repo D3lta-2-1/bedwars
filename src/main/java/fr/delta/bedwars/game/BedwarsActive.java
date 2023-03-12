@@ -10,7 +10,7 @@ import fr.delta.bedwars.game.behavior.DefaultSword;
 import fr.delta.bedwars.game.behavior.WinEventSender;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.player.InventoryManager;
-import fr.delta.bedwars.game.player.PlayerArmorManager;
+import fr.delta.bedwars.game.shop.data.ShopConfigs;
 import fr.delta.bedwars.game.shop.npc.ShopKeeper;
 import fr.delta.bedwars.game.ui.Messager;
 import fr.delta.bedwars.TextUtilities;
@@ -138,7 +138,7 @@ public class BedwarsActive {
 
     private Collection<TaterzenNPC> addShopkeepers(List<BlockBounds> shopkeepersBounds)
     {
-        var menu = new ItemShopMenu(this, activity);
+        var menu = new ItemShopMenu(this, ShopConfigs.CONFIGS.get(config.shopConfigId()), activity);
         var shopkeepers = new ArrayList<TaterzenNPC>();
         for(var shopkeeper : shopkeepersBounds)
         {

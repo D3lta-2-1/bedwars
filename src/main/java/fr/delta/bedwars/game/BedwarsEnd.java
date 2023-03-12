@@ -16,7 +16,7 @@ public class BedwarsEnd {
     final ServerWorld world;
     final GameSpace gameSpace;
     long date;
-    static final int timeBeforeClose = 5 * 20; //5s
+    static final int timeBeforeClose = 10 * 20; //5s
 
     BedwarsEnd(GameSpace gameSpace, ServerWorld world, Multimap<GameTeam, ServerPlayerEntity> teamPlayers, GameTeam winner)
     {

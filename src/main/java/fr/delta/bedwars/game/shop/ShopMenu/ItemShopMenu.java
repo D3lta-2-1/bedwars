@@ -1,12 +1,11 @@
 package fr.delta.bedwars.game.shop.ShopMenu;
 
 import eu.pb4.sgui.api.ClickType;
-import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.shop.articles.ShopEntry;
-import fr.delta.bedwars.game.shop.categories.ShopRegistries;
+import fr.delta.bedwars.game.shop.data.ShopConfig;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -15,9 +14,12 @@ import xyz.nucleoid.plasmid.game.GameActivity;
 import java.util.List;
 
 public class ItemShopMenu extends ShopMenu{
-    public ItemShopMenu(BedwarsActive bedwarsActive, GameActivity activity)
+    final ShopConfig config;
+
+    public ItemShopMenu(BedwarsActive bedwarsActive, ShopConfig config, GameActivity activity)
     {
         super(bedwarsActive, activity);
+        this.config = config;
     }
     public void open(ServerPlayerEntity player)
     {
@@ -33,13 +35,14 @@ public class ItemShopMenu extends ShopMenu{
             }
         };
         gui.setAutoUpdate(false);
-        addCategory(gui);
+        buildMenu(gui, config.configs());
+        //addCategory(gui);
         gui.open();
     }
 
     private void addCategory(SimpleGui gui)
     {
-        int slot = 0;
+        /*int slot = 0;
         for(var category : ShopRegistries.ItemShopCategories)
         {
             var builder = new GuiElementBuilder();
@@ -48,7 +51,7 @@ public class ItemShopMenu extends ShopMenu{
             builder.setCallback( click -> buildMenu(gui, category.Entries()));
             gui.setSlot(slot, builder);
             slot++;
-        }
+        }*/
     }
 
     private void buildMenu(SimpleGui gui, List<ShopEntry> entries)
@@ -56,7 +59,7 @@ public class ItemShopMenu extends ShopMenu{
         int x = 0;
         int y = 0;
         var iter = entries.iterator();
-        while(x != 5 && y != 3)
+        while(x != 7)
         {
             if(iter.hasNext())
             {
@@ -67,10 +70,13 @@ public class ItemShopMenu extends ShopMenu{
                 gui.clearSlot((1 + x) + (2 + y) * 9);
             }
             x++;
-            if(x == 6)
+            if(x == 7)
             {
-                x %= 7;
-                y++;
+                if(y != 3)
+                {
+                    x %= 7;
+                    y++;
+                }
             }
         }
     }

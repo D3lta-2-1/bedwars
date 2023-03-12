@@ -24,6 +24,16 @@ public class PlayerArmorManager {
         {
             return this.ordinal() < level.ordinal();
         }
+
+        static public ArmorLevel createFromString(String level)
+        {
+            for(var armorLevel : ArmorLevel.values())
+            {
+                if(armorLevel.name().toLowerCase().equals(level))
+                    return armorLevel;
+            }
+            return ArmorLevel.LEATHER;
+        }
     }
     private ArmorLevel armorLevel;
 

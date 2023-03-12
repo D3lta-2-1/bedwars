@@ -23,7 +23,6 @@ public class WinEventSender {
 
     void onPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer, boolean isFinal)
     {
-        System.out.println("test for win");
         if(isFinal)
         {
             GameTeam lastTeam = null;

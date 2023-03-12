@@ -3,6 +3,7 @@
   "map":  {
     "id": "bedwars:lighthouse"
   },
-  "high_limit" : 100,
-  "down_limit" : 10
+  "high_limit" : 50,
+  "down_limit" : 10,
+  "shop_config" : "bedwars:single"
 }

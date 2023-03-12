@@ -4,6 +4,7 @@
     "id": "bedwars:lighthouse"
   },
   "team_size" : 2,
-  "high_limit" : 100,
-  "down_limit" : 10
+  "high_limit" : 50,
+  "down_limit" : 0,
+  "shop_config" : "bedwars:single"
 }

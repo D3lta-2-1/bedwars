@@ -1,5 +1,7 @@
 package fr.delta.bedwars.game.shop.articles.blocks;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.shop.articles.ShopEntry;
 import net.minecraft.item.Item;
@@ -13,8 +15,22 @@ import net.minecraft.util.DyeColor;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Wool implements ShopEntry {
-    static public ShopEntry INSTANCE = new Wool();
+public class Wool extends ShopEntry  {
+
+    public static Codec<Wool> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Cost.CODEC.fieldOf("cost").forGetter(Wool::getCostNoArgument),
+            Codec.INT.fieldOf("count").forGetter(Wool::getCount)
+    ).apply(instance, Wool::new));
+    public Wool(Cost cost, int count) {
+        this.cost = cost;
+        this.count = count;
+    }
+
+    public Cost getCostNoArgument() {
+        return cost;
+    }
+    final private Cost cost;
+    final private int count;
     static final private Map<DyeColor, ItemStack> dyeColorItemStackMap = makeMap();
     static private Map<DyeColor, ItemStack> makeMap()
     {
@@ -42,7 +58,7 @@ public class Wool implements ShopEntry {
     @Override
     public Cost getCost(BedwarsActive bedwarsGame, ServerPlayerEntity player)
     {
-        return new Cost(Items.IRON_INGOT, 4);
+        return cost;
 
     }
     @Override
@@ -63,11 +79,13 @@ public class Wool implements ShopEntry {
         var team = bedwarsGame.getTeamForPlayer(player);
         if(team == null)
             return Items.WHITE_WOOL.getDefaultStack();
-        return dyeColorItemStackMap.get(team.config().blockDyeColor());
+        var stack = dyeColorItemStackMap.get(team.config().blockDyeColor()).copy();
+        if(stack.isEmpty()) System.out.println("caca");
+        return stack;
     }
 
     @Override
     public int getCount() {
-        return 16;
+        return count;
     }
 }
