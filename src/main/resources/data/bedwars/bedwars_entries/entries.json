@@ -22,6 +22,13 @@
     },
     {
       "type" : "bedwars:simple_entry",
+      "id" : "bedwars:obsidian",
+      "item" : "minecraft:obsidian",
+      "cost" : { "item" : "minecraft:emerald", "count": 4},
+      "count" : 4
+    },
+    {
+      "type" : "bedwars:simple_entry",
       "id" : "bedwars:ladder",
       "item" : "minecraft:ladder",
       "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
@@ -44,6 +51,16 @@
       "id" : "bedwars:diamond_sword",
       "item" : "not_a_sword:diamond_sword",
       "cost" : { "item" : "minecraft:emerald", "count": 3}
+    },
+    {
+      "type" : "bedwars:simple_entry",
+      "id" : "bedwars:knockback_stick",
+      "item" : "minecraft:stick",
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 5},
+      "count" : 1,
+      "enchantments" : [
+        { "id" : "minecraft:knockback", "level" : 2}
+      ]
     },
     {
       "type" : "bedwars:armor_entry",
@@ -93,6 +110,41 @@
       "item" : "nucleoid_extras:iron_launch_pad",
       "cost" : { "item" : "minecraft:gold_ingot", "count": 6},
       "count" : 1
+    },
+    {
+      "type" : "bedwars:simple_entry",
+      "id" : "bedwars:bow",
+      "item" : "minecraft:bow",
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 12},
+      "count" : 1
+    },
+    {
+      "type" : "bedwars:simple_entry",
+      "id" : "bedwars:power_bow",
+      "item" : "minecraft:bow",
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 20},
+      "count" : 1,
+      "enchantments" : [
+        { "id" : "minecraft:power", "level" : 1}
+      ]
+    },
+    {
+      "type" : "bedwars:simple_entry",
+      "id" : "bedwars:punch_bow",
+      "item" : "minecraft:bow",
+      "cost" : { "item" : "minecraft:emerald", "count": 6},
+      "count" : 1,
+      "enchantments" : [
+        { "id" : "minecraft:power", "level" : 1},
+        { "id" : "minecraft:punch", "level" : 1}
+      ]
+    },
+    {
+      "type" : "bedwars:simple_entry",
+      "id" : "bedwars:arrow",
+      "item" : "minecraft:arrow",
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 2},
+      "count" : 6
     }
-]
+  ]
 }

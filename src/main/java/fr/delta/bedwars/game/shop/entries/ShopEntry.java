@@ -3,6 +3,7 @@ package fr.delta.bedwars.game.shop.entries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.BedwarsActive;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -11,6 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import java.util.List;
+import java.util.Map;
 
 public abstract class ShopEntry {
     public record Cost(Item item, int count)
@@ -57,11 +59,40 @@ public abstract class ShopEntry {
      */
     public List<MutableText> getLore(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return null; }
 
+    /**
+     *
+     * @param bedwarsGame the game were this item is displayed
+     * @param player the player who opened the shop
+     * @return if the player can or cannot buy this item
+     */
+
     public BuyOffer canBeBough(BedwarsActive bedwarsGame, ServerPlayerEntity player)
     {
         return new BuyOffer(true, null);
     }
+
+    /**
+     *
+     * @param bedwarsGame the game were this item is displayed
+     * @param player the player who opened the shop
+     * @return the stack bough, the stack's count will be overwritten by the count return by $getCount
+     */
     public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return null; }
 
+    /**
+     *
+     * @return how many item will be give to the buyer
+     */
     public int getCount() { return 1; }
+
+    /**
+     *
+     * @param bedwarsGame the game were this item is displayed
+     * @param player the player who opened the shop
+     * @return enchantments display in the shopkeeper menu
+     */
+    public Map<Enchantment, Integer> enchantment(BedwarsActive bedwarsGame, ServerPlayerEntity player)
+    {
+        return null;
+    }
 }

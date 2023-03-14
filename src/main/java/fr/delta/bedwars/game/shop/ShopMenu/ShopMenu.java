@@ -43,6 +43,10 @@ public abstract class ShopMenu {
         var guiElement = new GuiElementBuilder();
         guiElement.setItem(display);
         guiElement.setCount(displayCount);
+        var enchantments= entry.enchantment(bedwarsGame, gui.getPlayer());
+        if(enchantments != null)
+            enchantments.forEach(guiElement::enchant);
+
         if(hasGlint) guiElement.glow();
 
         //set Name

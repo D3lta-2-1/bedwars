@@ -5,8 +5,9 @@
       "icon" : "minecraft:orange_terracotta",
       "entries" : [
         "bedwars:wool",
-        "bedwars:end_stone",
         "bedwars:wood",
+        "bedwars:end_stone",
+        "bedwars:obsidian",
         "bedwars:ladder"
       ]
     },
@@ -16,7 +17,8 @@
       "entries" : [
         "bedwars:stone_sword",
         "bedwars:iron_sword",
-        "bedwars:diamond_sword"
+        "bedwars:diamond_sword",
+        "bedwars:knockback_stick"
       ]
     },
     {
@@ -26,6 +28,16 @@
         "bedwars:chainmail_armor",
         "bedwars:iron_armor",
         "bedwars:diamond_armor"
+      ]
+    },
+    {
+      "name" : "bows",
+      "icon" : "minecraft:bow",
+      "entries" : [
+        "bedwars:bow",
+        "bedwars:power_bow",
+        "bedwars:punch_bow",
+        "bedwars:arrow"
       ]
     },
     {
