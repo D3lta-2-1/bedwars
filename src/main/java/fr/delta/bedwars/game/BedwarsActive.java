@@ -18,7 +18,6 @@ import fr.delta.bedwars.game.component.TeamComponents;
 import fr.delta.bedwars.game.shop.ShopMenu.ItemShopMenu;
 import fr.delta.bedwars.game.ui.BedwarsSideBar;
 import fr.delta.bedwars.game.map.BedwarsMap;
-import fr.delta.minigamespec.MiniGameSpec;
 import fr.delta.notasword.NotASword;
 import fr.delta.notasword.OldAttackSpeed;
 import net.minecraft.block.Blocks;
@@ -99,8 +98,6 @@ public class BedwarsActive {
         activity.deny(GameRuleType.SATURATED_REGENERATION);
         activity.deny(NotASword.ATTACK_SOUND);
         activity.allow(NotASword.OLD_KNOCKBACK);
-        activity.deny(MiniGameSpec.ADVENTURE_SPEC_CAN_HIT);
-        activity.deny(MiniGameSpec.OBSERVER_CAN_HIT);
         activity.deny(Bedwars.BED_INTERACTION);
     }
 
@@ -138,7 +135,9 @@ public class BedwarsActive {
 
     private Collection<TaterzenNPC> addShopkeepers(List<BlockBounds> shopkeepersBounds)
     {
-        var menu = new ItemShopMenu(this, ShopConfigs.CONFIGS.get(config.shopConfigId()), activity);
+        var entries = ShopConfigs.ENTRIES_REGISTRY.get(config.shopEntriesId());
+        var categories = ShopConfigs.CATEGORIES_REGISTRY.get(config.shopCategoriesId());
+        var menu = new ItemShopMenu(this, entries, categories, activity);
         var shopkeepers = new ArrayList<TaterzenNPC>();
         for(var shopkeeper : shopkeepersBounds)
         {

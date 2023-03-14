@@ -6,5 +6,6 @@
   "team_size" : 2,
   "high_limit" : 50,
   "down_limit" : 0,
-  "shop_config" : "bedwars:single"
+  "category_config" : "bedwars:single",
+  "entries_config" : "bedwars:entries"
 }

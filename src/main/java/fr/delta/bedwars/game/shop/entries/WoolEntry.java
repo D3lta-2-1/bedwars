@@ -1,9 +1,8 @@
-package fr.delta.bedwars.game.shop.articles.blocks;
+package fr.delta.bedwars.game.shop.entries;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.BedwarsActive;
-import fr.delta.bedwars.game.shop.articles.ShopEntry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -15,13 +14,13 @@ import net.minecraft.util.DyeColor;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Wool extends ShopEntry  {
+public class WoolEntry extends ShopEntry  {
 
-    public static Codec<Wool> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Cost.CODEC.fieldOf("cost").forGetter(Wool::getCostNoArgument),
-            Codec.INT.fieldOf("count").forGetter(Wool::getCount)
-    ).apply(instance, Wool::new));
-    public Wool(Cost cost, int count) {
+    public static Codec<WoolEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Cost.CODEC.fieldOf("cost").forGetter(WoolEntry::getCostNoArgument),
+            Codec.INT.fieldOf("count").forGetter(WoolEntry::getCount)
+    ).apply(instance, WoolEntry::new));
+    public WoolEntry(Cost cost, int count) {
         this.cost = cost;
         this.count = count;
     }

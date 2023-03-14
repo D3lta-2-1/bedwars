@@ -5,23 +5,28 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import fr.delta.bedwars.game.BedwarsActive;
-import fr.delta.bedwars.game.shop.articles.ShopEntry;
+import fr.delta.bedwars.game.shop.entries.EmptyEntry;
+import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import fr.delta.bedwars.game.shop.data.ItemShopConfig;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import xyz.nucleoid.plasmid.game.GameActivity;
+import xyz.nucleoid.plasmid.registry.TinyRegistry;
 
 import java.util.List;
 
 public class ItemShopMenu extends ShopMenu{
-    final ItemShopConfig config;
+    final ItemShopConfig categories;
+    final TinyRegistry<ShopEntry> entries;
 
-    public ItemShopMenu(BedwarsActive bedwarsActive, ItemShopConfig config, GameActivity activity)
+    public ItemShopMenu(BedwarsActive bedwarsActive, TinyRegistry<ShopEntry> entries, ItemShopConfig categories, GameActivity activity)
     {
         super(bedwarsActive, activity);
-        this.config = config;
+        this.categories = categories;
+        this.entries = entries;
     }
     public void open(ServerPlayerEntity player)
     {
@@ -44,7 +49,7 @@ public class ItemShopMenu extends ShopMenu{
     private void addCategory(SimpleGui gui)
     {
         int slot = 1;
-        for(var category : config.categories())
+        for(var category : categories.categories())
         {
             var builder = new GuiElementBuilder();
             builder.setItem(category.icon());
@@ -55,16 +60,20 @@ public class ItemShopMenu extends ShopMenu{
         }
     }
 
-    private void buildMenu(SimpleGui gui, List<ShopEntry> entries)
+    private void buildMenu(SimpleGui gui, List<Identifier> entriesIDs)
     {
         int x = 0;
         int y = 0;
-        var iter = entries.iterator();
+        var iter = entriesIDs.iterator();
         while(x != 7)
         {
             if(iter.hasNext())
             {
-                setEntryInSlot(gui, iter.next(), (1 + x) + (2 + y) * 9);
+                var entry = entries.get(iter.next());
+                if(entry == null)
+                    setEntryInSlot(gui, EmptyEntry.INSTANCE, (1 + x) + (2 + y) * 9);
+                else
+                    setEntryInSlot(gui, entry, (1 + x) + (2 + y) * 9);
             }
             else
             {

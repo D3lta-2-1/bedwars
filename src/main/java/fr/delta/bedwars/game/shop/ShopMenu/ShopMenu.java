@@ -6,7 +6,7 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
-import fr.delta.bedwars.game.shop.articles.ShopEntry;
+import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -37,6 +37,7 @@ public abstract class ShopMenu {
         var count = entry.getCount();
         var cost = entry.getCost(bedwarsGame, gui.getPlayer());
         var hasGlint = entry.hasGlint();
+        var canBeBough = entry.canBeBough(bedwarsGame, gui.getPlayer());
 
         //set Icon
         var guiElement = new GuiElementBuilder();
@@ -54,9 +55,13 @@ public abstract class ShopMenu {
         var parentedLore= entry.getLore(bedwarsGame, gui.getPlayer());
         if(parentedLore != null)
             lore.addAll(parentedLore);
-        lore.add(Text.literal("cost: " + cost.count() + " ").append(Text.translatable(cost.item().getTranslationKey())).setStyle(Style.EMPTY.withFormatting(Formatting.GRAY)));
+        if(cost != null)
+            lore.add(Text.literal("cost: " + cost.count() + " ").append(Text.translatable(cost.item().getTranslationKey())).setStyle(Style.EMPTY.withFormatting(Formatting.GRAY)));
         lore.add(Text.empty());
-        lore.add(Text.literal("Click to purchase").setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)));
+        if(canBeBough.isSuccess())
+            lore.add(Text.literal("Click to purchase").setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)));
+        else
+            lore.add(canBeBough.errorMessage());
         guiElement.setLore(lore);
 
         //add purchase action
@@ -72,9 +77,15 @@ public abstract class ShopMenu {
         if(!result.isSuccess())
         {
             player.sendMessage(result.errorMessage());
+            player.playSound(SoundEvents.ENTITY_SILVERFISH_HURT, SoundCategory.PLAYERS, 1.f, 1.f);
             return;
         }
         var cost = entry.getCost(bedwarsGame, player);
+        if(cost == null)
+        {
+            player.sendMessage(Text.literal("[DEBUG] error no cost found").setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
+            return;
+        }
         var inventory = player.getInventory();
         var stackList = inventory.main;
 

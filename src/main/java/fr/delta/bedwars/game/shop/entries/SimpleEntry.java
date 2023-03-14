@@ -1,4 +1,4 @@
-package fr.delta.bedwars.game.shop.articles;
+package fr.delta.bedwars.game.shop.entries;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

@@ -1,9 +1,8 @@
-package fr.delta.bedwars.game.shop.articles.swords;
+package fr.delta.bedwars.game.shop.entries;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.BedwarsActive;
-import fr.delta.bedwars.game.shop.articles.ShopEntry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;

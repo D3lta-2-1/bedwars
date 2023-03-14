@@ -1,6 +1,6 @@
 package fr.delta.bedwars.game.event;
 
-import fr.delta.bedwars.game.shop.articles.ShopEntry;
+import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;

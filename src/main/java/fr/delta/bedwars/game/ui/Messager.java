@@ -2,7 +2,7 @@ package fr.delta.bedwars.game.ui;
 
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.event.BedwarsEvents;
-import fr.delta.bedwars.game.shop.articles.ShopEntry;
+import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;

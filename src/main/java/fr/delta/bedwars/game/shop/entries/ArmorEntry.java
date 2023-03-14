@@ -1,10 +1,9 @@
-package fr.delta.bedwars.game.shop.articles.armors;
+package fr.delta.bedwars.game.shop.entries;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.player.PlayerArmorManager;
-import fr.delta.bedwars.game.shop.articles.ShopEntry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -13,8 +12,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
-import java.util.Collections;
 import java.util.List;
 
 public class ArmorEntry extends ShopEntry {
@@ -69,8 +66,6 @@ public class ArmorEntry extends ShopEntry {
 
     @Override
     public List<MutableText> getLore(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        if(!bedwarsGame.getInventoryManager().getArmorManager(player).getLevel().smallerThan(armorLevel))
-            return Collections.singletonList(Text.translatable("armor.bedwars.alreadyGotBetterArmor").setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
         return null;
     }
 

@@ -1,0 +1,42 @@
+{
+  "categories" : [
+    {
+      "name" : "blocks",
+      "icon" : "minecraft:orange_terracotta",
+      "entries" : [
+        "bedwars:wool",
+        "bedwars:end_stone",
+        "bedwars:wood",
+        "bedwars:ladder"
+      ]
+    },
+    {
+      "name" : "swords",
+      "icon" : "not_a_sword:golden_sword",
+      "entries" : [
+        "bedwars:stone_sword",
+        "bedwars:iron_sword",
+        "bedwars:diamond_sword"
+      ]
+    },
+    {
+      "name" : "armors",
+      "icon" : "minecraft:iron_chestplate",
+      "entries" : [
+        "bedwars:chainmail_armor",
+        "bedwars:iron_armor",
+        "bedwars:diamond_armor"
+      ]
+    },
+    {
+      "name" : "utilities",
+      "icon" : "minecraft:tnt",
+      "entries" : [
+        "bedwars:tnt",
+        "bedwars:golden_apple",
+        "bedwars:slime_block",
+        "bedwars:launch_pad"
+      ]
+    }
+  ]
+}

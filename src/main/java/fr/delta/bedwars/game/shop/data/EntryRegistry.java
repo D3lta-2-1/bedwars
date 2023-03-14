@@ -2,11 +2,11 @@ package fr.delta.bedwars.game.shop.data;
 
 import com.mojang.serialization.Codec;
 import fr.delta.bedwars.Bedwars;
-import fr.delta.bedwars.game.shop.articles.ShopEntry;
-import fr.delta.bedwars.game.shop.articles.SimpleEntry;
-import fr.delta.bedwars.game.shop.articles.armors.ArmorEntry;
-import fr.delta.bedwars.game.shop.articles.blocks.Wool;
-import fr.delta.bedwars.game.shop.articles.swords.SwordEntry;
+import fr.delta.bedwars.game.shop.entries.ShopEntry;
+import fr.delta.bedwars.game.shop.entries.SimpleEntry;
+import fr.delta.bedwars.game.shop.entries.ArmorEntry;
+import fr.delta.bedwars.game.shop.entries.WoolEntry;
+import fr.delta.bedwars.game.shop.entries.SwordEntry;
 import net.minecraft.util.Identifier;
 import xyz.nucleoid.plasmid.registry.TinyRegistry;
 
@@ -19,7 +19,7 @@ public class EntryRegistry {
     static
     {
         SHOP_ENTRY_CODECS.register(new Identifier(Bedwars.ID, "simple_entry"), SimpleEntry.CODEC);
-        SHOP_ENTRY_CODECS.register(new Identifier(Bedwars.ID, "colored_wool"), Wool.CODEC);
+        SHOP_ENTRY_CODECS.register(new Identifier(Bedwars.ID, "colored_wool"), WoolEntry.CODEC);
         SHOP_ENTRY_CODECS.register(new Identifier(Bedwars.ID, "sword_entry"), SwordEntry.CODEC);
         SHOP_ENTRY_CODECS.register(new Identifier(Bedwars.ID, "armor_entry"), ArmorEntry.CODEC);
     }
