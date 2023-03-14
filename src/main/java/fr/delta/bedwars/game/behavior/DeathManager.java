@@ -6,7 +6,6 @@ import fr.delta.bedwars.game.component.TeamComponents;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import fr.delta.bedwars.game.ui.PlayerPackets;
-import fr.delta.minigamespec.MiniGameSpec;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -15,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpacePlayers;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
@@ -80,13 +80,11 @@ public class DeathManager {
             if(bed.isBroken()) {
                 //this is a final kill just remove it from the game, this may need to be moved to a dedicated listener
                 teamManager.removePlayer(player);
-                player.changeGameMode(MiniGameSpec.ADVENTURE_SPEC_MODE);
             }
             else {
                 var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
                 PlayerPackets.showTitle(player, title, 0, 20 * 6, 1);
                 deadPlayers.add(new DeadPlayer(player, world.getTime()));
-                player.changeGameMode(MiniGameSpec.OBSERVER_MODE); //go for observer to reduce player death advantage
             }
             activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, source, attacker, bed.isBroken());
         }
@@ -139,6 +137,7 @@ public class DeathManager {
 
     public void spawnSpec(ServerPlayerEntity player)
     {
+        player.changeGameMode(GameMode.SPECTATOR);
         TeleporterLogic.spawnPlayer(player, respawnPos, world);
         player.setVelocity(Vec3d.ZERO);
         player.fallDistance = 0.0f;
