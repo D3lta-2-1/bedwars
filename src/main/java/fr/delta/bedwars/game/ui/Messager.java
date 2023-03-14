@@ -49,7 +49,7 @@ public class Messager {
 
                 var title = Text.translatable("bed.bedwars.bedBrokenTitle").setStyle(Style.EMPTY.withColor(Formatting.RED));
                 var subtitle = Text.translatable("bed.bedwars.bedBrokenSubtitle").setStyle(Style.EMPTY.withColor(Formatting.GRAY));
-                PlayerPackets.showTitle(player, title, subtitle, 0, 20, 20);
+                PlayerCustomPacketsSender.showTitle(player, title, subtitle, 0, 20, 20);
                 player.sendMessage(messageMark.copy().append(personalContent));
             }
             else

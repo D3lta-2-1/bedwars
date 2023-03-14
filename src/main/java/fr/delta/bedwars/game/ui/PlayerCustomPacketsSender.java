@@ -6,7 +6,7 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-public class PlayerPackets {
+public class PlayerCustomPacketsSender {
     //Fade - Ticks to spend fading in.
     //Stay - Ticks to keep the title displayed.
     //Fade Out - Ticks to spend fading out, not when to start fading out.

@@ -5,7 +5,7 @@ import fr.delta.bedwars.game.TeleporterLogic;
 import fr.delta.bedwars.game.component.TeamComponents;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.map.BedwarsMap;
-import fr.delta.bedwars.game.ui.PlayerPackets;
+import fr.delta.bedwars.game.ui.PlayerCustomPacketsSender;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -83,7 +83,7 @@ public class DeathManager {
             }
             else {
                 var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
-                PlayerPackets.showTitle(player, title, 0, 20 * 6, 1);
+                PlayerCustomPacketsSender.showTitle(player, title, 0, 20 * 6, 1);
                 deadPlayers.add(new DeadPlayer(player, world.getTime()));
             }
             activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, source, attacker, bed.isBroken());
@@ -120,7 +120,7 @@ public class DeathManager {
             var subtitle = TextUtilities.concatenate(Text.translatable("death.bedwars.subtitleBeginning").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)),
                                                                     Text.literal(String.valueOf(timeBeforeRespawn / 20 )).setStyle(Style.EMPTY.withColor(Formatting.RED)),
                                                                     Text.translatable("death.bedwars.subtitleEnd").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
-            PlayerPackets.changeSubtitle(deadPlayer.player, subtitle);
+            PlayerCustomPacketsSender.changeSubtitle(deadPlayer.player, subtitle);
             deadPlayer.player.sendMessage(subtitle);
         }
     }
@@ -146,8 +146,8 @@ public class DeathManager {
 
     public void respawnPlayer(ServerPlayerEntity player)
     {
-        PlayerPackets.showTitle(player, Text.translatable("death.bedwars.respawn").setStyle(Style.EMPTY.withColor(Formatting.GREEN)), 0 ,20 ,20);
-        PlayerPackets.changeSubtitle(player, Text.empty());
+        PlayerCustomPacketsSender.showTitle(player, Text.translatable("death.bedwars.respawn").setStyle(Style.EMPTY.withColor(Formatting.GREEN)), 0 ,20 ,20);
+        PlayerCustomPacketsSender.changeSubtitle(player, Text.empty());
         var teamKey = teamManager.teamFor(player);
         var spawn = teamComponentsMap.get(teamKey).spawn;
         spawn.spawnPlayer(player);
