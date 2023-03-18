@@ -27,14 +27,7 @@ public class Spawn {
         var y1 = bounds.center().z;
         var x2 = bedPos.x;
         var y2 = bedPos.z;
-        System.out.println(x1);
-        System.out.println(y1);
-        System.out.println(x2);
-        System.out.println(y2);
-
         this.yaw = ((float)Math.toDegrees(Math.atan2(y2 - y1, x2 - x1)) + 270) % 360;
-        System.out.println(yaw);
-
         claim.addRegion(this.bounds);
     }
     public void spawnPlayer(ServerPlayerEntity player)
