@@ -65,6 +65,9 @@
   "shop.bedwars.ironArmor" : "Iron Armor",
   "shop.bedwars.diamondArmor" : "Diamond Armor",
 
-  "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one"
+  "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one",
+
+  "block.bedwars.launch_pad" : "launch pad",
+  "item.bedwars.fire_ball" : "fire ball"
 
 }
