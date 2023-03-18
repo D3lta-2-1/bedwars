@@ -1,7 +1,5 @@
 package fr.delta.bedwars.custom.blocks;
 
-import fr.delta.bedwars.Bedwars;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
