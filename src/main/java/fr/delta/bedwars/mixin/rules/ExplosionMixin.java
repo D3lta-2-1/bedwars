@@ -1,4 +1,4 @@
-package fr.delta.bedwars.mixin;
+package fr.delta.bedwars.mixin.rules;
 
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,6 +24,6 @@ public class ExplosionMixin {
         var x = (double)args.get(0);
         var y = (double)args.get(1);
         var z = (double)args.get(2);
-        args.setAll(x * knockbackMultiplier, y * 2, z * knockbackMultiplier);
+        args.setAll(x * knockbackMultiplier, y, z * knockbackMultiplier);
     }
 }

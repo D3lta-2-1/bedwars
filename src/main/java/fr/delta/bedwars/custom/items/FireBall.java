@@ -1,6 +1,7 @@
 package fr.delta.bedwars.custom.items;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.Item;
@@ -9,6 +10,7 @@ import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
@@ -29,20 +31,27 @@ public class FireBall extends Item implements PolymerItem {
             var yaw = user.getYaw();
             var pitch = user.getPitch();
             var playerVel = user.getVelocity();
-            float velX = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) + (float)playerVel.x;
-            float velY = -MathHelper.sin(pitch* 0.017453292F);
-            float velZ = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) + (float)playerVel.z;
+            float velX = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * 1.2f;
+            float velY = -MathHelper.sin(pitch* 0.017453292F) * 1.2f;
+            float velZ = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * 1.2f;
             FireballEntity fireball = new FireballEntity(world, user, velX, velY, velZ, 2);
+            fireball.addVelocity(playerVel);
             fireball.setPos(user.getX(), user.getEyeY() - 0.2, user.getZ());
-            // fireball.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 0);
+            fireball.tick();
             fireball.setItem(itemStack);
             fireball.setOnFire(false);
             world.spawnEntity(fireball);
+
         }
         if (!user.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }
         return TypedActionResult.success(itemStack, world.isClient());
+    }
+
+    @Override
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        return ActionResult.PASS;
     }
 
     @Override

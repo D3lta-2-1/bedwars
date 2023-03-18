@@ -1,4 +1,4 @@
-package fr.delta.bedwars.mixin;
+package fr.delta.bedwars.mixin.rules;
 
 import fr.delta.bedwars.Bedwars;
 import net.minecraft.block.AbstractGlassBlock;
