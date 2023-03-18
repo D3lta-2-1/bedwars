@@ -106,6 +106,7 @@ public class BedwarsActive {
         activity.allow(NotASword.OLD_KNOCKBACK);
         activity.deny(Bedwars.BED_INTERACTION);
         activity.allow(Bedwars.BLAST_PROOF_GLASS_RULE);
+        activity.deny(Bedwars.ENDER_PEARL_DAMAGE);
         activity.listen(BlockPlaceEvent.AFTER, (igniter, world, pos, state) -> {
             if (state.getBlock() == Blocks.TNT) {
                 TntEntity tntEntity = new TntEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, igniter);
