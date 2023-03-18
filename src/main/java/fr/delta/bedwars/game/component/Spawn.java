@@ -16,12 +16,24 @@ public class Spawn {
     final GameTeam team;
     final ServerWorld world;
     final GameActivity activity;
-    public Spawn(BlockBounds bounds, ClaimManager claim, GameTeam team, ServerWorld world, GameActivity activity)
+    final float yaw;
+    public Spawn(BlockBounds bounds, ClaimManager claim, GameTeam team, ServerWorld world, Vec3d bedPos, GameActivity activity)
     {
         this.bounds = bounds;
         this.team = team;
         this.world = world;
         this.activity = activity;
+        var x1 = bounds.center().x;
+        var y1 = bounds.center().z;
+        var x2 = bedPos.x;
+        var y2 = bedPos.z;
+        System.out.println(x1);
+        System.out.println(y1);
+        System.out.println(x2);
+        System.out.println(y2);
+
+        this.yaw = ((float)Math.toDegrees(Math.atan2(y2 - y1, x2 - x1)) + 270) % 360;
+        System.out.println(yaw);
 
         claim.addRegion(this.bounds);
     }
@@ -31,7 +43,8 @@ public class Spawn {
         player.setVelocity(Vec3d.ZERO);
         player.fallDistance = 0.0f;
         player.setHealth(20.0f);
-        TeleporterLogic.spawnPlayer(player, bounds.center(), world);
+        player.clearStatusEffects();
+        TeleporterLogic.spawnPlayer(player, bounds.center(), world, yaw, 0.F);
         activity.invoker(BedwarsEvents.PLAYER_RESPAWN).onRespawn(player);
     }
 }
