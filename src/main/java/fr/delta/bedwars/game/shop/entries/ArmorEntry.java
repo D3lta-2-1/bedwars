@@ -6,6 +6,7 @@ import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.player.PlayerArmorManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -75,4 +76,8 @@ public class ArmorEntry extends ShopEntry {
         return ItemStack.EMPTY;
     }
 
+    @Override
+    public void editNbt(NbtCompound nbt) {
+        nbt.putByte("HideFlags", (byte) 127); //hide specifity
+    }
 }

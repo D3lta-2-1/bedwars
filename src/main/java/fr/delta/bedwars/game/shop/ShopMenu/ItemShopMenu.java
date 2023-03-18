@@ -54,6 +54,7 @@ public class ItemShopMenu extends ShopMenu{
             var builder = new GuiElementBuilder();
             builder.setItem(category.icon());
             builder.setName(Text.translatable(category.name()));
+            builder.getOrCreateNbt().putByte("HideFlags", (byte) 127);
             builder.setCallback( click -> buildMenu(gui, category.entries()));
             gui.setSlot(slot, builder);
             slot++;
