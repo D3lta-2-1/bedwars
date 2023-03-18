@@ -1,5 +1,5 @@
 {
-  "gameType.bedwars.bedwars": "BedWars",
+  "gameType.bedwars.bedwars": "Bedwars",
 
   "warning.bedwars.cannotBreakOwnBed" : "You can't break your own bed !",
   "warning.bedwars.buildLimit" : "Build limit reach",
@@ -59,9 +59,11 @@
   "shop.bedwars.itemShop" : "Item Shop",
 
   "shop.bedwars.wool" : "Wool",
+  "shop.bedwars.terracotta" : "Terracotta",
+  "shop.bedwars.glass" : "Glass",
   "shop.bedwars.chainArmor" : "ChainMail Armor",
   "shop.bedwars.ironArmor" : "Iron Armor",
-  "shop.bedwars.diamondArmor" : "Iron Armor",
+  "shop.bedwars.diamondArmor" : "Diamond Armor",
 
   "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one"
 
