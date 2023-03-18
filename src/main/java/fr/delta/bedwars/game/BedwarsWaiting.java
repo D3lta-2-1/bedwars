@@ -62,8 +62,8 @@ public class BedwarsWaiting {
             GameTeam team = new GameTeam(
                     new GameTeamKey("bedwars_team_" + mapTeamData.color.name().toLowerCase()),
                     GameTeamConfig.builder()
-                            .setCollision(AbstractTeam.CollisionRule.PUSH_OWN_TEAM)
-                            .setFriendlyFire(false)
+                            .setCollision(AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS)
+                            .setFriendlyFire(true)
                             .setNameTagVisibility(AbstractTeam.VisibilityRule.ALWAYS)
                             .setColors(GameTeamConfig.Colors.from(mapTeamData.color))
                             .build()
