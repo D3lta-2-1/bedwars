@@ -5,10 +5,15 @@
       "icon" : "minecraft:orange_terracotta",
       "entries" : [
         "bedwars:wool",
-        "bedwars:wood",
+        "bedwars:clay",
         "bedwars:end_stone",
+        "bedwars:glass",
+        "bedwars:wood",
         "bedwars:obsidian",
-        "bedwars:ladder"
+        "bedwars:ladder",
+        "bedwars:scaffolding",
+        "bedwars:slime_block",
+        "bedwars:honey_block"
       ]
     },
     {
@@ -46,8 +51,8 @@
       "entries" : [
         "bedwars:tnt",
         "bedwars:golden_apple",
-        "bedwars:slime_block",
-        "bedwars:launch_pad"
+        "bedwars:launch_pad",
+        "bedwars:fire_ball"
       ]
     }
   ]
