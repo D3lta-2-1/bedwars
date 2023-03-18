@@ -46,6 +46,8 @@ public abstract class ShopMenu {
         var enchantments= entry.enchantment(bedwarsGame, gui.getPlayer());
         if(enchantments != null)
             enchantments.forEach(guiElement::enchant);
+        //edit nbt
+        entry.editNbt(guiElement.getOrCreateNbt());
 
         if(hasGlint) guiElement.glow();
 
