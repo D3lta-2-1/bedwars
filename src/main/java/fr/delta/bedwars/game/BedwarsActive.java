@@ -18,11 +18,16 @@ import fr.delta.bedwars.game.component.TeamComponents;
 import fr.delta.bedwars.game.shop.ShopMenu.ItemShopMenu;
 import fr.delta.bedwars.game.ui.BedwarsSideBar;
 import fr.delta.bedwars.game.map.BedwarsMap;
+
 import fr.delta.notasword.NotASword;
 import fr.delta.notasword.OldAttackSpeed;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.world.event.GameEvent;
 import org.samo_lego.taterzens.npc.TaterzenNPC;
 import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameActivity;
@@ -31,6 +36,7 @@ import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.rule.GameRuleType;
+import xyz.nucleoid.stimuli.event.block.BlockPlaceEvent;
 
 import java.util.*;
 
@@ -99,6 +105,18 @@ public class BedwarsActive {
         activity.deny(NotASword.ATTACK_SOUND);
         activity.allow(NotASword.OLD_KNOCKBACK);
         activity.deny(Bedwars.BED_INTERACTION);
+        activity.allow(Bedwars.BLAST_PROOF_GLASS_RULE);
+        activity.listen(BlockPlaceEvent.AFTER, (igniter, world, pos, state) -> {
+            if (state.getBlock() == Blocks.TNT) {
+                TntEntity tntEntity = new TntEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, igniter);
+                tntEntity.setFuse(60);
+                tntEntity.setYaw(igniter.getYaw());
+                world.spawnEntity(tntEntity);
+                world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState());
+            }
+        });
     }
 
     private void setupTeam(Multimap<GameTeam, ServerPlayerEntity> teamPlayers)
