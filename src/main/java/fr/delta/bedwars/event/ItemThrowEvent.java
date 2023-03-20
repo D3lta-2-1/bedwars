@@ -1,4 +1,4 @@
-package fr.delta.bedwars.game.event;
+package fr.delta.bedwars.event;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
