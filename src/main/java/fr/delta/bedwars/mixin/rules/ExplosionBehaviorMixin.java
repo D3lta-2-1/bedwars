@@ -1,6 +1,6 @@
 package fr.delta.bedwars.mixin.rules;
 
-import fr.delta.bedwars.Bedwars;
+import fr.delta.bedwars.GameRules;
 import net.minecraft.block.AbstractGlassBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
@@ -35,7 +35,7 @@ public class ExplosionBehaviorMixin {
 
             ManagedGameSpace gameSpace = GameSpaceManager.get().byWorld(world);
             if (gameSpace != null) {
-                ActionResult result = gameSpace.getBehavior().testRule(Bedwars.BLAST_PROOF_GLASS_RULE);
+                ActionResult result = gameSpace.getBehavior().testRule(GameRules.BLAST_PROOF_GLASS_RULE);
                 if (result == ActionResult.SUCCESS) {
                     if (block.getBlock() instanceof AbstractGlassBlock) {
                         ci.setReturnValue(Optional.of(GLASS_RESISTANCE));

@@ -1,6 +1,6 @@
 package fr.delta.bedwars.mixin.rules;
 
-import fr.delta.bedwars.Bedwars;
+import fr.delta.bedwars.GameRules;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
@@ -17,7 +17,7 @@ public class EnderPearlEntityMixin {
 	private boolean applyEnderPearlDamageGameRule(Entity entity, DamageSource source, float amount) {
 		if (source == DamageSource.FALL) {
 			ManagedGameSpace gameSpace = GameSpaceManager.get().byWorld(entity.world);
-			if (gameSpace != null && gameSpace.getBehavior().testRule(Bedwars.ENDER_PEARL_DAMAGE) == ActionResult.FAIL) {
+			if (gameSpace != null && gameSpace.getBehavior().testRule(GameRules.ENDER_PEARL_DAMAGE) == ActionResult.FAIL) {
 				return false;
 			}
 		}
