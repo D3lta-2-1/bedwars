@@ -42,6 +42,7 @@ public class ItemShopMenu extends ShopMenu{
             }
         };
         gui.setAutoUpdate(false);
+        gui.setTitle(Text.translatable("itemShop.bedwars.title"));
         addCategory(gui);
         gui.open();
     }

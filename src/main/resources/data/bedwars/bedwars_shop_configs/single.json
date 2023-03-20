@@ -46,13 +46,23 @@
       ]
     },
     {
+      "name" : "tools",
+      "icon" : "minecraft:stone_pickaxe",
+      "entries" : [
+        "bedwars:shears",
+        "bedwars:pickaxe",
+        "bedwars:axe"
+      ]
+    },
+    {
       "name" : "utilities",
       "icon" : "minecraft:tnt",
       "entries" : [
         "bedwars:tnt",
         "bedwars:golden_apple",
         "bedwars:launch_pad",
-        "bedwars:fire_ball"
+        "bedwars:fire_ball",
+        "bedwars:ender_pearl"
       ]
     }
   ]

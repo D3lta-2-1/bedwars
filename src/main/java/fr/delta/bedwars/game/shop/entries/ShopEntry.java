@@ -36,22 +36,22 @@ public abstract class ShopEntry {
     /**
      * set the name of an entry
      */
-    public MutableText getName() { return Text.literal("Unnamed"); }
+    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return Text.literal("Unnamed"); }
 
     /**
      * set the item display in the gui of the shopkeeper
      */
-    public Item getDisplay() { return Items.STRUCTURE_VOID; }
+    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return Items.STRUCTURE_VOID; }
 
     /**
      * set how many item should be display in the gui of the shopkeeper
      */
-    public int displayCount() { return 1; }
+    public int displayCount(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return 1; }
 
     /**
      * set if the item should glint in the gui of the shopkeeper
      */
-    public boolean hasGlint() { return false; }
+    public boolean hasGlint(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return false; }
 
     /**
      * set additobnal lore of an item
@@ -98,4 +98,6 @@ public abstract class ShopEntry {
     }
 
     public void editNbt(NbtCompound nbt) {}
+
+    public void setup(BedwarsActive bedwarsGame) {}
 }

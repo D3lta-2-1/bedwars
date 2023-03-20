@@ -1,5 +1,5 @@
 package fr.delta.bedwars.game.shop.npc;
-import fr.delta.bedwars.game.behavior.ClaimManager;
+import fr.delta.bedwars.game.behaviour.ClaimManager;
 import fr.delta.bedwars.game.shop.ShopMenu.ShopMenu;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Style;

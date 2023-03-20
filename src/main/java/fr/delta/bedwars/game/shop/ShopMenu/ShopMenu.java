@@ -32,18 +32,19 @@ public abstract class ShopMenu {
     public abstract void open(ServerPlayerEntity player);
     protected void setEntryInSlot(SimpleGui gui, ShopEntry entry, int slot)
     {
-        var display = entry.getDisplay();
-        var displayCount = entry.displayCount();
+        var player = gui.getPlayer();
+        var display = entry.getDisplay(bedwarsGame, player);
+        var displayCount = entry.displayCount(bedwarsGame, player);
         var count = entry.getCount();
-        var cost = entry.getCost(bedwarsGame, gui.getPlayer());
-        var hasGlint = entry.hasGlint();
-        var canBeBough = entry.canBeBough(bedwarsGame, gui.getPlayer());
+        var cost = entry.getCost(bedwarsGame, player);
+        var hasGlint = entry.hasGlint(bedwarsGame, player);
+        var canBeBough = entry.canBeBough(bedwarsGame, player);
 
         //set Icon
         var guiElement = new GuiElementBuilder();
         guiElement.setItem(display);
         guiElement.setCount(displayCount);
-        var enchantments= entry.enchantment(bedwarsGame, gui.getPlayer());
+        var enchantments= entry.enchantment(bedwarsGame, player);
         if(enchantments != null)
             enchantments.forEach(guiElement::enchant);
         //edit nbt
@@ -53,12 +54,12 @@ public abstract class ShopMenu {
 
         //set Name
         var multiplier = count != 1 ? Text.literal(" x" + count + " ").setStyle(Style.EMPTY.withFormatting(Formatting.GRAY).withItalic(true)): Text.empty();
-        guiElement.setName(entry.getName().append(multiplier));
+        guiElement.setName(entry.getName(bedwarsGame, player).append(multiplier));
 
         //set lore
 
         var lore = new ArrayList<Text>();
-        var parentedLore= entry.getLore(bedwarsGame, gui.getPlayer());
+        var parentedLore= entry.getLore(bedwarsGame, player);
         if(parentedLore != null)
             lore.addAll(parentedLore);
         if(cost != null)
@@ -71,7 +72,11 @@ public abstract class ShopMenu {
         guiElement.setLore(lore);
 
         //add purchase action
-        guiElement.setCallback( (index, type, action, guiInterface) -> purchase(entry, type, guiInterface, activity));
+        guiElement.setCallback( (index, type, action, guiInterface) ->
+        {
+            purchase(entry, type, guiInterface, activity);
+            setEntryInSlot(gui, entry, slot);
+        });
 
         //finally set item in slot
         gui.setSlot(slot, guiElement);
@@ -131,7 +136,7 @@ public abstract class ShopMenu {
 
 
 
-            activity.invoker(BedwarsEvents.PLAYER_BUY).onBuy(player, entry);
+            activity.invoker(BedwarsEvents.PLAYER_BUY).onBuy(player, entry.getName(bedwarsGame, player), entry);
             if(boughStack.isEmpty()) return;
             boughStack.setCount(entry.getCount());
             if(type.numKey)

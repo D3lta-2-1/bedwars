@@ -7,6 +7,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import fr.delta.bedwars.Bedwars;
+import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -100,5 +101,14 @@ public class ShopConfigs {
         String fullPath = location.getPath();
         fullPath = fullPath.substring((path +"/").length(), fullPath.length() - ".json".length());
         return new Identifier(location.getNamespace(), fullPath);
+    }
+
+    public static void initialize(TinyRegistry<ShopEntry> entries, BedwarsActive game)
+    {
+        for(var entry : entries.values())
+        {
+            entry.setup(game);
+        }
+
     }
 }
