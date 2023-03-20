@@ -4,12 +4,14 @@
   "package": "fr.delta.bedwars.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "bedInteraction.BedBlockMixin",
+    "InputSlotFillerMixin",
+    "rules.BedBlockMixin",
     "itemThrowEvent.ScreenHandlerMixin",
     "itemThrowEvent.ServerPlayerEntityMixin",
     "rules.EnderPearlEntityMixin",
     "rules.ExplosionBehaviorMixin",
-    "rules.ExplosionMixin"
+    "rules.ExplosionMixin",
+    "slotInteraction.ScreenHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
