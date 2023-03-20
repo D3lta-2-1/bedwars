@@ -14,7 +14,7 @@ import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 public class SwordEntry extends ShopEntry {
 
     public static Codec<SwordEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Registries.ITEM.getCodec().fieldOf("item").forGetter(SwordEntry::getDisplay),
+            Registries.ITEM.getCodec().fieldOf("item").forGetter(SwordEntry::getDisplayNoArgument),
             Cost.CODEC.fieldOf("cost").forGetter(SwordEntry::getCostNoArgument)
     ).apply(instance, SwordEntry::new));
     public SwordEntry(Item item, Cost cost) {
@@ -28,6 +28,9 @@ public class SwordEntry extends ShopEntry {
     public Cost getCostNoArgument() {
         return cost;
     }
+    public Item getDisplayNoArgument() {
+        return item;
+    }
 
     @Override
     public ShopEntry.Cost getCost(BedwarsActive bedwarsGame, ServerPlayerEntity player)
@@ -35,13 +38,13 @@ public class SwordEntry extends ShopEntry {
         return cost;
     }
     @Override
-    public MutableText getName()
+    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player)
     {
         return Text.translatable(item.getTranslationKey());
     }
 
     @Override
-    public Item getDisplay()
+    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player)
     {
         return item;
     }
@@ -49,7 +52,7 @@ public class SwordEntry extends ShopEntry {
     @Override
     public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player)
     {
-        bedwarsGame.getDefaultSwordManager().remove(player);
+        bedwarsGame.getDefaultSwordManager().removeDefaultSword(player);
         return ItemStackBuilder.of(item).setUnbreakable().build();
     }
 }
