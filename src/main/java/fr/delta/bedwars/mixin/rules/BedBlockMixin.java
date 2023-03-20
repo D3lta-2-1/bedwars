@@ -1,6 +1,6 @@
-package fr.delta.bedwars.mixin.bedInteraction;
+package fr.delta.bedwars.mixin.rules;
 
-import fr.delta.bedwars.Bedwars;
+import fr.delta.bedwars.GameRules;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,7 +22,7 @@ public class BedBlockMixin {
     {
         var gameSpace = GameSpaceManager.get().byWorld(world);
 
-        if (gameSpace != null && gameSpace.getBehavior().testRule(Bedwars.BED_INTERACTION) == ActionResult.FAIL) {
+        if (gameSpace != null && gameSpace.getBehavior().testRule(GameRules.BED_INTERACTION) == ActionResult.FAIL) {
             ci.setReturnValue(ActionResult.SUCCESS);
         }
     }
