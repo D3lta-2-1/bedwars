@@ -1,7 +1,7 @@
 package fr.delta.bedwars.game.component;
 
 import fr.delta.bedwars.game.TeleporterLogic;
-import fr.delta.bedwars.game.behavior.ClaimManager;
+import fr.delta.bedwars.game.behaviour.ClaimManager;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
