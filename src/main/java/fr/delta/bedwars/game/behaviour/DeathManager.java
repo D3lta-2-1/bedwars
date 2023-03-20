@@ -1,4 +1,4 @@
-package fr.delta.bedwars.game.behavior;
+package fr.delta.bedwars.game.behaviour;
 
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.TeleporterLogic;
