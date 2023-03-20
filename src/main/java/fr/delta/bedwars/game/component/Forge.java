@@ -1,6 +1,6 @@
 package fr.delta.bedwars.game.component;
 
-import fr.delta.bedwars.game.behavior.ClaimManager;
+import fr.delta.bedwars.game.behaviour.ClaimManager;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
