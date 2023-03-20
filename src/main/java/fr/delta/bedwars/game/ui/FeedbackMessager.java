@@ -15,11 +15,11 @@ import xyz.nucleoid.plasmid.game.GameSpacePlayers;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 
-public class Messager {
+public class FeedbackMessager {
     final private GameSpacePlayers players;
     final private TeamManager teamManager;
 
-    public Messager(TeamManager teamManager, GameActivity activity)
+    public FeedbackMessager(TeamManager teamManager, GameActivity activity)
     {
         this.teamManager = teamManager;
         this.players = activity.getGameSpace().getPlayers();
@@ -75,11 +75,11 @@ public class Messager {
         return deathMessage;
     }
 
-    private void onBuy(ServerPlayerEntity player, ShopEntry entry)
+    private void onBuy(ServerPlayerEntity player, Text name, ShopEntry entry)
     {
-        var text1 = Text.translatable("shop.bedwars.youPurchase").setStyle(Style.EMPTY.withFormatting(Formatting.GREEN));
-        var text2 = entry.getName().setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
-        player.sendMessage(text1.append(text2));
+        var text = Text.translatable("shop.bedwars.youPurchase").setStyle(Style.EMPTY.withFormatting(Formatting.GREEN));
+        name.copy().setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
+        player.sendMessage(text.append(name));
         player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.f, 1.f);
     }
 }
