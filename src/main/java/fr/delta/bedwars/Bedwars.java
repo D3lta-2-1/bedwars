@@ -22,14 +22,10 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.nucleoid.plasmid.game.GameType;
-import xyz.nucleoid.plasmid.game.rule.GameRuleType;
 
 public class Bedwars implements DedicatedServerModInitializer {
     public static final String ID = "bedwars";
     public static final Logger LOGGER = LoggerFactory.getLogger(ID);
-    public static final GameRuleType BED_INTERACTION = GameRuleType.create();
-    public static final GameRuleType BLAST_PROOF_GLASS_RULE = GameRuleType.create();
-    public static final GameRuleType ENDER_PEARL_DAMAGE = GameRuleType.create();
 
     public static final Block LAUNCH_PAD = new Launchpad(AbstractBlock.Settings.copy(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE).hardness(0.5f).noCollision().resistance(6.f), Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE);
     public static final BlockEntityType<LaunchPadBlockEntity> LAUNCH_PAD_ENTITY = FabricBlockEntityTypeBuilder.create(LaunchPadBlockEntity::new, LAUNCH_PAD).build();
