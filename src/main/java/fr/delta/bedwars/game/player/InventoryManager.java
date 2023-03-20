@@ -2,7 +2,7 @@ package fr.delta.bedwars.game.player;
 
 import com.google.common.collect.Multimap;
 import fr.delta.bedwars.game.event.BedwarsEvents;
-import fr.delta.bedwars.game.behavior.DeathManager;
+import fr.delta.bedwars.game.behaviour.DeathManager;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -14,22 +14,32 @@ import java.util.*;
 
 public class InventoryManager
 {
+    public static class Managers
+    {
+        PlayerArmorManager armorManager;
+        List<ToolManager> toolManagers;
+        public Managers(PlayerArmorManager armorManager, List<ToolManager> toolManagers)
+        {
+            this.armorManager = armorManager;
+            this.toolManagers = toolManagers;
+        }
+    }
     final private DeathManager deathManager;
-    final Map<ServerPlayerEntity, PlayerArmorManager> playerArmorMap;
+    final Map<ServerPlayerEntity, Managers> playerManagerMap;
     static final List<ItemStack> lootable = new ArrayList<>(Arrays.asList(
             new ItemStack(Items.IRON_INGOT),
             new ItemStack(Items.GOLD_INGOT),
             new ItemStack(Items.EMERALD),
-            new ItemStack(Items.DIAMOND)
+            new ItemStack(Items.DIAMOND) //todo: could be added to the config
     ));
 
     public InventoryManager(DeathManager manager, Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap, GameActivity activity)
     {
         this.deathManager = manager;
-        this.playerArmorMap = new HashMap<>();
+        this.playerManagerMap = new HashMap<>();
         for(var entry : teamPlayersMap.entries())
         {
-            playerArmorMap.put(entry.getValue(), new PlayerArmorManager(entry.getValue(), entry.getKey()));
+            playerManagerMap.put(entry.getValue(), new Managers(new PlayerArmorManager(entry.getValue(), entry.getKey()), new ArrayList<>()));
         }
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
         activity.listen(BedwarsEvents.PLAYER_RESPAWN, this::onPlayerRespawn);
@@ -65,20 +75,28 @@ public class InventoryManager
             }
         }
         player.getInventory().clear();
+        playerManagerMap.get(player).toolManagers.forEach(ToolManager::decrementTier);
         //if the player is eliminated
         if(isFinal)
         {
-            playerArmorMap.remove(player); 
+            playerManagerMap.remove(player);
         }
     }
 
     private void onPlayerRespawn(ServerPlayerEntity player)
     {
-        playerArmorMap.get(player).updateArmor();
+        var managers= playerManagerMap.get(player);
+        managers.armorManager.updateArmor();
+        managers.toolManagers.forEach(toolManager -> player.getInventory().offerOrDrop(toolManager.createTool()));
     }
 
     public PlayerArmorManager getArmorManager(ServerPlayerEntity player)
     {
-        return playerArmorMap.get(player);
+        return playerManagerMap.get(player).armorManager;
+    }
+
+    public List<ToolManager> getToolManagers(ServerPlayerEntity player)
+    {
+        return playerManagerMap.get(player).toolManagers;
     }
 }
