@@ -18,7 +18,7 @@ import java.util.List;
 public class ArmorEntry extends ShopEntry {
 
     public static Codec<ArmorEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Registries.ITEM.getCodec().fieldOf("icon").forGetter(ArmorEntry::getDisplay),
+            Registries.ITEM.getCodec().fieldOf("icon").forGetter(ArmorEntry::getDisplayNoArgument),
             Cost.CODEC.fieldOf("cost").forGetter(ArmorEntry::getCostNoArgument),
             Codec.STRING.fieldOf("level").forGetter(ArmorEntry::getLevel)
     ).apply(instance, ArmorEntry::new));
@@ -37,6 +37,9 @@ public class ArmorEntry extends ShopEntry {
     public Cost getCostNoArgument() {
         return cost;
     }
+    public Item getDisplayNoArgument() {
+        return icon;
+    }
 
     public String getLevel()
     {
@@ -49,12 +52,12 @@ public class ArmorEntry extends ShopEntry {
     }
 
     @Override
-    public MutableText getName() {
+    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
         return Text.translatable("shop.bedwars." + level + "Armor");
     }
 
     @Override
-    public Item getDisplay() {
+    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
         return icon;
     }
 

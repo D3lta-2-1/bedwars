@@ -10,71 +10,51 @@ import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SimpleEntry extends ShopEntry {
 
     public static Codec<SimpleEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Registries.ITEM.getCodec().fieldOf("item").forGetter(SimpleEntry::getDisplay),
+            Registries.ITEM.getCodec().fieldOf("item").forGetter(SimpleEntry::getDisplayNoArgument),
             Cost.CODEC.fieldOf("cost").forGetter(SimpleEntry::getCostNoArgument),
             Codec.INT.fieldOf("count").forGetter(SimpleEntry::getCount),
-            RawEnchantmentData.CODEC.listOf().optionalFieldOf("enchantments", new ArrayList<>()).forGetter(SimpleEntry::getRawEnchantments),
+            Codec.unboundedMap(Registries.ENCHANTMENT.getCodec(), Codec.INT).optionalFieldOf("enchantments", new HashMap<>()).forGetter(SimpleEntry::getEnchantments),
             Codec.BOOL.optionalFieldOf("unbreakable", false).forGetter(SimpleEntry::isUnbreakable)
     ).apply(instance, SimpleEntry::new));
 
-    record RawEnchantmentData(Identifier id, int level)
-    {
-        public static Codec<RawEnchantmentData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Identifier.CODEC.fieldOf("id").forGetter(RawEnchantmentData::id),
-                Codec.INT.fieldOf("level").forGetter(RawEnchantmentData::level)
-        ).apply(instance, RawEnchantmentData::new));
-    }
-    public SimpleEntry(Item item, Cost cost, int count, List<RawEnchantmentData> rawEnchantments, boolean isUnbreakable) {
+    public SimpleEntry(Item item, Cost cost, int count, Map<Enchantment, Integer> enchantments, boolean isUnbreakable) {
         this.item = item;
         this.cost = cost;
         this.count = count;
-        this.rawEnchantments = rawEnchantments;
-        if(!rawEnchantments.isEmpty())
-        {
-            enchantments = new HashMap<>();
-            rawEnchantments.forEach(rawEnchantmentData -> {
-                var enchantment = Registries.ENCHANTMENT.get(rawEnchantmentData.id());
-                if(enchantment != null)
-                    enchantments.put(enchantment, rawEnchantmentData.level());
-            });
-        }
-        else
-        {
-            enchantments = null;
-        }
+        this.enchantments = enchantments;
         this.isUnbreakable = isUnbreakable;
     }
 
     final private Item item;
     final private Cost cost;
     final private int count;
-    final private List<RawEnchantmentData> rawEnchantments;
+
     final private Map<Enchantment, Integer> enchantments;
 
     final private boolean isUnbreakable;
+
+    public Map<Enchantment, Integer> getEnchantments() {
+        return enchantments;
+    }
 
     public boolean isUnbreakable() {
         return isUnbreakable;
     }
 
 
-    public List<RawEnchantmentData> getRawEnchantments() {
-        return rawEnchantments;
-    }
-
     public Cost getCostNoArgument() {
         return cost;
+    }
+    public Item getDisplayNoArgument() {
+        return item;
     }
 
     @Override
@@ -83,13 +63,13 @@ public class SimpleEntry extends ShopEntry {
     }
 
     @Override
-    public MutableText getName()
+    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player)
     {
         return Text.translatable(item.getTranslationKey());
     }
 
     @Override
-    public Item getDisplay()
+    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player)
     {
         return item;
     }

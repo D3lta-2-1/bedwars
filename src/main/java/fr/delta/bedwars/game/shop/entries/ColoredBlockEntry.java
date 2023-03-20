@@ -125,13 +125,13 @@ public class ColoredBlockEntry extends ShopEntry  {
         return cost;
     }
     @Override
-    public MutableText getName()
+    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player)
     {
         return Text.translatable(translationKey);
     }
 
     @Override
-    public Item getDisplay()
+    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player)
     {
         return display;
     }

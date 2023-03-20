@@ -14,17 +14,17 @@ public class EmptyEntry extends ShopEntry{
 
 
     @Override
-    public MutableText getName() {
+    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
         return Text.literal("Empty Entry").setStyle(Style.EMPTY.withFormatting(Formatting.RED));
     }
 
     @Override
-    public Item getDisplay() {
+    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
         return Items.BARRIER;
     }
 
     @Override
-    public boolean hasGlint() {
+    public boolean hasGlint(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
         return true;
     }
 

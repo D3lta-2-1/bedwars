@@ -2,11 +2,7 @@ package fr.delta.bedwars.game.shop.data;
 
 import com.mojang.serialization.Codec;
 import fr.delta.bedwars.Bedwars;
-import fr.delta.bedwars.game.shop.entries.ShopEntry;
-import fr.delta.bedwars.game.shop.entries.SimpleEntry;
-import fr.delta.bedwars.game.shop.entries.ArmorEntry;
-import fr.delta.bedwars.game.shop.entries.ColoredBlockEntry;
-import fr.delta.bedwars.game.shop.entries.SwordEntry;
+import fr.delta.bedwars.game.shop.entries.*;
 import net.minecraft.util.Identifier;
 import xyz.nucleoid.plasmid.registry.TinyRegistry;
 
@@ -27,5 +23,6 @@ public class EntryRegistry {
         register("colored_glass", ColoredBlockEntry.GLASS_CODEC);
         register("sword_entry", SwordEntry.CODEC);
         register("armor_entry", ArmorEntry.CODEC);
+        register("tool_entry", ToolEntry.CODEC);
     }
 }

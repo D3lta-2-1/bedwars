@@ -3,131 +3,129 @@
     {
       "type" : "bedwars:colored_wool",
       "id" : "bedwars:wool",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 4 },
       "count" : 16
     },
     {
       "type" : "bedwars:colored_terracotta",
       "id" : "bedwars:clay",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 12},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 12 },
       "count" : 16
     },
     {
       "type" : "bedwars:colored_glass",
       "id" : "bedwars:glass",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 12},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 12 },
       "count" : 4
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:end_stone",
       "item" : "minecraft:end_stone",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 24},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 24 },
       "count" : 12
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:wood",
       "item" : "minecraft:oak_planks",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 4},
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 4 },
       "count" : 16
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:obsidian",
       "item" : "minecraft:obsidian",
-      "cost" : { "item" : "minecraft:emerald", "count": 4},
+      "cost" : { "item" : "minecraft:emerald", "count": 4 },
       "count" : 4
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:ladder",
       "item" : "minecraft:ladder",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 4 },
       "count" : 16
     },
     {
       "type" : "bedwars:sword_entry",
       "id" : "bedwars:stone_sword",
       "item" : "not_a_sword:stone_sword",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 10}
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 10 }
     },
     {
       "type" : "bedwars:sword_entry",
       "id" : "bedwars:iron_sword",
       "item" : "not_a_sword:iron_sword",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 7}
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 7 }
     },
     {
       "type" : "bedwars:sword_entry",
       "id" : "bedwars:diamond_sword",
       "item" : "not_a_sword:diamond_sword",
-      "cost" : { "item" : "minecraft:emerald", "count": 3}
+      "cost" : { "item" : "minecraft:emerald", "count": 3 }
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:knockback_stick",
       "item" : "minecraft:stick",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 5},
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 5 },
       "count" : 1,
-      "enchantments" : [
-        { "id" : "minecraft:knockback", "level" : 1}
-      ]
+      "enchantments" : { "minecraft:knockback" : 1 }
     },
     {
       "type" : "bedwars:armor_entry",
       "id" : "bedwars:chainmail_armor",
       "icon" : "minecraft:chainmail_boots",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 30},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 30 },
       "level" : "chain"
     },
     {
       "type" : "bedwars:armor_entry",
       "id" : "bedwars:iron_armor",
       "icon" : "minecraft:iron_boots",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 12},
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 12 },
       "level" : "iron"
     },
     {
       "type" : "bedwars:armor_entry",
       "id" : "bedwars:diamond_armor",
       "icon" : "minecraft:diamond_boots",
-      "cost" : { "item" : "minecraft:emerald", "count": 6},
+      "cost" : { "item" : "minecraft:emerald", "count": 6 },
       "level" : "diamond"
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:tnt",
       "item" : "minecraft:tnt",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 4},
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 4 },
       "count" : 1
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:golden_apple",
       "item" : "minecraft:golden_apple",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 3},
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 3 },
       "count" : 1
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:slime_block",
       "item" : "minecraft:slime_block",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 4 },
       "count" : 8
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:launch_pad",
       "item" : "bedwars:launch_pad",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 128},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 128 },
       "count" : 1
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:bow",
       "item" : "minecraft:bow",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 12},
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 12 },
       "count" : 1,
       "unbreakable" : true
     },
@@ -135,53 +133,124 @@
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:power_bow",
       "item" : "minecraft:bow",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 20},
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 20 },
       "count" : 1,
       "unbreakable" : true,
-      "enchantments" : [
-        { "id" : "minecraft:power", "level" : 1}
-      ]
+      "enchantments" : {  "minecraft:power" : 1 }
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:punch_bow",
       "item" : "minecraft:bow",
-      "cost" : { "item" : "minecraft:emerald", "count": 6},
+      "cost" : { "item" : "minecraft:emerald", "count": 6 },
       "count" : 1,
       "unbreakable" : true,
-      "enchantments" : [
-        { "id" : "minecraft:power", "level" : 1},
-        { "id" : "minecraft:punch", "level" : 1}
-      ]
+      "enchantments" : { "minecraft:power" : 1, "minecraft:punch" : 1 }
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:arrow",
       "item" : "minecraft:arrow",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 2},
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 2 },
       "count" : 6
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:fire_ball",
       "item" : "bedwars:fire_ball",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 40},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 40 },
       "count" : 1
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:scaffolding",
       "item" : "minecraft:scaffolding",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 4},
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 4 },
       "count" : 4
     },
     {
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:honey_block",
       "item" : "minecraft:honey_block",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 1},
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 1 },
       "count" : 4
+    },
+    {
+      "type" : "bedwars:simple_entry",
+      "id" : "bedwars:ender_pearl",
+      "item" : "minecraft:ender_pearl",
+      "cost" : { "item" : "minecraft:emerald", "count": 4 },
+      "count" : 1
+    },
+    {
+      "type" : "bedwars:tool_entry",
+      "id" : "bedwars:shears",
+      "tiers" : [
+        {
+        "item" : "minecraft:shears",
+        "cost" : { "item" : "minecraft:iron_ingot", "count": 20 }
+        }
+      ]
+    },
+    {
+      "type" : "bedwars:tool_entry",
+      "id" : "bedwars:pickaxe",
+      "tiers" : [
+        {
+          "item" : "minecraft:wooden_pickaxe",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 10 }
+        },
+        {
+          "item" : "minecraft:stone_pickaxe",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 10 },
+          "enchantments" : { "minecraft:efficiency": 1 }
+        },
+        {
+          "item" : "minecraft:iron_pickaxe",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 10 },
+          "enchantments" : { "minecraft:efficiency": 2 }
+        },
+        {
+          "item" : "minecraft:golden_pickaxe",
+          "cost" : { "item" : "minecraft:gold_ingot", "count": 3 },
+          "enchantments" : { "minecraft:efficiency": 3 }
+        },
+        {
+          "item" : "minecraft:diamond_pickaxe",
+          "cost" : { "item" : "minecraft:gold_ingot", "count": 6 },
+          "enchantments" : { "minecraft:efficiency": 3 }
+        }
+      ]
+    },
+    {
+      "type" : "bedwars:tool_entry",
+      "id" : "bedwars:axe",
+      "tiers" : [
+        {
+          "item" : "minecraft:wooden_axe",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 10 }
+        },
+        {
+          "item" : "minecraft:stone_axe",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 10 },
+          "enchantments" : { "minecraft:efficiency": 1 }
+        },
+        {
+          "item" : "minecraft:iron_axe",
+          "cost" : { "item" : "minecraft:iron_ingot", "count": 10 },
+          "enchantments" : { "minecraft:efficiency": 2 }
+        },
+        {
+          "item" : "minecraft:golden_axe",
+          "cost" : { "item" : "minecraft:gold_ingot", "count": 3 },
+          "enchantments" : { "minecraft:efficiency": 3 }
+        },
+        {
+          "item" : "minecraft:diamond_axe",
+          "cost" : { "item" : "minecraft:gold_ingot", "count": 6 },
+          "enchantments" : { "minecraft:efficiency": 3 }
+        }
+      ]
     }
-
   ]
 }
