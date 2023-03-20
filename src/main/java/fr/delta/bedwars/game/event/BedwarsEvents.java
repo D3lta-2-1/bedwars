@@ -3,6 +3,7 @@ package fr.delta.bedwars.game.event;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.stimuli.event.StimulusEvent;
 
@@ -20,7 +21,7 @@ public final class BedwarsEvents {
         }
     });
 
-    public static final StimulusEvent<PlayerDeath> PLAYER_DEATH = StimulusEvent.create(PlayerDeath.class, ctx -> (ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer,boolean isFinal) -> {
+    public static final StimulusEvent<PlayerDeath> PLAYER_DEATH = StimulusEvent.create(PlayerDeath.class, ctx -> (player, source,  killer, isFinal) -> {
         try {
             for (var listener : ctx.getListeners()) {
                 listener.onDeath(player, source, killer, isFinal);
@@ -30,7 +31,7 @@ public final class BedwarsEvents {
         }
     });
 
-    public static final StimulusEvent<AfterPlayerDeath> AFTER_PLAYER_DEATH = StimulusEvent.create(AfterPlayerDeath.class, ctx -> (ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer,boolean isFinal) -> {
+    public static final StimulusEvent<AfterPlayerDeath> AFTER_PLAYER_DEATH = StimulusEvent.create(AfterPlayerDeath.class, ctx -> (player, source, killer, isFinal) -> {
         try {
             for (var listener : ctx.getListeners()) {
                 listener.afterPlayerDeath(player, source, killer, isFinal);
@@ -40,7 +41,7 @@ public final class BedwarsEvents {
         }
     });
 
-    public static final StimulusEvent<PlayerRespawn> PLAYER_RESPAWN = StimulusEvent.create(PlayerRespawn.class, ctx -> (ServerPlayerEntity player) -> {
+    public static final StimulusEvent<PlayerRespawn> PLAYER_RESPAWN = StimulusEvent.create(PlayerRespawn.class, ctx -> player -> {
         try {
             for (var listener : ctx.getListeners()) {
                 listener.onRespawn(player);
@@ -50,10 +51,10 @@ public final class BedwarsEvents {
         }
     });
 
-    public static final StimulusEvent<PlayerBuy> PLAYER_BUY = StimulusEvent.create(PlayerBuy.class, ctx -> (ServerPlayerEntity player, ShopEntry entry) -> {
+    public static final StimulusEvent<PlayerBuy> PLAYER_BUY = StimulusEvent.create(PlayerBuy.class, ctx -> (player, name, entry) -> {
         try {
             for (var listener : ctx.getListeners()) {
-                listener.onBuy(player, entry);
+                listener.onBuy(player, name, entry);
             }
         } catch (Throwable t) {
             ctx.handleException(t);
@@ -92,7 +93,7 @@ public final class BedwarsEvents {
 
     public interface PlayerBuy
     {
-        void onBuy(ServerPlayerEntity player, ShopEntry entry);
+        void onBuy(ServerPlayerEntity player, Text name, ShopEntry entry);
     }
 
     public interface TeamWin
