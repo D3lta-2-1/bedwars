@@ -1,7 +1,7 @@
 package fr.delta.bedwars.game.component;
 
 import fr.delta.bedwars.BedwarsConfig;
-import fr.delta.bedwars.game.behavior.ClaimManager;
+import fr.delta.bedwars.game.behaviour.ClaimManager;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import net.minecraft.server.world.ServerWorld;
 import xyz.nucleoid.plasmid.game.GameActivity;
