@@ -1,6 +1,6 @@
 package fr.delta.bedwars.mixin.itemThrowEvent;
 
-import fr.delta.bedwars.game.event.ItemThrowEvent;
+import fr.delta.bedwars.event.ItemThrowEvent;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
