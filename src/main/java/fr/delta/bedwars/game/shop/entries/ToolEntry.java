@@ -3,6 +3,7 @@ package fr.delta.bedwars.game.shop.entries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.BedwarsActive;
+import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.player.ToolManager;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
@@ -117,6 +118,7 @@ public class ToolEntry extends ShopEntry{
 
     @Override
     public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
+        BedwarsEvents.ensureInventoryIsNotFull(player, bedwarsGame.getActivity());
         var manager = getOrCreateManager(bedwarsGame, player);
         return manager.upgrade();
     }

@@ -1,5 +1,6 @@
 package fr.delta.bedwars.game.player;
 import fr.delta.bedwars.event.SlotInteractionEvent;
+import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.shop.entries.ToolEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
@@ -26,6 +27,12 @@ public class ToolManager {
         this.currentTier = -1;
         activity.listen(SlotInteractionEvent.BEFORE, this::onInteract);
         activity.listen(ItemThrowEvent.EVENT, this::onThrowItem);
+        activity.listen(BedwarsEvents.IS_STACK_THROWABLE, (stack, playerTested) ->
+        {
+            if(playerTested != player)
+                return ActionResult.PASS;
+            return stack.isItemEqual(currentTool) ? ActionResult.FAIL : ActionResult.PASS;
+        });
     }
 
     public ItemStack concurrentTool()

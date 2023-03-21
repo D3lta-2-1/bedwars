@@ -21,9 +21,11 @@ import java.util.List;
 
 public class DefaultSwordManager {
     static final Item defaultSword = OldSwords.WOODEN_SWORD;
+    private final GameActivity activity;
 
     public DefaultSwordManager(GameActivity activity)
     {
+        this.activity = activity;
         activity.listen(BedwarsEvents.PLAYER_RESPAWN, this::giveDefaultSword);
         activity.listen(SlotInteractionEvent.BEFORE, this::onInteract);
         activity.listen(SlotInteractionEvent.AFTER, ((player, handler, slotIndex, button, actionType) -> { updatePlayer(player, handler);
@@ -31,6 +33,7 @@ public class DefaultSwordManager {
         activity.listen(ItemPickupEvent.EVENT, this::onPickupItem);
         activity.listen(ItemThrowEvent.AFTER,this::afterThrowItem);
         activity.listen(xyz.nucleoid.stimuli.event.item.ItemThrowEvent.EVENT, this::onThrowItem);
+        activity.listen(BedwarsEvents.IS_STACK_THROWABLE, (stack, player) -> stack.getItem() instanceof SwordItem ? ActionResult.FAIL : ActionResult.PASS);
     }
 
     public void removeDefaultSword(ServerPlayerEntity player)
@@ -107,6 +110,7 @@ public class DefaultSwordManager {
 
     void giveDefaultSword(ServerPlayerEntity player)
     {
+        BedwarsEvents.ensureInventoryIsNotFull(player, activity);
         player.getInventory().offerOrDrop(ItemStackBuilder.of(defaultSword).setUnbreakable().build()); //may can be a bug since the sword can theoretically drop here
     }
 
