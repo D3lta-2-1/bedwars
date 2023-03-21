@@ -54,13 +54,11 @@ public class BedwarsActive {
     final private List<GameTeam> teamsInOrder;
     final private ClaimManager claim;
     final private DeathManager deathManager;
-    final private OldAttackSpeed attackSpeedRestorer;
     final private DefaultSwordManager defaultSwordManager;
     final private InventoryManager inventoryManager;
     final private FeedbackMessager feedbackMessager;
     final private Sidebar sidebar;
     final private Collection<TaterzenNPC> shopKeepers;
-    final private WinEventSender winEventSender;
 
     BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, ServerPlayerEntity> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
     {
@@ -77,13 +75,13 @@ public class BedwarsActive {
         setupTeam(teamPlayers);
         this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
         this.deathManager = new DeathManager(teamComponentsMap, teamManager, world, gameMap, activity);
-        this.attackSpeedRestorer = new OldAttackSpeed(activity);
+        new OldAttackSpeed(activity);
         this.defaultSwordManager = new DefaultSwordManager(activity);
-        this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, activity);
+        this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, teamManager, teamComponentsMap, defaultSwordManager, activity);
         this.sidebar = BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, activity);
         this.feedbackMessager = new FeedbackMessager(teamManager, activity);
         this.shopKeepers = addShopkeepers(gameMap.ShopKeepers());
-        this.winEventSender = new WinEventSender(teamsInOrder, teamManager, activity);
+        new WinEventSender(teamsInOrder, teamManager, activity);
         activity.listen(BedwarsEvents.TEAM_WIN, this::onTeamWin);
         destroySpawn();
         startGame();

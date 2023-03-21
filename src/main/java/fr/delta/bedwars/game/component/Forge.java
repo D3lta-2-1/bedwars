@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.Vec3d;
 import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
@@ -43,6 +44,16 @@ public class Forge {
         claim.addRegion(this.bounds);
         activity.listen(GameActivityEvents.TICK, this::tick);
         activity.listen(ItemPickupEvent.EVENT, this::onPickupItem);
+    }
+
+    public Vec3d getCenter()
+    {
+        return bounds.center();
+    }
+
+    public ServerWorld getWorld()
+    {
+        return world;
     }
 
     //utilities for spawning new items

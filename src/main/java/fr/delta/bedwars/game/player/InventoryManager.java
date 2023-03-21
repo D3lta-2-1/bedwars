@@ -1,14 +1,19 @@
 package fr.delta.bedwars.game.player;
 
 import com.google.common.collect.Multimap;
+import fr.delta.bedwars.game.behaviour.DefaultSwordManager;
+import fr.delta.bedwars.game.component.TeamComponents;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.behaviour.DeathManager;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
+import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
+import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 
 import java.util.*;
 
@@ -26,6 +31,9 @@ public class InventoryManager
     }
     final private DeathManager deathManager;
     final Map<ServerPlayerEntity, Managers> playerManagerMap;
+    final Map<GameTeamKey, TeamComponents> teamComponentsMap;
+    final private TeamManager teamManager;
+    final private DefaultSwordManager defaultSwordManager;
     static final List<ItemStack> lootable = new ArrayList<>(Arrays.asList(
             new ItemStack(Items.IRON_INGOT),
             new ItemStack(Items.GOLD_INGOT),
@@ -33,10 +41,13 @@ public class InventoryManager
             new ItemStack(Items.DIAMOND) //todo: could be added to the config
     ));
 
-    public InventoryManager(DeathManager manager, Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap, GameActivity activity)
+    public InventoryManager(DeathManager manager, Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap, TeamManager teamManager, Map<GameTeamKey, TeamComponents> teamComponentsMap, DefaultSwordManager defaultSwordManager, GameActivity activity)
     {
         this.deathManager = manager;
+        this.teamComponentsMap = teamComponentsMap;
+        this.teamManager = teamManager;
         this.playerManagerMap = new HashMap<>();
+        this.defaultSwordManager = defaultSwordManager;
         for(var entry : teamPlayersMap.entries())
         {
             playerManagerMap.put(entry.getValue(), new Managers(new PlayerArmorManager(entry.getValue(), entry.getKey()), new ArrayList<>()));
@@ -53,6 +64,7 @@ public class InventoryManager
         {
             while(inventory.contains(lootableStack)){
                 var index = inventory.getSlotWithStack(lootableStack);
+                inventory.removeStack(index);
                 itemList.add(inventory.removeStack(index));
             }
         }
@@ -61,25 +73,45 @@ public class InventoryManager
 
     private void onPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer, boolean isFinal)
     {
-        var loots = generateDrop(player);
+
         if(killer != null && deathManager.isAlive(killer))
         {
+            var loots = generateDrop(player);
             for(var item : loots)
                 killer.getInventory().offerOrDrop(item);
         }
-        else if(!source.equals(DamageSource.OUT_OF_WORLD))
+        else if(!source.equals(DamageSource.OUT_OF_WORLD) && !isFinal)
         {
+            var loots = generateDrop(player);
             for(var item : loots)
             {
                 player.dropStack(item);
             }
         }
-        player.getInventory().clear();
-        playerManagerMap.get(player).toolManagers.forEach(ToolManager::decrementTier);
-        //if the player is eliminated
         if(isFinal)
         {
             playerManagerMap.remove(player);
+            playerManagerMap.get(player).toolManagers.forEach(ToolManager::removeTool);
+            defaultSwordManager.removeDefaultSword(player);
+            var forge = teamComponentsMap.get(teamManager.teamFor(player)).forge;
+            var world = forge.getWorld();
+            for(var stack : player.getInventory().main)
+            {
+                world.spawnEntity(new ItemEntity(world, forge.getCenter().getX(), forge.getCenter().getY(), forge.getCenter().getZ(), stack));
+            }
+            for(var stack : player.getInventory().main)
+            {
+                world.spawnEntity(new ItemEntity(world, forge.getCenter().getX(), forge.getCenter().getY(), forge.getCenter().getZ(), stack));
+            }
+            for(var stack : player.getEnderChestInventory().stacks)
+            {
+                world.spawnEntity(new ItemEntity(world, forge.getCenter().getX(), forge.getCenter().getY(), forge.getCenter().getZ(), stack));
+            }
+        }
+        else
+        {
+            player.getInventory().clear();
+            playerManagerMap.get(player).toolManagers.forEach(ToolManager::decrementTier);
         }
     }
 
