@@ -69,6 +69,10 @@ public class ToolManager {
         }
     }
 
+    public boolean isEmpty() {
+        return currentTier == -1;
+    }
+
     public boolean isMaxed()
     {
         return currentTier == availableTiers.size() - 1;

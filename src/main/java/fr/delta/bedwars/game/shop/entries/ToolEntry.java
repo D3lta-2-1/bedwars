@@ -118,8 +118,8 @@ public class ToolEntry extends ShopEntry{
 
     @Override
     public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        BedwarsEvents.ensureInventoryIsNotFull(player, bedwarsGame.getActivity());
         var manager = getOrCreateManager(bedwarsGame, player);
+        if(manager.isEmpty()) BedwarsEvents.ensureInventoryIsNotFull(player, bedwarsGame.getActivity());
         return manager.upgrade();
     }
 }
