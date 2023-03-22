@@ -251,6 +251,22 @@
           "enchantments" : { "minecraft:efficiency": 3 }
         }
       ]
+    },
+    {
+      "type" : "bedwars:potion_entry",
+      "id" : "bedwars:jump_boost",
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 4 },
+      "effects" : [
+        { "effect" : "minecraft:jump_boost", "duration" : 45, "amplifier" : 5 }
+      ]
+    },
+    {
+      "type" : "bedwars:potion_entry",
+      "id" : "bedwars:speed",
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 4 },
+      "effects" : [
+        { "effect" : "minecraft:speed", "duration" : 45, "amplifier" : 2 }
+      ]
     }
   ]
 }

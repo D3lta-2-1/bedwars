@@ -18,7 +18,7 @@
     },
     {
       "name" : "swords",
-      "icon" : "not_a_sword:golden_sword",
+      "icon" : "minecraft:golden_sword",
       "entries" : [
         "bedwars:stone_sword",
         "bedwars:iron_sword",
@@ -63,6 +63,14 @@
         "bedwars:launch_pad",
         "bedwars:fire_ball",
         "bedwars:ender_pearl"
+      ]
+    },
+    {
+      "name" : "potions",
+      "icon" : "minecraft:brewing_stand",
+      "entries" : [
+        "bedwars:jump_boost",
+        "bedwars:speed"
       ]
     }
   ]

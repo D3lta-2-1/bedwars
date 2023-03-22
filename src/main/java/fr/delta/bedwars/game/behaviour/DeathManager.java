@@ -137,6 +137,7 @@ public class DeathManager {
 
     public void spawnSpec(ServerPlayerEntity player)
     {
+        player.clearStatusEffects();
         player.changeGameMode(GameMode.SPECTATOR);
         TeleporterLogic.spawnPlayer(player, respawnPos, world);
         player.setVelocity(Vec3d.ZERO);
