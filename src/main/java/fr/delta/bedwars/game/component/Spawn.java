@@ -30,6 +30,11 @@ public class Spawn {
         this.yaw = ((float)Math.toDegrees(Math.atan2(y2 - y1, x2 - x1)) + 270) % 360;
         claim.addRegion(this.bounds);
     }
+
+    public BlockBounds getBounds()
+    {
+        return bounds;
+    }
     public void spawnPlayer(ServerPlayerEntity player)
     {
         player.changeGameMode(GameMode.SURVIVAL);

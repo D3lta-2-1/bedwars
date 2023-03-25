@@ -90,7 +90,6 @@ public class InventoryManager
         }
         if(isFinal)
         {
-            playerManagerMap.remove(player);
             playerManagerMap.get(player).toolManagers.forEach(ToolManager::removeTool);
             defaultSwordManager.removeDefaultSword(player);
             var forge = teamComponentsMap.get(teamManager.teamFor(player)).forge;
@@ -107,6 +106,7 @@ public class InventoryManager
             {
                 world.spawnEntity(new ItemEntity(world, forge.getCenter().getX(), forge.getCenter().getY(), forge.getCenter().getZ(), stack));
             }
+            playerManagerMap.remove(player);
         }
         else
         {

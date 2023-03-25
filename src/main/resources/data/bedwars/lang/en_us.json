@@ -6,6 +6,7 @@
   "warning.bedwars.cannotPlaceBlockHere" : "you can't place blocks here",
   "warning.bedwars.cannotBreakThisBlock" : "You can't break this block",
   "warning.bedwars.resourcesMissing" : "you don't have enough resources !",
+  "waring.bedwars.chestLocked" : "you can't open this chest since this team isn't eliminated yet",
 
   "sidebar.bedwars.title" : "BedWars",
   "sidebar.bedwars.you" : "YOU",
