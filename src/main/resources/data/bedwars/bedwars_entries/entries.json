@@ -267,6 +267,14 @@
       "effects" : [
         { "effect" : "minecraft:speed", "duration" : 45, "amplifier" : 2 }
       ]
+    },
+    {
+      "type" : "bedwars:potion_entry",
+      "id" : "bedwars:invisibility",
+      "cost" : { "item" : "minecraft:gold_ingot", "count": 4 },
+      "effects" : [
+        { "effect" : "minecraft:invisibility", "duration" : 30 }
+      ]
     }
   ]
 }

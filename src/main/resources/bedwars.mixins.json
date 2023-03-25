@@ -5,13 +5,15 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "InputSlotFillerMixin",
-    "rules.BedBlockMixin",
     "itemThrowEvent.ScreenHandlerMixin",
     "itemThrowEvent.ServerPlayerEntityMixin",
+    "potionDrankEvent.PotionItemMixin",
+    "rules.BedBlockMixin",
     "rules.EnderPearlEntityMixin",
     "rules.ExplosionBehaviorMixin",
     "rules.ExplosionMixin",
-    "slotInteraction.ScreenHandlerMixin"
+    "slotInteraction.ScreenHandlerMixin",
+    "statusEffectEvent.LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

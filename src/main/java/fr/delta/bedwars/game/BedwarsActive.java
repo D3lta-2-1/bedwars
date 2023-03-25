@@ -4,10 +4,7 @@ import com.google.common.collect.Multimap;
 import eu.pb4.sidebars.api.Sidebar;
 import fr.delta.bedwars.BedwarsConfig;
 import fr.delta.bedwars.GameRules;
-import fr.delta.bedwars.game.behaviour.ClaimManager;
-import fr.delta.bedwars.game.behaviour.DeathManager;
-import fr.delta.bedwars.game.behaviour.DefaultSwordManager;
-import fr.delta.bedwars.game.behaviour.WinEventSender;
+import fr.delta.bedwars.game.behaviour.*;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.player.InventoryManager;
 import fr.delta.bedwars.game.shop.data.ShopConfigs;
@@ -21,9 +18,9 @@ import fr.delta.bedwars.game.map.BedwarsMap;
 import fr.delta.notasword.NotASword;
 import fr.delta.notasword.OldAttackSpeed;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import org.samo_lego.taterzens.npc.TaterzenNPC;
 import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpace;
@@ -50,7 +47,7 @@ public class BedwarsActive {
     final private InventoryManager inventoryManager;
     final private FeedbackMessager feedbackMessager;
     final private Sidebar sidebar;
-    final private Collection<TaterzenNPC> shopKeepers;
+    final private Collection<Entity> shopKeepers;
 
     BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, ServerPlayerEntity> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
     {
@@ -67,17 +64,18 @@ public class BedwarsActive {
         setupTeam(teamPlayers);
         this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
         this.deathManager = new DeathManager(teamComponentsMap, teamManager, world, gameMap, activity);
-        new OldAttackSpeed(activity);
         this.defaultSwordManager = new DefaultSwordManager(activity);
         this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, teamManager, teamComponentsMap, defaultSwordManager, activity);
         this.sidebar = BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, activity);
         this.feedbackMessager = new FeedbackMessager(teamManager, activity);
         this.shopKeepers = addShopkeepers(gameMap.ShopKeepers());
         new WinEventSender(teamsInOrder, teamManager, activity);
-        activity.listen(BedwarsEvents.TEAM_WIN, this::onTeamWin);
+        new OldAttackSpeed(20D ,activity);
+        new InvisibilityArmorHider(teamManager, activity);
         destroySpawn();
         startGame();
         breakBedForEmptyTeam();
+        activity.listen(BedwarsEvents.TEAM_WIN, this::onTeamWin);
     }
     private void setupGameRules()
     {
@@ -95,6 +93,8 @@ public class BedwarsActive {
         activity.allow(GameRules.BLAST_PROOF_GLASS_RULE);
         activity.deny(GameRules.ENDER_PEARL_DAMAGE);
         activity.deny(GameRules.RECIPE_BOOK_USAGE);
+        activity.allow(GameRules.AMPLIFIED_EXPLOSION_KNOCKBACK);
+        activity.allow(GameRules.REDUCED_EXPLOSION_DAMAGE);
         GameProperties.add(activity);
     }
 
@@ -130,14 +130,14 @@ public class BedwarsActive {
         }
     }
 
-    private Collection<TaterzenNPC> addShopkeepers(List<BlockBounds> shopkeepersBounds)
+    private Collection<Entity> addShopkeepers(List<BlockBounds> shopkeepersBounds)
     {
         var entries = ShopConfigs.ENTRIES_REGISTRY.get(config.shopEntriesId());
         if(entries == null) throw new NullPointerException("entries is null");
         ShopConfigs.initialize(entries, this);
         var categories = ShopConfigs.CATEGORIES_REGISTRY.get(config.shopCategoriesId());
         var menu = new ItemShopMenu(this, entries, categories, activity);
-        var shopkeepers = new ArrayList<TaterzenNPC>();
+        var shopkeepers = new ArrayList<Entity>();
         for(var shopkeeper : shopkeepersBounds)
         {
             shopkeepers.add(ShopKeeper.createShopKeeper(world, shopkeeper, claim, menu));

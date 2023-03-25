@@ -80,7 +80,7 @@ public class InventoryManager
             for(var item : loots)
                 killer.getInventory().offerOrDrop(item);
         }
-        else if(!source.equals(DamageSource.OUT_OF_WORLD) && !isFinal)
+        else if(!source.equals(player.getDamageSources().outOfWorld()) && !isFinal)
         {
             var loots = generateDrop(player);
             for(var item : loots)

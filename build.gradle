@@ -25,9 +25,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation "com.github.samolego.Taterzens:taterzens-fabric:${project.taterzen_version}"
     modImplementation "com.github.D3lta-2-1:NotASword:${project.NotASword_version}"
-    //modImplementation "com.github.D3lta-2-1:MiniGameSpec:${project.mini_game_spec}"
     modImplementation "xyz.nucleoid:plasmid:${project.plasmid_version}"
 }
 

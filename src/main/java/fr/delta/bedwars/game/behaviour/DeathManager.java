@@ -7,6 +7,7 @@ import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import fr.delta.bedwars.game.ui.PlayerCustomPacketsSender;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Style;
@@ -15,6 +16,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.World;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpacePlayers;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
@@ -97,9 +99,8 @@ public class DeathManager {
         //kill all player under 0
         for(var player : players)
         {
-            if(player.getPos().getY() > 0) continue;
-
-            onPlayerDeath(player, DamageSource.OUT_OF_WORLD);
+            if(player.getY() > 0) continue;
+            onPlayerDeath(player, player.getDamageSources().outOfWorld());
         }
 
         //do the dead animation
