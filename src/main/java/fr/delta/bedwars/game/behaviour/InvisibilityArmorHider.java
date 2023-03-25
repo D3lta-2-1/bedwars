@@ -10,6 +10,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -18,6 +19,7 @@ import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpacePlayers;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
+import xyz.nucleoid.stimuli.event.player.PlayerS2CPacketEvent;
 
 import java.util.List;
 
@@ -32,9 +34,10 @@ public class InvisibilityArmorHider {
         activity.listen(StatusEffectEvent.ADD, this::onStatusEffectAdd);
         activity.listen(StatusEffectEvent.REMOVE, this::onStatusEffectRemove);
         activity.listen(PlayerDamageEvent.EVENT, this::onPlayerDamage);
+        activity.listen(PlayerS2CPacketEvent.EVENT, this::onPacket);
     }
 
-    public void onStatusEffectAdd(LivingEntity entity, StatusEffectInstance effect, @Nullable Entity source) {
+    void onStatusEffectAdd(LivingEntity entity, StatusEffectInstance effect, @Nullable Entity source) {
         if(entity instanceof ServerPlayerEntity AffectedPlayer)
         {
             var teamKey = teamManager.teamFor(AffectedPlayer);
@@ -48,7 +51,7 @@ public class InvisibilityArmorHider {
         }
     }
 
-    public void onStatusEffectRemove(LivingEntity entity, StatusEffectInstance effect) {
+    void onStatusEffectRemove(LivingEntity entity, StatusEffectInstance effect) {
         if(entity instanceof ServerPlayerEntity AffectedPlayer)
         {
             var teamKey = teamManager.teamFor(AffectedPlayer);
@@ -62,12 +65,26 @@ public class InvisibilityArmorHider {
         }
     }
 
-    public ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
+    ActionResult onPlayerDamage(ServerPlayerEntity player, DamageSource source, float amount) {
         var attacker =source.getAttacker();
         if(attacker == null) return ActionResult.PASS;
         if(attacker instanceof ServerPlayerEntity)
         {
             player.removeStatusEffect(StatusEffects.INVISIBILITY);
+        }
+        return ActionResult.PASS;
+    }
+
+    ActionResult onPacket(ServerPlayerEntity player, Packet<?> packet)
+    {
+        if(packet instanceof EntityEquipmentUpdateS2CPacket equipmentPacket)
+        {
+            var entity = player.getWorld().getEntityById(equipmentPacket.getId());
+            if(entity instanceof ServerPlayerEntity affectedPlayer)
+            {
+                var effect = affectedPlayer.getStatusEffect(StatusEffects.INVISIBILITY);
+                if(effect != null) return ActionResult.FAIL;
+            }
         }
         return ActionResult.PASS;
     }

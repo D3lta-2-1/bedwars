@@ -6,6 +6,7 @@ import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import fr.delta.bedwars.game.shop.ShopMenu.ShopMenu;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -18,10 +19,12 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
     private final ShopMenu shopMenu;
+    private ServerPlayerEntity lookTarget = null;
 
     static public ShopKeeperEntity createEmpty(EntityType<? extends PathAwareEntity> entityType, World world)
     {
@@ -48,6 +51,11 @@ public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
     }
 
     @Override
+    public boolean damage(DamageSource source, float amount) {
+        return false;
+    }
+
+    @Override
     public void onBeforeSpawnPacket(Consumer<Packet<?>> packetConsumer) {
         var packet = PolymerEntityUtils.createMutablePlayerListPacket(EnumSet.of(PlayerListS2CPacket.Action.ADD_PLAYER, PlayerListS2CPacket.Action.UPDATE_LISTED));
         var gameProfile = new GameProfile(this.getUuid(), "Test NPC");
@@ -64,5 +72,19 @@ public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
         if(player instanceof ServerPlayerEntity serverPlayer && shopMenu != null)
             shopMenu.open(serverPlayer);
         return super.interactMob(player, hand);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        var box = this.getBoundingBox().expand(4.0D);
+        List<ServerPlayerEntity> players = this.world.getEntitiesByClass(ServerPlayerEntity.class, box, (empty) -> true);
+        if(players.isEmpty()) return;
+        if (this.lookTarget == null || this.distanceTo(this.lookTarget) > 5.0D || this.lookTarget.isDisconnected() || !this.lookTarget.isAlive()) {
+            this.lookTarget = players.get(this.random.nextInt(players.size()));
+        }
+        this.lookAtEntity(lookTarget, 60.0F, 60.0F);
+        this.setHeadYaw(this.getYaw());
     }
 }
