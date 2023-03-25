@@ -70,7 +70,8 @@
       "icon" : "minecraft:brewing_stand",
       "entries" : [
         "bedwars:jump_boost",
-        "bedwars:speed"
+        "bedwars:speed",
+        "bedwars:invisibility"
       ]
     }
   ]

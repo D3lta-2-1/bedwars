@@ -22,7 +22,7 @@ public class PotionEntry extends ShopEntry
     static Codec<StatusEffectInstance> STATUS_EFFECT_INSTANCE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Registries.STATUS_EFFECT.getCodec().fieldOf("effect").forGetter(StatusEffectInstance::getEffectType),
             Codec.FLOAT.fieldOf("duration").forGetter((effectInstance) -> effectInstance.getAmplifier() / 20.f),
-            Codec.INT.fieldOf("amplifier").forGetter((effectInstance) -> effectInstance.getAmplifier() - 1),
+            Codec.INT.optionalFieldOf("amplifier", 1).forGetter((effectInstance) -> effectInstance.getAmplifier() - 1),
             Codec.BOOL.optionalFieldOf("ambient", false).forGetter(StatusEffectInstance::isAmbient),
             Codec.BOOL.optionalFieldOf("showParticles", true).forGetter(StatusEffectInstance::shouldShowParticles),
             Codec.BOOL.optionalFieldOf("showIcon", true).forGetter(StatusEffectInstance::shouldShowIcon)
