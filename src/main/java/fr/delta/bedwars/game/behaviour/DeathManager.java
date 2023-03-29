@@ -1,5 +1,6 @@
 package fr.delta.bedwars.game.behaviour;
 
+import fr.delta.bedwars.BedwarsConfig;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.TeleporterLogic;
 import fr.delta.bedwars.game.component.TeamComponents;
@@ -7,7 +8,6 @@ import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import fr.delta.bedwars.game.ui.PlayerCustomPacketsSender;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Style;
@@ -16,7 +16,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.World;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpacePlayers;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
@@ -37,6 +36,7 @@ public class DeathManager {
     private final GameSpacePlayers players;
     private final GameActivity activity;
     private final Vec3d respawnPos;
+    private final int voidHigh;
 
     static class DeadPlayer
     {
@@ -49,7 +49,7 @@ public class DeathManager {
         }
     }
     private final List<DeadPlayer> deadPlayers = new ArrayList<>();
-    public DeathManager(Map<GameTeamKey, TeamComponents> teamComponentsMap, TeamManager teamManager, ServerWorld world, BedwarsMap map, GameActivity activity)
+    public DeathManager(Map<GameTeamKey, TeamComponents> teamComponentsMap, TeamManager teamManager, ServerWorld world, BedwarsMap map, BedwarsConfig config, GameActivity activity)
     {
         this.teamComponentsMap = teamComponentsMap;
         this.teamManager = teamManager;
@@ -57,6 +57,7 @@ public class DeathManager {
         this.players = activity.getGameSpace().getPlayers();
         this.activity = activity;
         this.respawnPos = map.waiting().center();
+        this.voidHigh = config.voidHigh();
         //register events
         activity.listen(PlayerDeathEvent.EVENT, this::onPlayerDeath);
         activity.listen(GameActivityEvents.TICK, this::tick);
@@ -99,7 +100,7 @@ public class DeathManager {
         //kill all player under 0
         for(var player : players)
         {
-            if(player.getY() > 0) continue;
+            if(player.getY() > voidHigh) continue;
             onPlayerDeath(player, player.getDamageSources().outOfWorld());
         }
 
