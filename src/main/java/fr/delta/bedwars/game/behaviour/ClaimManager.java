@@ -37,6 +37,7 @@ public class ClaimManager {
         activity.listen(BlockPlaceEvent.BEFORE, this::onPlace);
     }
 
+
     public void addRegion(BlockBounds region)
     {
         this.claimedRegions.add(region);
