@@ -1,11 +1,14 @@
 package fr.delta.bedwars.game.component;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.behaviour.ClaimManager;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -16,19 +19,56 @@ import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 import xyz.nucleoid.stimuli.event.item.ItemPickupEvent;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Forge {
-    static final String SPLITTABLE_KEY = "splittable";
-    final BlockBounds bounds;
-    final ServerWorld world;
-    final TeamManager teamManager;
 
-    //default time in tick, set in the config
-    double timeBeforeNextIronSpawn;
-    double timeBeforeNextGoldSpawn;
-    double timeBeforeNextEmeraldSpawn;
-    final ForgeConfig config;
+    public record SpawnData(int spawnTime, int maxInForge, boolean splittable)
+    {
+        public static final Codec<SpawnData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.INT.fieldOf("spawnTime").forGetter(SpawnData::spawnTime),
+                Codec.INT.fieldOf("maxInForge").forGetter(SpawnData::maxInForge),
+                Codec.BOOL.optionalFieldOf("splittable", true).forGetter(SpawnData::splittable)
+        ).apply(instance, SpawnData::new));
+    }
+    public record ForgeConfig (List<Map<Item, SpawnData>> tiers)
+    {
+        static public ForgeConfig defaulted()
+        {
+            return new ForgeConfig(
+                    List.of(Map.of(
+                            Items.IRON_INGOT, new SpawnData(100, 64, true),
+                            Items.GOLD_INGOT, new SpawnData(200, 16, true)
+                    ), Map.of(
+                            Items.IRON_INGOT, new SpawnData(65, 96, true),
+                            Items.GOLD_INGOT, new SpawnData(134, 20, true)
+                    ), Map.of(
+                            Items.IRON_INGOT, new SpawnData(50, 128, true),
+                            Items.GOLD_INGOT, new SpawnData(100, 24, true),
+                            Items.EMERALD, new SpawnData(300, 8, false)
+                    ), Map.of(
+                            Items.IRON_INGOT, new SpawnData(40, 96, true),
+                            Items.GOLD_INGOT, new SpawnData(50, 32, true),
+                            Items.EMERALD, new SpawnData(150, 8, false)
+                    )
+                )
+            );
+        }
 
-    int tier; // 0 to 4, that correspond to 50, 100, 150, 200% faster resources
+        public static final Codec<ForgeConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.list(Codec.unboundedMap(Registries.ITEM.getCodec(), SpawnData.CODEC)).fieldOf("tiers").forGetter(ForgeConfig::tiers)
+        ).apply(instance, ForgeConfig::new));
+    }
+    private static final String SPLITTABLE_KEY = "splittable";
+    private final BlockBounds bounds;
+    private final ServerWorld world;
+    private final TeamManager teamManager;
+    private final ForgeConfig config;
+    private Map<Item, SpawnData> itemSpawnData;
+    private final  Map<Item, Long> lastSpawnTime = new HashMap<>();
+    int concurrentTier;
 
     public Forge(BlockBounds bounds, ClaimManager claim, ForgeConfig config, ServerWorld world, TeamManager teamManager, GameActivity activity)
     {
@@ -36,14 +76,23 @@ public class Forge {
         this.world = world;
         this.teamManager = teamManager;
         this.config = config;
-        this.tier = 0;
-        timeBeforeNextIronSpawn = 0;
-        timeBeforeNextGoldSpawn = 0;
-        timeBeforeNextEmeraldSpawn = 0;
-
+        this.setTier(0);
         claim.addRegion(this.bounds);
         activity.listen(GameActivityEvents.TICK, this::tick);
         activity.listen(ItemPickupEvent.EVENT, this::onPickupItem);
+    }
+
+    public void setTier(int tier)
+    {
+        concurrentTier = tier;
+        itemSpawnData = config.tiers().get(tier);
+        lastSpawnTime.clear();
+        var concurrentTime = world.getTime();
+        for(var item : itemSpawnData.keySet())
+        {
+            lastSpawnTime.put(item, concurrentTime);
+            this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getStack(item, itemSpawnData.get(item).splittable() ), 0,0,0));
+        }
     }
 
     public Vec3d getCenter()
@@ -60,38 +109,16 @@ public class Forge {
     private double X(){ return bounds.center().x; }
     private double Y(){ return bounds.center().y; }
     private double Z(){ return bounds.center().z; }
-    private ItemStack getSplittableIronIngot()
+    private ItemStack getStack(Item item, boolean splittable)
     {
-        var ingot = new ItemStack(Items.IRON_INGOT);
-        var nbt = new NbtCompound();
-        nbt.putBoolean(SPLITTABLE_KEY, true);
-        ingot.setNbt(nbt);
+        var ingot = new ItemStack(item);
+        if(splittable)
+        {
+            var nbt = new NbtCompound();
+            nbt.putBoolean(SPLITTABLE_KEY, true);
+            ingot.setNbt(nbt);
+        }
         return ingot;
-    }
-
-    private ItemStack getSplittableGoldIngot()
-    {
-        var ingot = new ItemStack(Items.GOLD_INGOT);
-        var nbt = new NbtCompound();
-        nbt.putBoolean(SPLITTABLE_KEY, true);
-        ingot.setNbt(nbt);
-        return ingot;
-    }
-
-    private ItemStack getSplittableEmerald()
-    {
-        var emerald = new ItemStack(Items.EMERALD);
-        var nbt = new NbtCompound();
-        nbt.putBoolean(SPLITTABLE_KEY, true);
-        emerald.setNbt(nbt);
-        return emerald;
-
-    }
-
-    private double getTimeToWaitForTier(double time, int tier)
-    {
-        var speedupPercent = 1  + tier * 0.5;
-        return time / speedupPercent;
     }
 
     private boolean isFullOf(Item item, int maxCount)
@@ -102,6 +129,7 @@ public class Forge {
             if(!stack.getItem().equals(item)) return false;
             if(!stack.hasNbt()) return false;
             var nbt = stack.getNbt();
+            assert nbt != null;
             return (nbt.contains(SPLITTABLE_KEY) && nbt.getBoolean(SPLITTABLE_KEY));
         });
 
@@ -113,44 +141,20 @@ public class Forge {
         return count >= maxCount;
     }
 
-    private void tickIron()
-    {
-        if(timeBeforeNextIronSpawn <= 0)
-        {
-            if(!isFullOf(Items.IRON_INGOT, 48))
-                this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getSplittableIronIngot(), 0,0,0));
-            timeBeforeNextIronSpawn += getTimeToWaitForTier(config.ironSpawnTime(), tier);
-        }
-        timeBeforeNextIronSpawn--;
-    }
-
-    private void tickGold()
-    {
-        if(timeBeforeNextGoldSpawn <= 0)
-        {
-            if(!isFullOf(Items.GOLD_INGOT, 16))
-                this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getSplittableGoldIngot(),0,0,0));
-            timeBeforeNextGoldSpawn += getTimeToWaitForTier(config.goldSpawnTime(), tier);
-        }
-        timeBeforeNextGoldSpawn--;
-    }
-
-    private void tickEmerald()
-    {
-        if(tier < 2) return;
-        if(timeBeforeNextEmeraldSpawn <= 0)
-        {
-            this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getSplittableEmerald(),0,0,0));
-            timeBeforeNextEmeraldSpawn += getTimeToWaitForTier(config.emeraldSpawnTime(), tier - 3); //to only get 50% faster when tier 4
-        }
-        timeBeforeNextEmeraldSpawn--;
-    }
-
     public void tick()
     {
-        tickIron();
-        tickGold();
-        tickEmerald();
+        var concurrentTime = world.getTime();
+        for(var resource : itemSpawnData.entrySet())
+        {
+            var item = resource.getKey();
+            var data = resource.getValue();
+            if(lastSpawnTime.get(item) + data.spawnTime() <= concurrentTime)
+            {
+                if(!isFullOf(item, data.maxInForge()))
+                    this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getStack(item, data.splittable()), 0,0,0));
+                lastSpawnTime.put(item, concurrentTime);
+            }
+        }
     }
 
     private ActionResult onPickupItem(ServerPlayerEntity player, ItemEntity entity, ItemStack stack)
@@ -161,6 +165,7 @@ public class Forge {
         if(!stack.hasNbt()) return ActionResult.PASS;
         //remove the splittable_tag
         var nbt = stack.getNbt();
+        assert nbt != null;
         if(!nbt.contains(SPLITTABLE_KEY) || !nbt.getBoolean(SPLITTABLE_KEY) ) return ActionResult.PASS;
         stack.removeSubNbt(SPLITTABLE_KEY);
         //get teamMates
