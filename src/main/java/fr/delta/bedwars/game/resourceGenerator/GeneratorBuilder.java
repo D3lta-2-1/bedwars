@@ -1,4 +1,4 @@
-package fr.delta.bedwars.game.map.resourceGenerator;
+package fr.delta.bedwars.game.resourceGenerator;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

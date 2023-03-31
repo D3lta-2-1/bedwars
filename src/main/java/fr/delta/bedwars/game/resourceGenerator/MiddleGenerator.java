@@ -1,4 +1,4 @@
-package fr.delta.bedwars.game.map.resourceGenerator;
+package fr.delta.bedwars.game.resourceGenerator;
 
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.attachment.ChunkAttachment;

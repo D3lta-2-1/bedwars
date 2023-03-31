@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.component.Forge;
 import fr.delta.bedwars.game.map.BedwarsMapConfig;
-import fr.delta.bedwars.game.map.resourceGenerator.GeneratorBuilder;
+import fr.delta.bedwars.game.resourceGenerator.GeneratorBuilder;
 import net.minecraft.util.Identifier;
 
 import java.util.List;
