@@ -1,10 +1,25 @@
 {
   "type": "bedwars:bedwars",
-  "map":  {
-    "id": "bedwars:lighthouse"
-  },
-  "high_limit" : 50,
-  "down_limit" : 10,
+  "map": { "id": "bedwars:lighthouse"},
+  "generator_types" : [
+    {
+     "region_name" : "emerald_generator",
+      "item" : "minecraft:emerald",
+      "rgb_color" : { "red" : 0, "green" : 255, "blue" : 0},
+      "display_block" : "minecraft:emerald_block",
+      "time_to_generate_tiers" : [1200]
+    },
+    {
+      "region_name" : "diamond_generator",
+      "item" : "minecraft:diamond",
+      "rgb_color" : { "red" : 0, "green" : 255, "blue" : 255},
+      "display_block" : "minecraft:diamond_block",
+      "time_to_generate_tiers" : [1200]
+    }
+  ],
   "category_config" : "bedwars:single",
-  "entries_config" : "bedwars:entries"
+  "entries_config" : "bedwars:entries",
+  "void_high" : -10,
+  "high_limit" : 40,
+  "down_limit" : 15
 }

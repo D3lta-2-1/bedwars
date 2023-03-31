@@ -91,7 +91,7 @@ public class Forge {
         for(var item : itemSpawnData.keySet())
         {
             lastSpawnTime.put(item, concurrentTime);
-            this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getStack(item, itemSpawnData.get(item).splittable() ), 0,0,0));
+            this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getStack(item, itemSpawnData.get(item).splittable())));
         }
     }
 

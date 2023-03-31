@@ -59,10 +59,11 @@ public class BedwarsActive {
         this.teamManager = TeamManager.addTo(activity);
         setupTeam(teamPlayers); //populate teamManager
         this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
-        this.deathManager = new DeathManager(teamComponentsMap, teamManager, world, gameMap, activity);
+        this.deathManager = new DeathManager(teamComponentsMap, teamManager, world, gameMap, config, activity);
         this.defaultSwordManager = new DefaultSwordManager(activity);
         this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, teamManager, teamComponentsMap, defaultSwordManager, activity);
         addShopkeepers(gameMap.ShopKeepers());
+        addMiddleGenerator();
         BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, activity);
         new FeedbackMessager(teamManager, activity);
         new WinEventSender(teamsInOrder, teamManager, activity);
@@ -137,6 +138,17 @@ public class BedwarsActive {
         for(var shopkeeper : shopkeepersBounds)
         {
            ShopKeeper.createShopKeeper(world, shopkeeper, claim, menu);
+        }
+    }
+
+    private void addMiddleGenerator()
+    {
+        for(var generatorType : config.generatorTypeList())
+        {
+            for(var bounds : gameMap.generatorsRegions().get(generatorType.getInternal_id()))
+            {
+                generatorType.createGenerator(bounds, world, claim, activity);
+            }
         }
     }
 

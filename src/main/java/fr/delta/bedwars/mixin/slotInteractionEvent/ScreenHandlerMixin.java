@@ -1,4 +1,4 @@
-package fr.delta.bedwars.mixin.slotInteraction;
+package fr.delta.bedwars.mixin.slotInteractionEvent;
 
 import fr.delta.bedwars.event.SlotInteractionEvent;
 import net.minecraft.entity.player.PlayerEntity;

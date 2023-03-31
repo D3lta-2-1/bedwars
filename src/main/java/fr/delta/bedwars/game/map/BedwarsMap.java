@@ -1,5 +1,7 @@
 package fr.delta.bedwars.game.map;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import fr.delta.bedwars.BedwarsConfig;
 import fr.delta.bedwars.Constants;
 import net.minecraft.server.MinecraftServer;
@@ -12,12 +14,11 @@ import xyz.nucleoid.map_templates.MapTemplate;
 import xyz.nucleoid.map_templates.MapTemplateSerializer;
 import xyz.nucleoid.plasmid.game.GameOpenException;
 import xyz.nucleoid.plasmid.game.world.generator.TemplateChunkGenerator;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBounds waiting, List<RawTeamData> teamData, List<BlockBounds> ShopKeepers) {
+public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBounds waiting, List<RawTeamData> teamData, List<BlockBounds> ShopKeepers, Multimap<String, BlockBounds> generatorsRegions) {
     public static BedwarsMap loadMap(BedwarsConfig config, MinecraftServer server) throws GameOpenException {
         //load map
         MapTemplate template;
@@ -29,7 +30,7 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
         //get waiting spawn
         var waitingSpawn = template.getMetadata().getFirstRegionBounds(Constants.WAITING_SPAWN);
         //get teamMetaData such as bed location and spawn location
-        List<RawTeamData> dataList      = new ArrayList<>();
+        List<RawTeamData> dataList = new ArrayList<>();
         for(var color : Constants.TEAM_COLORS)
         {
             var spawnKey = color.name().toLowerCase() + "_" + Constants.SPAWN;
@@ -48,7 +49,21 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
             throw new GameOpenException(Text.literal("no team spawn found"));
         if(waitingSpawn == null)
             throw new GameOpenException(Text.literal("no waiting spawn found"));
-        return new BedwarsMap(template, server, waitingSpawn, dataList, shopkeepers);
+
+        //get generators
+        var generatorTypeList = config.generatorTypeList();
+        Multimap<String, BlockBounds> generatorsRegions = ArrayListMultimap.create();
+        for(var generatorType : generatorTypeList)
+        {
+            var generatorRegions = template.getMetadata().getRegionBounds(generatorType.getInternal_id().toLowerCase()).toList();
+            if(generatorRegions.isEmpty()) continue;
+            for(var generatorRegion : generatorRegions)
+            {
+                generatorsRegions.put(generatorType.getInternal_id(), generatorRegion);
+            }
+        }
+
+        return new BedwarsMap(template, server, waitingSpawn, dataList, shopkeepers, generatorsRegions);
     }
 
     private ChunkGenerator asGenerator() {

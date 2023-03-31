@@ -1,4 +1,4 @@
-package fr.delta.bedwars.mixin;
+package fr.delta.bedwars.mixin.recipeClikedEvent;
 
 import fr.delta.bedwars.event.RecipeClickedEvent;
 import net.minecraft.recipe.InputSlotFiller;

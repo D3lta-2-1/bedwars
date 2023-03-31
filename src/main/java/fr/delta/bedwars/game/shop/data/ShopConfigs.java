@@ -93,6 +93,8 @@ public class ShopConfigs {
                 });
                 Bedwars.LOGGER.info("shop categories loaded :");
                 CATEGORIES_REGISTRY.keySet().forEach(config -> Bedwars.LOGGER.info(config.toString()));
+                Bedwars.LOGGER.info("entries configs loaded :");
+                ENTRIES_REGISTRY.keySet().forEach(config -> Bedwars.LOGGER.info(config.toString()));
             }
         });
     }

@@ -17,7 +17,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
-
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Consumer;
@@ -25,19 +24,26 @@ import java.util.function.Consumer;
 public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
     private final ShopMenu shopMenu;
     private ServerPlayerEntity lookTarget = null;
+    //private final ElementHolder holder;
+    //private final MobAnchorElement rideAnchor = new MobAnchorElement();
+    //private final ItemDisplayElement cube = new ItemDisplayElement(Items.RED_CONCRETE);
 
     static public ShopKeeperEntity createEmpty(EntityType<? extends PathAwareEntity> entityType, World world)
     {
-        return new ShopKeeperEntity(entityType, world);
+        return new ShopKeeperEntity(entityType, world, null);
     }
     public ShopKeeperEntity(EntityType<? extends PathAwareEntity> entityType, World world, ShopMenu shopMenu) {
         super(entityType, world);
         this.shopMenu = shopMenu;
-    }
+        /*this.holder = new ElementHolder(){
+            @Override
+            protected void startWatchingExtraPackets(ServerPlayNetworkHandler player, Consumer<Packet<ClientPlayPacketListener>> packetConsumer) {
+                packetConsumer.accept(VirtualEntityUtils.createRidePacket(getId(), IntList.of(cube.getEntityId())));
+            }
+        };
 
-    protected ShopKeeperEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
-        super(entityType, world);
-        this.shopMenu = null;
+        this.rideAnchor.setOffset(new Vec3d(0, 3, 0));
+        this.holder.addElement(cube);*/
     }
 
     @Override
@@ -54,6 +60,16 @@ public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
     public boolean damage(DamageSource source, float amount) {
         return false;
     }
+
+    /*@Override
+    public void onEntityPacketSent(Consumer<Packet<?>> consumer, Packet<?> packet) {
+        if (packet instanceof EntityPassengersSetS2CPacket passengersSetS2CPacket) {
+            consumer.accept(VirtualEntityUtils.createRidePacket(this.rideAnchor.getEntityId(), IntList.of(passengersSetS2CPacket.getPassengerIds())));
+            return;
+        }
+
+        consumer.accept(packet);
+    }*/
 
     @Override
     public void onBeforeSpawnPacket(Consumer<Packet<?>> packetConsumer) {
@@ -87,4 +103,11 @@ public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
         this.lookAtEntity(lookTarget, 60.0F, 60.0F);
         this.setHeadYaw(this.getYaw());
     }
+
+   /* @Override
+    public void modifyRawTrackedData(List<DataTracker.SerializedEntry<?>> data, ServerPlayerEntity player, boolean initial) {
+        //data.add(DataTracker.SerializedEntry.of(EntityTrackedData.FLAGS, (byte) (1 << EntityTrackedData.INVISIBLE_FLAG_INDEX)));
+        data.add(new DataTracker.SerializedEntry(EntityAccessor.getNO_GRAVITY().getId(), EntityAccessor.getNO_GRAVITY().getType(), true));
+        data.add(DataTracker.SerializedEntry.of(ArmorStandEntity.ARMOR_STAND_FLAGS, (byte) (ArmorStandEntity.SMALL_FLAG | ArmorStandEntity.MARKER_FLAG)));
+    }*/
 }
