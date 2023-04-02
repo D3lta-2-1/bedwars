@@ -1,11 +1,14 @@
 package fr.delta.bedwars.game;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import fr.delta.bedwars.BedwarsConfig;
 import fr.delta.bedwars.GameRules;
+import fr.delta.bedwars.StageEvent.GameEventManager;
 import fr.delta.bedwars.game.behaviour.*;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.player.InventoryManager;
+import fr.delta.bedwars.game.resourceGenerator.ResourceGenerator;
 import fr.delta.bedwars.game.shop.data.ShopConfigs;
 import fr.delta.bedwars.game.shop.npc.ShopKeeper;
 import fr.delta.bedwars.game.ui.FeedbackMessager;
@@ -43,6 +46,7 @@ public class BedwarsActive {
     final private DeathManager deathManager;
     final private DefaultSwordManager defaultSwordManager;
     final private InventoryManager inventoryManager;
+    final private Multimap<String, ResourceGenerator> middleGeneratorsMap;
 
     BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, ServerPlayerEntity> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
     {
@@ -62,9 +66,10 @@ public class BedwarsActive {
         this.deathManager = new DeathManager(teamComponentsMap, teamManager, world, gameMap, config, activity);
         this.defaultSwordManager = new DefaultSwordManager(activity);
         this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, teamManager, teamComponentsMap, defaultSwordManager, activity);
+        this.middleGeneratorsMap = addMiddleGenerator();
         addShopkeepers(gameMap.ShopKeepers());
-        addMiddleGenerator();
-        BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, activity);
+        var stageManager = new GameEventManager(world, new LinkedList<>(config.events()), this, activity);
+        BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
         new FeedbackMessager(teamManager, activity);
         new WinEventSender(teamsInOrder, teamManager, activity);
         new OldAttackSpeed(20D ,activity);
@@ -141,15 +146,17 @@ public class BedwarsActive {
         }
     }
 
-    private void addMiddleGenerator()
+    private Multimap<String, ResourceGenerator> addMiddleGenerator()
     {
+        Multimap<String, ResourceGenerator> middleGeneratorsMap = ArrayListMultimap.create();
         for(var generatorType : config.generatorTypeList())
         {
-            for(var bounds : gameMap.generatorsRegions().get(generatorType.getInternal_id()))
+            for(var bounds : gameMap.generatorsRegions().get(generatorType.getInternalId()))
             {
-                generatorType.createGenerator(bounds, world, claim, activity);
+                middleGeneratorsMap.put(generatorType.getInternalId(), generatorType.createGenerator(bounds, world, claim, activity));
             }
         }
+        return middleGeneratorsMap;
     }
 
     private void startGame() {
@@ -174,7 +181,7 @@ public class BedwarsActive {
 
     private void onTeamWin(GameTeam team)
     {
-        //todo : add messages into Messager Class
+        //todo : add messages into Messenger Class
         gameSpace.getPlayers().sendMessage(TextUtilities.getTranslation("name", team.config().blockDyeColor().name()).append(" win"));
         new BedwarsEnd(gameSpace, world, teamPlayersMap, team);
     }
@@ -204,5 +211,9 @@ public class BedwarsActive {
 
     public Multimap<GameTeam, ServerPlayerEntity> getTeamPlayersMap() {
         return teamPlayersMap;
+    }
+
+    public Multimap<String, ResourceGenerator> getGeneratorsMap() {
+        return middleGeneratorsMap;
     }
 }

@@ -24,29 +24,29 @@ public class GeneratorBuilder {
 
     public static final Codec<GeneratorBuilder> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    Codec.STRING.fieldOf("region_name").forGetter(GeneratorBuilder::getInternal_id),
+                    Codec.STRING.fieldOf("region_name").forGetter(GeneratorBuilder::getInternalId),
                     Registries.ITEM.getCodec().fieldOf("item").forGetter(GeneratorBuilder::getItem),
                     RGB_CODEC.fieldOf("rgb_color").forGetter(GeneratorBuilder::getRgbColor),
                     Codec.INT.listOf().fieldOf("time_to_generate_tiers").forGetter(GeneratorBuilder::getTimeToGenerateTierList),
                     Registries.BLOCK.getCodec().fieldOf("display_block").forGetter(GeneratorBuilder::getDisplayBlock)
             ).apply(instance, GeneratorBuilder::new)
     );
-    private final String internal_id;
+    private final String internalId;
     private final Item item;
     private final List<Integer> timeToGenerateTierList;
     private final Block displayBlock;
     private final int rgbColor;
 
     public GeneratorBuilder(String name, Item item, int rgbColor, List<Integer> timeToGenerateTierList, Block displayBlock) {
-        this.internal_id = name;
+        this.internalId = name;
         this.item = item;
         this.rgbColor = rgbColor;
         this.timeToGenerateTierList = timeToGenerateTierList;
         this.displayBlock = displayBlock;
     }
 
-    public String getInternal_id() {
-        return internal_id;
+    public String getInternalId() {
+        return internalId;
     }
 
     public Item getItem() {
@@ -65,7 +65,7 @@ public class GeneratorBuilder {
         return rgbColor;
     }
 
-    public void createGenerator(BlockBounds bounds, World world, ClaimManager claimManager, GameActivity activity) {
-        new MiddleGenerator(bounds, this.item, rgbColor, this.displayBlock, world, this.timeToGenerateTierList, claimManager, activity);
+    public ResourceGenerator createGenerator(BlockBounds bounds, World world, ClaimManager claimManager, GameActivity activity) {
+        return new ResourceGenerator(bounds, this.item, rgbColor, this.displayBlock, world, this.timeToGenerateTierList, claimManager, activity);
     }
 }

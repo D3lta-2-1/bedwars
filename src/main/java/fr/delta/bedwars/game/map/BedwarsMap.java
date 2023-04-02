@@ -43,7 +43,7 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
             dataList.add(new RawTeamData(color, spawn, bed, forge));
         }
         //get shopkeepers
-        var shopkeepers = template.getMetadata().getRegionBounds(Constants.SHOPKEEPER).toList();
+        var shopkeepers = template.getMetadata().getRegionBounds(Constants.ITEM_SHOPKEEPER).toList();
         //check if correctly load the map
         if(dataList.isEmpty())
             throw new GameOpenException(Text.literal("no team spawn found"));
@@ -55,11 +55,11 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
         Multimap<String, BlockBounds> generatorsRegions = ArrayListMultimap.create();
         for(var generatorType : generatorTypeList)
         {
-            var generatorRegions = template.getMetadata().getRegionBounds(generatorType.getInternal_id().toLowerCase()).toList();
+            var generatorRegions = template.getMetadata().getRegionBounds(generatorType.getInternalId().toLowerCase()).toList();
             if(generatorRegions.isEmpty()) continue;
             for(var generatorRegion : generatorRegions)
             {
-                generatorsRegions.put(generatorType.getInternal_id(), generatorRegion);
+                generatorsRegions.put(generatorType.getInternalId(), generatorRegion);
             }
         }
 

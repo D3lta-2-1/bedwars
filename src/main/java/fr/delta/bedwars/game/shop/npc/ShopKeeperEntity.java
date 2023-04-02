@@ -87,7 +87,7 @@ public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         if(player instanceof ServerPlayerEntity serverPlayer && shopMenu != null)
             shopMenu.open(serverPlayer);
-        return super.interactMob(player, hand);
+        return ActionResult.FAIL;
     }
 
     @Override

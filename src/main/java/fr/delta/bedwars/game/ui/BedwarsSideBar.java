@@ -1,6 +1,8 @@
 package fr.delta.bedwars.game.ui;
 
 import eu.pb4.sidebars.api.Sidebar;
+import fr.delta.bedwars.StageEvent.GameEventManager;
+import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.component.TeamComponents;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.component.Bed;
@@ -22,12 +24,14 @@ import java.util.List;
 import java.util.Map;
 
 public class BedwarsSideBar {
-    public static Sidebar build(Map<GameTeamKey, TeamComponents> teamComponents, TeamManager manager, List<GameTeam> teamsInOrder, GameActivity activity)
+    public static Sidebar build(Map<GameTeamKey, TeamComponents> teamComponents, TeamManager manager, List<GameTeam> teamsInOrder, GameEventManager gameEventManager, BedwarsActive game, GameActivity activity)
     {
         var sidebar = new Sidebar(Sidebar.Priority.MEDIUM);
         sidebar.setTitle(Text.translatable("sidebar.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.GOLD).withBold(true)));
 
         sidebar.set( b -> {
+            b.add(ScreenTexts.EMPTY);
+            b.add(player -> gameEventManager.getStageStatue(game));
             b.add(ScreenTexts.EMPTY);
             for(var team : teamsInOrder)
             {

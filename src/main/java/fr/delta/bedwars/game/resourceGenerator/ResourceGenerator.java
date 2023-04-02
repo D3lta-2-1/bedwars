@@ -4,6 +4,7 @@ import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.attachment.ChunkAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.BlockDisplayElement;
 import eu.pb4.polymer.virtualentity.api.elements.TextDisplayElement;
+import fr.delta.bedwars.Bedwars;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.behaviour.ClaimManager;
 import net.minecraft.block.Block;
@@ -23,7 +24,7 @@ import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 import java.util.List;
 
-public class MiddleGenerator {
+public class ResourceGenerator {
 
     private final Vec3d pos;
 
@@ -39,7 +40,7 @@ public class MiddleGenerator {
     private final SinusAnimation rotationAnimation;
     private final SinusAnimation YAnimation;
     private ElementHolder holder = null;
-    public MiddleGenerator(BlockBounds bounds, Item spawnedItem, int rgbColor, Block display, World world, List<Integer> timeToGenerateTierList, ClaimManager claimManager, GameActivity activity)
+    public ResourceGenerator(BlockBounds bounds, Item spawnedItem, int rgbColor, Block display, World world, List<Integer> timeToGenerateTierList, ClaimManager claimManager, GameActivity activity)
     {
         this.pos = bounds.centerBottom().add(0, 3.5,0);
         this.spawnedItem = spawnedItem;
@@ -59,7 +60,7 @@ public class MiddleGenerator {
     private TextDisplayElement createText(Text text, float y) {
         var textElement = new TextDisplayElement(text);
         textElement.setBillboardMode(DisplayEntity.BillboardMode.CENTER);
-        textElement.setTransformation(new Matrix4f().translate(0, y, 0));
+        textElement.setOffset(new Vec3d(0, y, 0));
         return textElement;
     }
 
@@ -75,6 +76,20 @@ public class MiddleGenerator {
                 Text.translatable("generator.bedwars.seconds").formatted(Formatting.YELLOW));
     }
 
+    public Item getSpawnedItem() {
+        return spawnedItem;
+    }
+
+    public void setTier(int tier) {
+        if(tier < timeToGenerateTierList.size() && tier >= 0)
+        {
+            currentTier = tier;
+            tierText.setText(getTierText());
+        }
+        else
+            Bedwars.LOGGER.warn("Invalid tier for middle generator: " + tier + ", ignoring...");
+    }
+
     void tick()
     {
         // restore the block if it was unloaded
@@ -88,6 +103,17 @@ public class MiddleGenerator {
             var blockPos = new BlockPos(asInteger(pos.getX()), asInteger(pos.getY()), asInteger(pos.getZ()));
             new ChunkAttachment(this.holder, world.getWorldChunk(blockPos), pos, true);
         }
+        // update the text counter
+        var timeBeforeNextSpawn = lastSpawnItemTime + timeToGenerateTierList.get(currentTier) - world.getTime();
+        if(timeBeforeNextSpawn % 20 == 0)
+        {
+            countText.setText(getCountText(timeBeforeNextSpawn));
+        }
+        if(timeBeforeNextSpawn <= 0)
+        {
+            spawnItem();
+            tierText.setText(getTierText());
+        }
         // animate the block
         blockElement.setTransformation(new Matrix4f()
                 .rotateY(rotationAnimation.get(world.getTime()))
@@ -95,17 +121,7 @@ public class MiddleGenerator {
         blockElement.setOffset(new Vec3d(0, YAnimation.get(world.getTime()), 0));
         blockElement.setInterpolationDuration(1);
         blockElement.startInterpolation();
-        // update the text counter
-        var timeBeforeNextSpawn = lastSpawnItemTime + timeToGenerateTierList.get(currentTier) - world.getTime();
-        if(timeBeforeNextSpawn <= 0)
-        {
-            spawnItem();
-            tierText.setText(getTierText());
-        }
-        if(timeBeforeNextSpawn % 20 == 0)
-        {
-            countText.setText(getCountText(timeBeforeNextSpawn));
-        }
+
     }
 
     private void spawnItem()

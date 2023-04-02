@@ -13,7 +13,7 @@ public class TextUtilities {
     public static final MutableText GENERAL_PREFIX = Text.literal(">");
     public static Style WARNING = Style.EMPTY.withColor(Formatting.RED);
 
-    static public MutableText concatenate(MutableText... texts)
+    static public MutableText concatenate(Text... texts)
     {
         var result = Text.empty();
         for(var text : texts)

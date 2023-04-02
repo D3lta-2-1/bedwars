@@ -91,7 +91,7 @@ public class Forge {
         for(var item : itemSpawnData.keySet())
         {
             lastSpawnTime.put(item, concurrentTime);
-            this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getStack(item, itemSpawnData.get(item).splittable())));
+            this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getStack(item, itemSpawnData.get(item).splittable()),0,0,0));
         }
     }
 
@@ -159,15 +159,15 @@ public class Forge {
 
     private ActionResult onPickupItem(ServerPlayerEntity player, ItemEntity entity, ItemStack stack)
     {
-        var forgeBox = bounds.asBox();
-        //check if the item was picked up in this forge
-        if(!player.getBoundingBox().intersects(forgeBox)) return ActionResult.PASS;
         if(!stack.hasNbt()) return ActionResult.PASS;
         //remove the splittable_tag
         var nbt = stack.getNbt();
         assert nbt != null;
         if(!nbt.contains(SPLITTABLE_KEY) || !nbt.getBoolean(SPLITTABLE_KEY) ) return ActionResult.PASS;
-        stack.removeSubNbt(SPLITTABLE_KEY);
+        stack.setNbt(null);
+        var forgeBox = bounds.asBox();
+        //check if the item was picked up in this forge
+        if(!player.getBoundingBox().intersects(forgeBox)) return ActionResult.PASS;
         //get teamMates
         var team = teamManager.teamFor(player);
         if(team == null) return ActionResult.PASS;
