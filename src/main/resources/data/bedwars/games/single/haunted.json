@@ -1,6 +1,6 @@
 {
   "type": "bedwars:bedwars",
-  "map": { "id": "bedwars:haunted"},
+  "map": "bedwars:haunted",
   "generator_types" :
   [
     {

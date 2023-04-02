@@ -1,6 +1,6 @@
 {
   "type": "bedwars:bedwars",
-  "map": { "id": "bedwars:amazon"},
+  "map": "bedwars:amazon",
   "generator_types" :
   [
     {
