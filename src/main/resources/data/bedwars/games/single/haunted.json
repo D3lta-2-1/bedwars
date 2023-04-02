@@ -1,0 +1,53 @@
+{
+  "type": "bedwars:bedwars",
+  "map": { "id": "bedwars:haunted"},
+  "generator_types" :
+  [
+    {
+     "region_name" : "emerald_generator",
+      "item" : "minecraft:emerald",
+      "rgb_color" : { "red" : 0, "green" : 255, "blue" : 0},
+      "display_block" : "minecraft:emerald_block",
+      "time_to_generate_tiers" : [1200, 600, 300]
+    },
+    {
+      "region_name" : "diamond_generator",
+      "item" : "minecraft:diamond",
+      "rgb_color" : { "red" : 0, "green" : 255, "blue" : 255},
+      "display_block" : "minecraft:diamond_block",
+      "time_to_generate_tiers" : [1200, 600, 300]
+    }
+  ],
+  "game_events" :
+  [
+    {
+        "type" : "bedwars:change_generator_tier",
+        "time" : 7200,
+        "region_name" : "diamond_generator",
+        "tier" : 1
+    },
+    {
+       "type" : "bedwars:change_generator_tier",
+       "time" : 7200,
+       "region_name" : "emerald_generator",
+       "tier" : 1
+    },
+    {
+      "type" : "bedwars:change_generator_tier",
+      "time" : 7200,
+      "region_name" : "diamond_generator",
+      "tier" : 2
+    },
+    {
+      "type" : "bedwars:change_generator_tier",
+      "time" : 7200,
+      "region_name" : "emerald_generator",
+      "tier" : 2
+    }
+  ],
+  "category_config" : "bedwars:single",
+  "entries_config" : "bedwars:entries",
+  "void_high" : 0,
+  "high_limit" : 70,
+  "down_limit" : 40
+}

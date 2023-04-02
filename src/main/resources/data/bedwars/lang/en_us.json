@@ -77,5 +77,7 @@
   "generator.bedwars.seconds" : " seconds",
   "generator.bedwars.0" : "I",
   "generator.bedwars.1" : "II",
-  "generator.bedwars.2" : "III"
+  "generator.bedwars.2" : "III",
+
+  "events.bedwars.in" : " in "
 }

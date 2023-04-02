@@ -36,6 +36,15 @@
       ]
     },
     {
+      "name" : "tools",
+      "icon" : "minecraft:stone_pickaxe",
+      "entries" : [
+        "bedwars:shears",
+        "bedwars:pickaxe",
+        "bedwars:axe"
+      ]
+    },
+    {
       "name" : "bows",
       "icon" : "minecraft:bow",
       "entries" : [
@@ -46,12 +55,12 @@
       ]
     },
     {
-      "name" : "tools",
-      "icon" : "minecraft:stone_pickaxe",
+      "name" : "potions",
+      "icon" : "minecraft:brewing_stand",
       "entries" : [
-        "bedwars:shears",
-        "bedwars:pickaxe",
-        "bedwars:axe"
+        "bedwars:jump_boost",
+        "bedwars:speed",
+        "bedwars:invisibility"
       ]
     },
     {
@@ -63,15 +72,6 @@
         "bedwars:launch_pad",
         "bedwars:fire_ball",
         "bedwars:ender_pearl"
-      ]
-    },
-    {
-      "name" : "potions",
-      "icon" : "minecraft:brewing_stand",
-      "entries" : [
-        "bedwars:jump_boost",
-        "bedwars:speed",
-        "bedwars:invisibility"
       ]
     }
   ]
