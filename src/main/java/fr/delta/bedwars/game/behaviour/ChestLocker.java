@@ -1,6 +1,6 @@
 package fr.delta.bedwars.game.behaviour;
 
-import fr.delta.bedwars.game.component.TeamComponents;
+import fr.delta.bedwars.game.teamComponent.TeamComponents;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
