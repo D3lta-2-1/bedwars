@@ -28,21 +28,25 @@ public class GeneratorBuilder {
                     Registries.ITEM.getCodec().fieldOf("item").forGetter(GeneratorBuilder::getItem),
                     RGB_CODEC.fieldOf("rgb_color").forGetter(GeneratorBuilder::getRgbColor),
                     Codec.INT.listOf().fieldOf("time_to_generate_tiers").forGetter(GeneratorBuilder::getTimeToGenerateTierList),
-                    Registries.BLOCK.getCodec().fieldOf("display_block").forGetter(GeneratorBuilder::getDisplayBlock)
+                    Registries.BLOCK.getCodec().fieldOf("display_block").forGetter(GeneratorBuilder::getDisplayBlock),
+                    Codec.INT.optionalFieldOf("max_items", 4).forGetter(GeneratorBuilder::getMaxItems)
             ).apply(instance, GeneratorBuilder::new)
     );
     private final String internalId;
     private final Item item;
     private final List<Integer> timeToGenerateTierList;
+
     private final Block displayBlock;
     private final int rgbColor;
+    private final int maxItems;
 
-    public GeneratorBuilder(String name, Item item, int rgbColor, List<Integer> timeToGenerateTierList, Block displayBlock) {
+    public GeneratorBuilder(String name, Item item, int rgbColor, List<Integer> timeToGenerateTierList, Block displayBlock, int maxItems) {
         this.internalId = name;
         this.item = item;
         this.rgbColor = rgbColor;
         this.timeToGenerateTierList = timeToGenerateTierList;
         this.displayBlock = displayBlock;
+        this.maxItems = maxItems;
     }
 
     public String getInternalId() {
@@ -64,8 +68,11 @@ public class GeneratorBuilder {
     public int getRgbColor() {
         return rgbColor;
     }
+    public int getMaxItems() {
+        return maxItems;
+    }
 
     public ResourceGenerator createGenerator(BlockBounds bounds, World world, ClaimManager claimManager, GameActivity activity) {
-        return new ResourceGenerator(bounds, this.item, rgbColor, this.displayBlock, world, this.timeToGenerateTierList, claimManager, activity);
+        return new ResourceGenerator(bounds, this.item, rgbColor, this.displayBlock, world, this.timeToGenerateTierList, claimManager, maxItems, activity);
     }
 }

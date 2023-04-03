@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
@@ -26,22 +27,25 @@ import java.util.List;
 
 public class ResourceGenerator {
 
+    private final BlockBounds bounds;
     private final Vec3d pos;
-
     private final List<Integer> timeToGenerateTierList;
-    int currentTier = 0;
+    int currentTier = 1;
     long lastSpawnItemTime;
     private final Item spawnedItem;
     private final World world;
     private final BlockDisplayElement blockElement;
+    private final int maxItems;
     private final TextDisplayElement typeText;
     private final TextDisplayElement countText;
     private final TextDisplayElement tierText;
     private final SinusAnimation rotationAnimation;
     private final SinusAnimation YAnimation;
     private ElementHolder holder = null;
-    public ResourceGenerator(BlockBounds bounds, Item spawnedItem, int rgbColor, Block display, World world, List<Integer> timeToGenerateTierList, ClaimManager claimManager, GameActivity activity)
+
+    public ResourceGenerator(BlockBounds bounds, Item spawnedItem, int rgbColor, Block display, World world, List<Integer> timeToGenerateTierList, ClaimManager claimManager, int maxItems, GameActivity activity)
     {
+        this.bounds = bounds;
         this.pos = bounds.centerBottom().add(0, 3.5,0);
         this.spawnedItem = spawnedItem;
         this.world = world;
@@ -53,6 +57,7 @@ public class ResourceGenerator {
         this.countText = createText(getCountText(lastSpawnItemTime + timeToGenerateTierList.get(currentTier) - world.getTime()), 1.25f);
         this.rotationAnimation = new SinusAnimation(Math.PI * 2, 300, world.getTime());
         this.YAnimation = new SinusAnimation(0.125, 300, world.getTime());
+        this.maxItems = maxItems;
         claimManager.addRegion(bounds);
         activity.listen(GameActivityEvents.TICK, this::tick);
     }
@@ -60,7 +65,7 @@ public class ResourceGenerator {
     private TextDisplayElement createText(Text text, float y) {
         var textElement = new TextDisplayElement(text);
         textElement.setBillboardMode(DisplayEntity.BillboardMode.CENTER);
-        textElement.setOffset(new Vec3d(0, y, 0));
+        textElement.setTranslation(new Vector3f(0, y, 0));
         return textElement;
     }
 
@@ -81,7 +86,7 @@ public class ResourceGenerator {
     }
 
     public void setTier(int tier) {
-        if(tier < timeToGenerateTierList.size() && tier >= 0)
+        if(tier - 1< timeToGenerateTierList.size() && tier  >= 1)
         {
             currentTier = tier;
             tierText.setText(getTierText());
@@ -100,11 +105,10 @@ public class ResourceGenerator {
             holder.addElement(tierText);
             holder.addElement(typeText);
             holder.addElement(countText);
-            var blockPos = new BlockPos(asInteger(pos.getX()), asInteger(pos.getY()), asInteger(pos.getZ()));
-            new ChunkAttachment(this.holder, world.getWorldChunk(blockPos), pos, true);
+            new ChunkAttachment(this.holder, world.getWorldChunk(asBlockPos(pos)), pos, true);
         }
         // update the text counter
-        var timeBeforeNextSpawn = lastSpawnItemTime + timeToGenerateTierList.get(currentTier) - world.getTime();
+        var timeBeforeNextSpawn = lastSpawnItemTime + timeToGenerateTierList.get(currentTier - 1) - world.getTime();
         if(timeBeforeNextSpawn % 20 == 0)
         {
             countText.setText(getCountText(timeBeforeNextSpawn));
@@ -126,14 +130,30 @@ public class ResourceGenerator {
 
     private void spawnItem()
     {
+        this.lastSpawnItemTime = this.world.getTime();
+        if(isFullOf(this.spawnedItem, maxItems))
+            return;
         var itemStack = new ItemStack(this.spawnedItem);
         var itemEntity = new ItemEntity(this.world, this.pos.getX(), this.pos.getY(), this.pos.getZ(), itemStack, 0,0,0);
         this.world.spawnEntity(itemEntity);
-        this.lastSpawnItemTime = this.world.getTime();
     }
 
-    private int asInteger(double value) {
-        return (int) Math.floor(value);
+    private boolean isFullOf(Item item, int maxCount)
+    {
+        int count = 0;
+        var items = world.getEntitiesByClass(ItemEntity.class, bounds.asBox(), (itemEntity) -> {
+            var stack = itemEntity.getStack();
+            return stack.getItem().equals(item);
+        });
+        for(var itemEntity :items)
+        {
+            count += itemEntity.getStack().getCount();
+        }
+        return count >= maxCount;
+    }
+
+    private static BlockPos asBlockPos(Vec3d vec) {
+        return new BlockPos((int)vec.getX(), (int)vec.getY(), (int)vec.getZ());
     }
 
     public record SinusAnimation(double amplitude, int fullPeriodTime, long startTime) {

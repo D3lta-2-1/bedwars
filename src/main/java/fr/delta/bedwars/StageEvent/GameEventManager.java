@@ -36,11 +36,10 @@ public class GameEventManager {
     }
 
     public Text getStageStatue(BedwarsActive game) {
-        var time = stageBeginTime + events.peek().getTimeToWait()  - world.getTime();
         return events.isEmpty() ? Text.empty() : TextUtilities.concatenate(
                 events.peek().getStageName(game),
                 Text.translatable("events.bedwars.in"),
-                getTime(time));
+                getTime(stageBeginTime + events.peek().getTimeToWait()  - world.getTime()));
     }
 
     private Text getTime(long time) {
