@@ -1,6 +1,7 @@
 {
   "type": "bedwars:bedwars",
-  "map": "bedwars:lighthouse",
+  "map": "bedwars:sakura",
+  "team_size" : 4,
   "generator_types" :
   [
     {
@@ -46,8 +47,8 @@
     }
   ],
   "category_config" : "bedwars:default_categories",
-  "entries_config" : "bedwars:single_duos_entries",
-  "void_high" : -10,
-  "high_limit" : 50,
-  "down_limit" : 15
+  "entries_config" : "bedwars:trios_fours_entries",
+  "void_high" : 30,
+  "high_limit" : 85,
+  "down_limit" : 55
 }

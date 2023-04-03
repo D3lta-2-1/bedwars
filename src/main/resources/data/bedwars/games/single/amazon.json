@@ -45,8 +45,8 @@
       "tier" : 2
     }
   ],
-  "category_config" : "bedwars:single",
-  "entries_config" : "bedwars:entries",
+  "category_config" : "bedwars:default_categories",
+  "entries_config" : "bedwars:single_duos_entries",
   "void_high" : 0,
   "high_limit" : 70,
   "down_limit" : 40
