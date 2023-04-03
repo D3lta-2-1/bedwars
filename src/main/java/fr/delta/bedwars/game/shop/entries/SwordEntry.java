@@ -38,13 +38,13 @@ public class SwordEntry extends ShopEntry {
         return cost;
     }
     @Override
-    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player)
+    public MutableText getName(BedwarsActive bedwarsGame, ServerPlayerEntity player)
     {
         return Text.translatable(item.getTranslationKey());
     }
 
     @Override
-    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player)
+    public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player)
     {
         return item;
     }
