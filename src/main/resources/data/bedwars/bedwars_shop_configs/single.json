@@ -1,5 +1,5 @@
 {
-  "categories" : [
+  "item_shop_categories" : [
     {
       "name" : "blocks",
       "icon" : "minecraft:orange_terracotta",
@@ -13,7 +13,8 @@
         "bedwars:ladder",
         "bedwars:scaffolding",
         "bedwars:slime_block",
-        "bedwars:honey_block"
+        "bedwars:honey_block",
+        "bedwars:ice"
       ]
     },
     {
@@ -74,5 +75,10 @@
         "bedwars:ender_pearl"
       ]
     }
+  ],
+  "team_upgrade" : [
+    "bedwars:forge_upgrade"
+  ],
+  "traps" : [
   ]
 }

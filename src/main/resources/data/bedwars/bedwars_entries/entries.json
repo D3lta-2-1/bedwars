@@ -62,7 +62,7 @@
       "type" : "bedwars:sword_entry",
       "id" : "bedwars:diamond_sword",
       "item" : "not_a_sword:diamond_sword",
-      "cost" : { "item" : "minecraft:emerald", "count": 3 }
+      "cost" : { "item" : "minecraft:emerald", "count": 4 }
     },
     {
       "type" : "bedwars:simple_entry",
@@ -109,6 +109,13 @@
     },
     {
       "type" : "bedwars:simple_entry",
+      "id" : "bedwars:ice",
+      "item" : "minecraft:packed_ice",
+      "cost" : { "item" : "minecraft:iron_ingot", "count": 4 },
+      "count" : 4
+    },
+    {
+      "type" : "bedwars:simple_entry",
       "id" : "bedwars:slime_block",
       "item" : "minecraft:slime_block",
       "cost" : { "item" : "minecraft:iron_ingot", "count": 4 },
@@ -118,7 +125,7 @@
       "type" : "bedwars:simple_entry",
       "id" : "bedwars:launch_pad",
       "item" : "bedwars:launch_pad",
-      "cost" : { "item" : "minecraft:iron_ingot", "count": 128 },
+      "cost" : { "item" : "minecraft:emerald", "count": 4 },
       "count" : 1
     },
     {
@@ -255,7 +262,7 @@
     {
       "type" : "bedwars:potion_entry",
       "id" : "bedwars:jump_boost",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 4 },
+      "cost" : { "item" : "minecraft:emerald", "count": 1 },
       "effects" : [
         { "effect" : "minecraft:jump_boost", "duration" : 45, "amplifier" : 5 }
       ]
@@ -263,7 +270,7 @@
     {
       "type" : "bedwars:potion_entry",
       "id" : "bedwars:speed",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 4 },
+      "cost" : { "item" : "minecraft:emerald", "count": 1 },
       "effects" : [
         { "effect" : "minecraft:speed", "duration" : 45, "amplifier" : 2 }
       ]
@@ -271,7 +278,7 @@
     {
       "type" : "bedwars:potion_entry",
       "id" : "bedwars:invisibility",
-      "cost" : { "item" : "minecraft:gold_ingot", "count": 4 },
+      "cost" : { "item" : "minecraft:emerald", "count": 2 },
       "effects" : [
         { "effect" : "minecraft:invisibility", "duration" : 30 }
       ]

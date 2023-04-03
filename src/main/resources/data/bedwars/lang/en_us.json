@@ -57,6 +57,7 @@
   "bed.bedwars.personalBreakContent" : "Your bed got memed by ",
 
   "itemShop.bedwars.title" : "Item Shop",
+  "teamShop.bedwars.title" : "Team Upgrade Shop",
   "shop.bedwars.youPurchase" : "you purchase ",
   "shop.bedwars.itemShop" : "Item Shop",
   "shop.bedwars.wool" : "Wool",
@@ -66,6 +67,12 @@
   "shop.bedwars.ironArmor" : "Iron Armor",
   "shop.bedwars.diamondArmor" : "Diamond Armor",
   "shop.bedwars.potion" : "potion",
+  "shop.bedwars.forge" : "forge ",
+  "shop.bedwars.forgeMaxed" : "forge Maxed",
+  "shop.bedwars.ironForge" : "Iron Forge",
+  "shop.bedwars.goldenForge" : "Golden Forge",
+  "shop.bedwars.emerald" : "Emerald Forge",
+  "shop.bedwars.moltenForge" : "Molten Forge",
 
   "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one",
 
@@ -75,9 +82,9 @@
   "generator.bedwars.tier" : "Tier ",
   "generator.bedwars.spawnIn" : "spawn in ",
   "generator.bedwars.seconds" : " seconds",
-  "generator.bedwars.0" : "I",
-  "generator.bedwars.1" : "II",
-  "generator.bedwars.2" : "III",
+  "generator.bedwars.1" : "I",
+  "generator.bedwars.2" : "II",
+  "generator.bedwars.3" : "III",
 
   "events.bedwars.in" : " in "
 }

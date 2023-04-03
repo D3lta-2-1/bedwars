@@ -24,25 +24,25 @@
         "type" : "bedwars:change_generator_tier",
         "time" : 7200,
         "region_name" : "diamond_generator",
-        "tier" : 1
+        "tier" : 2
     },
     {
        "type" : "bedwars:change_generator_tier",
        "time" : 7200,
        "region_name" : "emerald_generator",
-       "tier" : 1
+       "tier" : 2
     },
     {
       "type" : "bedwars:change_generator_tier",
       "time" : 7200,
       "region_name" : "diamond_generator",
-      "tier" : 2
+      "tier" : 3
     },
     {
       "type" : "bedwars:change_generator_tier",
       "time" : 7200,
       "region_name" : "emerald_generator",
-      "tier" : 2
+      "tier" : 3
     }
   ],
   "category_config" : "bedwars:single",
