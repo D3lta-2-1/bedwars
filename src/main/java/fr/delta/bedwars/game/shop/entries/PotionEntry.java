@@ -56,7 +56,7 @@ public class PotionEntry extends ShopEntry
     }
 
     @Override
-    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public MutableText getName(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         var text = Text.empty();
         for(var effect : effects)
         {
@@ -67,10 +67,10 @@ public class PotionEntry extends ShopEntry
         return text;
     }
 
-    public Cost getCost(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return cost; }
+    public Cost getCost(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return cost; }
 
     @Override
-    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return Items.POTION;
     }
 

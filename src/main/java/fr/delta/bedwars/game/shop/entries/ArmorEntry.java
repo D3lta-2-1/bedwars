@@ -47,7 +47,7 @@ public class ArmorEntry extends ShopEntry {
     }
 
     @Override
-    public Cost getCost(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public Cost getCost(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return cost;
     }
 
@@ -57,7 +57,7 @@ public class ArmorEntry extends ShopEntry {
     }
 
     @Override
-    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return icon;
     }
 

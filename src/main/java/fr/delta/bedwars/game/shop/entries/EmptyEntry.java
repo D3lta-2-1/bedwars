@@ -12,19 +12,18 @@ import net.minecraft.util.Formatting;
 public class EmptyEntry extends ShopEntry{
     public static EmptyEntry INSTANCE = new EmptyEntry();
 
-
     @Override
-    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public MutableText getName(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return Text.literal("Empty Entry").setStyle(Style.EMPTY.withFormatting(Formatting.RED));
     }
 
     @Override
-    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return Items.BARRIER;
     }
 
     @Override
-    public boolean hasGlint(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public boolean hasGlint(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return true;
     }
 
@@ -34,7 +33,7 @@ public class EmptyEntry extends ShopEntry{
     }
 
     @Override
-    public Cost getCost(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public Cost getCost(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return null;
     }
 }

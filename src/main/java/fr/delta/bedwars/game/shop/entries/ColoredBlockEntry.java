@@ -131,7 +131,7 @@ public class ColoredBlockEntry extends ShopEntry  {
     }
 
     @Override
-    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player)
+    public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player)
     {
         return display;
     }
