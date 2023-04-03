@@ -18,12 +18,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBounds waiting, List<RawTeamData> teamData, List<BlockBounds> ShopKeepers, Multimap<String, BlockBounds> generatorsRegions) {
+public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBounds waiting, List<RawTeamData> teamData, List<BlockBounds> itemShopKeepers, List<BlockBounds> teamShopKeepers, Multimap<String, BlockBounds> generatorsRegions) {
     public static BedwarsMap loadMap(BedwarsConfig config, MinecraftServer server) throws GameOpenException {
         //load map
         MapTemplate template;
         try {
-            template = MapTemplateSerializer.loadFromResource(server, config.mapConfig().id());
+            template = MapTemplateSerializer.loadFromResource(server, config.mapConfig());
         } catch (IOException e) {
             throw new GameOpenException(Text.literal("Failed to load map"));
         }
@@ -42,8 +42,9 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
             if(spawn == null || bed == null || forge == null) continue;
             dataList.add(new RawTeamData(color, spawn, bed, forge));
         }
-        //get shopkeepers
-        var shopkeepers = template.getMetadata().getRegionBounds(Constants.ITEM_SHOPKEEPER).toList();
+        //get item_shopkeepers
+        var itemShopkeepers = template.getMetadata().getRegionBounds(Constants.ITEM_SHOPKEEPER).toList();
+        var teamShopkeepers = template.getMetadata().getRegionBounds(Constants.TEAM_SHOPKEEPER).toList();
         //check if correctly load the map
         if(dataList.isEmpty())
             throw new GameOpenException(Text.literal("no team spawn found"));
@@ -63,7 +64,7 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
             }
         }
 
-        return new BedwarsMap(template, server, waitingSpawn, dataList, shopkeepers, generatorsRegions);
+        return new BedwarsMap(template, server, waitingSpawn, dataList, itemShopkeepers, teamShopkeepers, generatorsRegions);
     }
 
     private ChunkGenerator asGenerator() {
