@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import fr.delta.bedwars.BedwarsConfig;
 import fr.delta.bedwars.Constants;
+import fr.delta.bedwars.data.AdditionalDataLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
@@ -23,7 +24,7 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
         //load map
         MapTemplate template;
         try {
-            template = MapTemplateSerializer.loadFromResource(server, config.mapConfig());
+            template = MapTemplateSerializer.loadFromResource(server, config.mapId());
         } catch (IOException e) {
             throw new GameOpenException(Text.literal("Failed to load map"));
         }
@@ -52,10 +53,12 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
             throw new GameOpenException(Text.literal("no waiting spawn found"));
 
         //get generators
-        var generatorTypeList = config.generatorTypeList();
+        var generatorTypeList = config.generatorTypeIdList();
         Multimap<String, BlockBounds> generatorsRegions = ArrayListMultimap.create();
-        for(var generatorType : generatorTypeList)
+        for(var generatorTypeId : generatorTypeList)
         {
+            var generatorType = AdditionalDataLoader.GENERATOR_TYPE_REGISTRY.get(generatorTypeId);
+            if(generatorType == null) continue;
             var generatorRegions = template.getMetadata().getRegionBounds(generatorType.getInternalId().toLowerCase()).toList();
             if(generatorRegions.isEmpty()) continue;
             for(var generatorRegion : generatorRegions)

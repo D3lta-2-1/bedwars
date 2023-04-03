@@ -6,7 +6,7 @@ import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import fr.delta.bedwars.custom.blocks.LaunchPadBlockEntity;
 import fr.delta.bedwars.custom.blocks.Launchpad;
 import fr.delta.bedwars.game.BedwarsWaiting;
-import fr.delta.bedwars.game.shop.data.ShopConfigs;
+import fr.delta.bedwars.data.AdditionalDataLoader;
 import fr.delta.bedwars.custom.items.FireBall;
 import fr.delta.bedwars.game.shop.npc.ShopKeeperEntity;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -55,6 +55,6 @@ public class Bedwars implements DedicatedServerModInitializer {
         //register game type
         GameType.register(new Identifier(ID, "bedwars"), BedwarsConfig.CODEC, BedwarsWaiting::open);
         //load all shops categories
-        ShopConfigs.register();
+        AdditionalDataLoader.register();
     }
 }

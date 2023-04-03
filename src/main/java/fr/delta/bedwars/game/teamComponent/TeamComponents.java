@@ -1,6 +1,7 @@
 package fr.delta.bedwars.game.teamComponent;
 
 import fr.delta.bedwars.BedwarsConfig;
+import fr.delta.bedwars.data.AdditionalDataLoader;
 import fr.delta.bedwars.game.behaviour.ClaimManager;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import net.minecraft.server.world.ServerWorld;
@@ -41,7 +42,10 @@ public class TeamComponents
                 if (rawData.color.equals(color)) {
                     components.bed = new Bed(rawData.bedLocation, gameMap, team, teamManager, activity);
                     components.spawn = new Spawn(rawData.spawnLocation, claimManager, world, rawData.bedLocation.center(),activity);
-                    components.forge = new Forge(rawData.forge, claimManager, config.forgeConfig(), world, teamManager ,activity);
+                    var forgeConfig = AdditionalDataLoader.FORGE_CONFIG_REGISTRY.get(config.forgeConfigId());
+                    if(forgeConfig == null)
+                        throw new NullPointerException(config.forgeConfigId().toString() + " forge does not exist");
+                    components.forge = new Forge(rawData.forge, claimManager, forgeConfig, world, teamManager ,activity);
                 }
             }
             return components;

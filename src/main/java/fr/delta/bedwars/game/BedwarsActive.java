@@ -10,7 +10,7 @@ import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.player.InventoryManager;
 import fr.delta.bedwars.game.resourceGenerator.ResourceGenerator;
 import fr.delta.bedwars.game.shop.ShopMenu.TeamShopMenu;
-import fr.delta.bedwars.game.shop.data.ShopConfigs;
+import fr.delta.bedwars.data.AdditionalDataLoader;
 import fr.delta.bedwars.game.shop.npc.ShopKeeper;
 import fr.delta.bedwars.game.ui.FeedbackMessager;
 import fr.delta.bedwars.TextUtilities;
@@ -135,11 +135,11 @@ public class BedwarsActive {
 
     private void addShopkeepers()
     {
-        var entries = ShopConfigs.ENTRIES_REGISTRY.get(config.shopEntriesId());
-        if(entries == null) throw new NullPointerException("entries is null");
-        ShopConfigs.initialize(entries, this);
-        var categories = ShopConfigs.CATEGORIES_REGISTRY.get(config.shopCategoriesId());
-        if(categories == null) throw new NullPointerException("categories is null");
+        var entries = AdditionalDataLoader.SHOP_ENTRIES_REGISTRY.get(config.shopEntriesId());
+        if(entries == null) throw new NullPointerException(config.shopEntriesId().toString() + " entries does not exist");
+        AdditionalDataLoader.initialize(entries, this);
+        var categories = AdditionalDataLoader.SHOP_CATEGORIES_REGISTRY.get(config.shopCategoriesId());
+        if(categories == null) throw new NullPointerException(config.shopCategoriesId().toString() + " category does not exist");
 
         var itemShopMenu = new ItemShopMenu(this, entries, categories.ItemShopCategories(), activity);
         for(var shopkeeper : gameMap.itemShopKeepers())
@@ -157,8 +157,10 @@ public class BedwarsActive {
     private Multimap<String, ResourceGenerator> addMiddleGenerator()
     {
         Multimap<String, ResourceGenerator> middleGeneratorsMap = ArrayListMultimap.create();
-        for(var generatorType : config.generatorTypeList())
+        for(var generatorTypeId : config.generatorTypeIdList())
         {
+            var generatorType = AdditionalDataLoader.GENERATOR_TYPE_REGISTRY.get(generatorTypeId);
+            if(generatorType == null) throw new NullPointerException(generatorTypeId.toString() + "generatorType is null");
             for(var bounds : gameMap.generatorsRegions().get(generatorType.getInternalId()))
             {
                 middleGeneratorsMap.put(generatorType.getInternalId(), generatorType.createGenerator(bounds, world, claim, activity));

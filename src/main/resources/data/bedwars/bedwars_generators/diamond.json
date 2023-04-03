@@ -1,0 +1,7 @@
+{
+  "region_name" : "diamond_generator",
+  "item" : "minecraft:diamond",
+  "rgb_color" : { "red" : 0, "green" : 255, "blue" : 255},
+  "display_block" : "minecraft:diamond_block",
+  "time_to_generate_tiers" : [1200, 600, 300]
+}

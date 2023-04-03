@@ -1,0 +1,7 @@
+{
+  "region_name" : "emerald_generator",
+  "item" : "minecraft:emerald",
+  "rgb_color" : { "red" : 0, "green" : 255, "blue" : 0},
+  "display_block" : "minecraft:emerald_block",
+  "time_to_generate_tiers" : [1200, 600, 300]
+}

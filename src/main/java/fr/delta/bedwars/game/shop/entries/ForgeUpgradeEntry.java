@@ -25,9 +25,13 @@ public class ForgeUpgradeEntry extends ShopEntry {
     @Override
     public MutableText getName(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         var forge = bedwarsGame.getTeamComponentsFor(player).forge;
-        if(forge.isMaxed()) return Text.translatable("shop.bedwars.forgeMaxed").formatted(Formatting.RED);
+
+        if(forge.isMaxed()){
+            var nameKey = forge.getTier().nameKey();
+            return (!nameKey.isEmpty() ? Text.translatable(nameKey) : super.getName(bedwarsGame, player)).formatted(Formatting.RED);
+        }
         var nameKey = forge.getNextTier().nameKey();
-        return nameKey != null ? Text.translatable(nameKey) : super.getName(bedwarsGame, player);
+        return !nameKey.isEmpty() ? Text.translatable(nameKey) : super.getName(bedwarsGame, player);
     }
 
     @Override
@@ -38,7 +42,7 @@ public class ForgeUpgradeEntry extends ShopEntry {
     @Override
     public ShopEntry.BuyOffer canBeBough(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         var forge = bedwarsGame.getTeamComponentsFor(player).forge;
-        return new ShopEntry.BuyOffer(!forge.isMaxed(), Text.empty());
+        return new ShopEntry.BuyOffer(!forge.isMaxed(), Text.translatable("bedwars.shop.forge.maxed").formatted(Formatting.RED));
     }
 
     @Override
@@ -53,8 +57,8 @@ public class ForgeUpgradeEntry extends ShopEntry {
         var tier = forge.getNextTier();
         if(tier == null) return null;
         var key = tier.descriptionKey();
-        if(key == null) return null;
-        return List.of(Text.translatable(key));
+        if(key.isEmpty()) return null;
+        return List.of(Text.translatable(key).formatted(Formatting.AQUA));
     }
 
     @Override

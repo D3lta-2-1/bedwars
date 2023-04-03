@@ -67,12 +67,16 @@
   "shop.bedwars.ironArmor" : "Iron Armor",
   "shop.bedwars.diamondArmor" : "Diamond Armor",
   "shop.bedwars.potion" : "potion",
-  "shop.bedwars.forge" : "forge ",
+  "shop.bedwars.forge" : "Forge ",
   "shop.bedwars.forgeMaxed" : "forge Maxed",
   "shop.bedwars.ironForge" : "Iron Forge",
   "shop.bedwars.goldenForge" : "Golden Forge",
-  "shop.bedwars.emerald" : "Emerald Forge",
+  "shop.bedwars.emeraldForge" : "Emerald Forge",
   "shop.bedwars.moltenForge" : "Molten Forge",
+  "shop.bedwars.ironForgeLore" : "spawns 50% more resources",
+  "shop.bedwars.goldenForgeLore" : "spawns 100% more resources",
+  "shop.bedwars.emeraldForgeLore" : "spawns emeralds",
+  "shop.bedwars.moltenForgeLore" : "spawns 200% more resources",
 
   "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one",
 

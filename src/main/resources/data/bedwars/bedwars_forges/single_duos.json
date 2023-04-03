@@ -1,0 +1,46 @@
+[
+  {
+    "items_to_spawn" : {
+      "minecraft:iron_ingot" : {"spawn_time" : 100, "max_in_forge" : 64},
+      "minecraft:gold_ingot" : {"spawn_time" : 200, "max_in_forge" : 16}
+    }
+  },
+  {
+    "cost" : {"item" :"minecraft:diamond", "count" : 2},
+    "name_key" : "shop.bedwars.ironForge",
+    "description_key" : "shop.bedwars.ironForgeLore",
+    "items_to_spawn" : {
+      "minecraft:iron_ingot" : {"spawn_time" : 65, "max_in_forge" : 96},
+      "minecraft:gold_ingot" : {"spawn_time" : 134, "max_in_forge" : 20}
+    }
+  },
+  {
+    "cost" : {"item" :"minecraft:diamond", "count" : 4},
+    "name_key" : "shop.bedwars.goldenForge",
+    "description_key" : "shop.bedwars.goldenForgeLore",
+    "items_to_spawn" : {
+      "minecraft:iron_ingot" : {"spawn_time" : 50, "max_in_forge" : 128},
+      "minecraft:gold_ingot" : {"spawn_time" : 100, "max_in_forge" : 24}
+    }
+  },
+  {
+    "cost" : {"item" :"minecraft:diamond", "count" : 6},
+    "name_key" : "shop.bedwars.emeraldForge",
+    "description_key" : "shop.bedwars.emeraldForgeLore",
+    "items_to_spawn" : {
+      "minecraft:iron_ingot" : {"spawn_time" : 50, "max_in_forge" : 128},
+      "minecraft:gold_ingot" : {"spawn_time" : 100, "max_in_forge" : 24},
+      "minecraft:emerald" : {"spawn_time" : 1200, "max_in_forge" : 4, "splittable" : false}
+    }
+  },
+  {
+    "cost" : {"item" :"minecraft:diamond", "count" : 8},
+    "name_key" : "shop.bedwars.emeraldForge",
+    "description_key" : "shop.bedwars.emeraldForgeLore",
+    "items_to_spawn" : {
+      "minecraft:iron_ingot" : {"spawn_time" : 34, "max_in_forge" : 128},
+      "minecraft:gold_ingot" : {"spawn_time" : 97, "max_in_forge" : 32},
+      "minecraft:emerald" : {"spawn_time" : 600, "max_in_forge" : 4, "splittable" : false}
+    }
+  }
+]

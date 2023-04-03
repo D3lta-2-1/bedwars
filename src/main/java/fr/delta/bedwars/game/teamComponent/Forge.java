@@ -29,8 +29,8 @@ public class Forge {
     public record SpawnData(int spawnTime, int maxInForge, boolean splittable)
     {
         public static final Codec<SpawnData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.INT.fieldOf("spawnTime").forGetter(SpawnData::spawnTime),
-                Codec.INT.fieldOf("maxInForge").forGetter(SpawnData::maxInForge),
+                Codec.INT.fieldOf("spawn_time").forGetter(SpawnData::spawnTime),
+                Codec.INT.optionalFieldOf("max_in_Forge", 64).forGetter(SpawnData::maxInForge),
                 Codec.BOOL.optionalFieldOf("splittable", true).forGetter(SpawnData::splittable)
         ).apply(instance, SpawnData::new));
     }
@@ -38,58 +38,14 @@ public class Forge {
     public record Tier(ShopEntry.Cost cost, String nameKey, String descriptionKey, Map<Item, SpawnData> itemsToSpawn)
     {
         public static final Codec<Tier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ShopEntry.Cost.CODEC.optionalFieldOf("cost", new ShopEntry.Cost(Items.DIAMOND, 4)).forGetter(Tier::cost),
-                Codec.STRING.optionalFieldOf("name_key", null).forGetter(Tier::descriptionKey),
-                Codec.STRING.optionalFieldOf("description_key", null).forGetter(Tier::descriptionKey),
+                ShopEntry.Cost.CODEC.optionalFieldOf("cost", new ShopEntry.Cost(Items.DIAMOND, 0)).forGetter(Tier::cost),
+                Codec.STRING.optionalFieldOf("name_key", "").forGetter(Tier::descriptionKey),
+                Codec.STRING.optionalFieldOf("description_key", "").forGetter(Tier::descriptionKey),
                 Codec.unboundedMap(Registries.ITEM.getCodec(), SpawnData.CODEC).fieldOf("items_to_spawn").forGetter(Tier::itemsToSpawn)
         ).apply(instance, Tier::new));
     }
 
-    static public List<Tier> defaulted()
-    {
-        return List.of(
-                new Tier(null,
-                        null,
-                        null,
-                        Map.of(
-                                Items.IRON_INGOT, new SpawnData(100, 64, true),
-                                Items.GOLD_INGOT, new SpawnData(200, 16, true)
-                )),
-                new Tier(new ShopEntry.Cost(Items.DIAMOND, 2),
-                        "shop.bedwars.ironForge",
-                        null,
-                        Map.of(
-                                Items.IRON_INGOT, new SpawnData(65, 96, true),
-                                Items.GOLD_INGOT, new SpawnData(134, 20, true)
-                )),
-                new Tier(new ShopEntry.Cost(Items.DIAMOND, 4),
-                        "shop.bedwars.goldenForge",
-                        null,
-                        Map.of(
-                                Items.IRON_INGOT, new SpawnData(50, 128, true),
-                                Items.GOLD_INGOT, new SpawnData(100, 24, true)
-                )),
-                new Tier(new ShopEntry.Cost(Items.DIAMOND, 8),
-                        null,
-                        "shop.bedwars.emerald",
-                        Map.of(
-                                Items.IRON_INGOT, new SpawnData(50, 128, true),
-                                Items.GOLD_INGOT, new SpawnData(100, 24, true),
-                                Items.EMERALD, new SpawnData(1200, 4, false)
-                )),
-                new Tier(new ShopEntry.Cost(Items.DIAMOND, 16),
-                        null,
-                        "shop.bedwars.moltenForge",
-                        Map.of(
-                                Items.IRON_INGOT, new SpawnData(40, 96, true),
-                                Items.GOLD_INGOT, new SpawnData(80, 32, true),
-                                Items.EMERALD, new SpawnData(600, 4, false)
-                        ))
-        );
-    }
-
-
-    public static final Codec<List<Tier>> CODEC = Codec.list(Tier.CODEC);
+    public static final Codec<List<Tier>> CODEC = Tier.CODEC.listOf();
     private static final String SPLITTABLE_KEY = "splittable";
     private final BlockBounds bounds;
     private final ServerWorld world;
