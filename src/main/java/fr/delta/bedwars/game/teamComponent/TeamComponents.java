@@ -1,4 +1,4 @@
-package fr.delta.bedwars.game.component;
+package fr.delta.bedwars.game.teamComponent;
 
 import fr.delta.bedwars.BedwarsConfig;
 import fr.delta.bedwars.game.behaviour.ClaimManager;
@@ -40,7 +40,7 @@ public class TeamComponents
             for (var rawData : gameMap.teamData()) {
                 if (rawData.color.equals(color)) {
                     components.bed = new Bed(rawData.bedLocation, gameMap, team, teamManager, activity);
-                    components.spawn = new Spawn(rawData.spawnLocation, claimManager, team, world, rawData.bedLocation.center(),activity);
+                    components.spawn = new Spawn(rawData.spawnLocation, claimManager, world, rawData.bedLocation.center(),activity);
                     components.forge = new Forge(rawData.forge, claimManager, config.forgeConfig(), world, teamManager ,activity);
                 }
             }

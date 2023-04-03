@@ -1,4 +1,4 @@
-package fr.delta.bedwars.game.component;
+package fr.delta.bedwars.game.teamComponent;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import fr.delta.bedwars.game.map.BedwarsMap;

@@ -8,10 +8,13 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public record ItemShopConfig(List<Category> categories) {
-    public static final Codec<ItemShopConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        Category.CODEC.listOf().fieldOf("categories").forGetter(ItemShopConfig::categories)
-            ).apply(instance, ItemShopConfig::new)
+public record ShopCategoriesConfig(List<Category> ItemShopCategories, List<Identifier> teamUpgrade, List<Identifier> traps)
+{
+    public static final Codec<ShopCategoriesConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Category.CODEC.listOf().fieldOf("item_shop_categories").forGetter(ShopCategoriesConfig::ItemShopCategories),
+            Identifier.CODEC.listOf().fieldOf("team_upgrade").forGetter(ShopCategoriesConfig::teamUpgrade),
+            Identifier.CODEC.listOf().fieldOf("traps").forGetter(ShopCategoriesConfig::traps)
+            ).apply(instance, ShopCategoriesConfig::new)
     );
 
     public record Category(String name ,Item icon, List<Identifier> entries)

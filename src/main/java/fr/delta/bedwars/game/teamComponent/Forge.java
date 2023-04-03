@@ -1,8 +1,9 @@
-package fr.delta.bedwars.game.component;
+package fr.delta.bedwars.game.teamComponent;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.behaviour.ClaimManager;
+import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -33,44 +34,72 @@ public class Forge {
                 Codec.BOOL.optionalFieldOf("splittable", true).forGetter(SpawnData::splittable)
         ).apply(instance, SpawnData::new));
     }
-    public record ForgeConfig (List<Map<Item, SpawnData>> tiers)
-    {
-        static public ForgeConfig defaulted()
-        {
-            return new ForgeConfig(
-                    List.of(Map.of(
-                            Items.IRON_INGOT, new SpawnData(100, 64, true),
-                            Items.GOLD_INGOT, new SpawnData(200, 16, true)
-                    ), Map.of(
-                            Items.IRON_INGOT, new SpawnData(65, 96, true),
-                            Items.GOLD_INGOT, new SpawnData(134, 20, true)
-                    ), Map.of(
-                            Items.IRON_INGOT, new SpawnData(50, 128, true),
-                            Items.GOLD_INGOT, new SpawnData(100, 24, true),
-                            Items.EMERALD, new SpawnData(300, 8, false)
-                    ), Map.of(
-                            Items.IRON_INGOT, new SpawnData(40, 96, true),
-                            Items.GOLD_INGOT, new SpawnData(50, 32, true),
-                            Items.EMERALD, new SpawnData(150, 8, false)
-                    )
-                )
-            );
-        }
 
-        public static final Codec<ForgeConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.list(Codec.unboundedMap(Registries.ITEM.getCodec(), SpawnData.CODEC)).fieldOf("tiers").forGetter(ForgeConfig::tiers)
-        ).apply(instance, ForgeConfig::new));
+    public record Tier(ShopEntry.Cost cost, String nameKey, String descriptionKey, Map<Item, SpawnData> itemsToSpawn)
+    {
+        public static final Codec<Tier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ShopEntry.Cost.CODEC.optionalFieldOf("cost", new ShopEntry.Cost(Items.DIAMOND, 4)).forGetter(Tier::cost),
+                Codec.STRING.optionalFieldOf("name_key", null).forGetter(Tier::descriptionKey),
+                Codec.STRING.optionalFieldOf("description_key", null).forGetter(Tier::descriptionKey),
+                Codec.unboundedMap(Registries.ITEM.getCodec(), SpawnData.CODEC).fieldOf("items_to_spawn").forGetter(Tier::itemsToSpawn)
+        ).apply(instance, Tier::new));
     }
+
+    static public List<Tier> defaulted()
+    {
+        return List.of(
+                new Tier(null,
+                        null,
+                        null,
+                        Map.of(
+                                Items.IRON_INGOT, new SpawnData(100, 64, true),
+                                Items.GOLD_INGOT, new SpawnData(200, 16, true)
+                )),
+                new Tier(new ShopEntry.Cost(Items.DIAMOND, 2),
+                        "shop.bedwars.ironForge",
+                        null,
+                        Map.of(
+                                Items.IRON_INGOT, new SpawnData(65, 96, true),
+                                Items.GOLD_INGOT, new SpawnData(134, 20, true)
+                )),
+                new Tier(new ShopEntry.Cost(Items.DIAMOND, 4),
+                        "shop.bedwars.goldenForge",
+                        null,
+                        Map.of(
+                                Items.IRON_INGOT, new SpawnData(50, 128, true),
+                                Items.GOLD_INGOT, new SpawnData(100, 24, true)
+                )),
+                new Tier(new ShopEntry.Cost(Items.DIAMOND, 8),
+                        null,
+                        "shop.bedwars.emerald",
+                        Map.of(
+                                Items.IRON_INGOT, new SpawnData(50, 128, true),
+                                Items.GOLD_INGOT, new SpawnData(100, 24, true),
+                                Items.EMERALD, new SpawnData(1200, 4, false)
+                )),
+                new Tier(new ShopEntry.Cost(Items.DIAMOND, 16),
+                        null,
+                        "shop.bedwars.moltenForge",
+                        Map.of(
+                                Items.IRON_INGOT, new SpawnData(40, 96, true),
+                                Items.GOLD_INGOT, new SpawnData(80, 32, true),
+                                Items.EMERALD, new SpawnData(600, 4, false)
+                        ))
+        );
+    }
+
+
+    public static final Codec<List<Tier>> CODEC = Codec.list(Tier.CODEC);
     private static final String SPLITTABLE_KEY = "splittable";
     private final BlockBounds bounds;
     private final ServerWorld world;
     private final TeamManager teamManager;
-    private final ForgeConfig config;
+    private final List<Tier> config;
     private Map<Item, SpawnData> itemSpawnData;
     private final  Map<Item, Long> lastSpawnTime = new HashMap<>();
     int concurrentTier;
 
-    public Forge(BlockBounds bounds, ClaimManager claim, ForgeConfig config, ServerWorld world, TeamManager teamManager, GameActivity activity)
+    public Forge(BlockBounds bounds, ClaimManager claim, List<Tier> config, ServerWorld world, TeamManager teamManager, GameActivity activity)
     {
         this.bounds = bounds;
         this.world = world;
@@ -85,7 +114,7 @@ public class Forge {
     public void setTier(int tier)
     {
         concurrentTier = tier;
-        itemSpawnData = config.tiers().get(tier);
+        itemSpawnData = config.get(tier).itemsToSpawn();
         lastSpawnTime.clear();
         var concurrentTime = world.getTime();
         for(var item : itemSpawnData.keySet())
@@ -93,6 +122,36 @@ public class Forge {
             lastSpawnTime.put(item, concurrentTime);
             this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getStack(item, itemSpawnData.get(item).splittable()),0,0,0));
         }
+    }
+
+    public Tier getTier()
+    {
+        return config.get(concurrentTier);
+    }
+    public int getNextTierInt()
+    {
+        if(concurrentTier + 1 >= config.size())
+            return concurrentTier;
+        return concurrentTier + 1;
+    }
+
+    public void upgrade()
+    {
+        if(concurrentTier + 1 >= config.size())
+            return;
+        this.setTier(concurrentTier + 1);
+    }
+
+    public boolean isMaxed()
+    {
+        return concurrentTier + 1 >= config.size();
+    }
+
+    public Tier getNextTier()
+    {
+        if(concurrentTier + 1 >= config.size())
+            return null;
+        return config.get(concurrentTier + 1);
     }
 
     public Vec3d getCenter()
