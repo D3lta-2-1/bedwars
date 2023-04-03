@@ -3,7 +3,7 @@ package fr.delta.bedwars.game.behaviour;
 import fr.delta.bedwars.BedwarsConfig;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.TeleporterLogic;
-import fr.delta.bedwars.game.component.TeamComponents;
+import fr.delta.bedwars.game.teamComponent.TeamComponents;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import fr.delta.bedwars.game.ui.PlayerCustomPacketsSender;
