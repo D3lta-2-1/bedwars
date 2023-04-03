@@ -6,8 +6,10 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
+import fr.delta.bedwars.game.shop.entries.EmptyEntry;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -15,7 +17,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import xyz.nucleoid.plasmid.game.GameActivity;
+import xyz.nucleoid.plasmid.registry.TinyRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +27,13 @@ import java.util.List;
 public abstract class ShopMenu {
     final private GameActivity activity;
     final private BedwarsActive bedwarsGame;
+    final private TinyRegistry<ShopEntry> entries;
 
-    public ShopMenu(BedwarsActive bedwarsGame, GameActivity activity)
+    public ShopMenu(BedwarsActive bedwarsGame, TinyRegistry<ShopEntry> entries, GameActivity activity)
     {
         this.bedwarsGame = bedwarsGame;
         this.activity = activity;
+        this.entries = entries;
     }
     public abstract void open(ServerPlayerEntity player);
     protected void setEntryInSlot(SimpleGui gui, ShopEntry entry, int slot)
@@ -101,7 +107,7 @@ public abstract class ShopMenu {
         var stackList = inventory.main;
 
 
-        //get all slots
+        //get all slots that contains the "money" item
         List<Integer> slotWithResources = new ArrayList<>();
         int i = 0;
         int total = 0;
@@ -132,11 +138,10 @@ public abstract class ShopMenu {
                     stackList.set(index, ItemStack.EMPTY);
                 }
             }
+            var name = entry.getName(bedwarsGame, player);
             var boughStack = entry.onBuy(bedwarsGame, player);
 
-
-
-            activity.invoker(BedwarsEvents.PLAYER_BUY).onBuy(player, entry.getName(bedwarsGame, player), entry);
+            activity.invoker(BedwarsEvents.PLAYER_BUY).onBuy(player, name, entry);
             if(boughStack.isEmpty()) return;
             boughStack.setCount(entry.getCount());
             if(type.numKey)
@@ -186,6 +191,46 @@ public abstract class ShopMenu {
             player.dropItem(stack, false);
             inventory.offerOrDrop(stackToGiveBack);
             return;
+        }
+    }
+
+    protected void buildListAt(SimpleGui gui, List<Identifier> entriesIDs, int xOffset, int yOffset, int width, int height)
+    {
+        int x = 0;
+        int y = 0;
+        var iter = entriesIDs.iterator();
+        while(x != width)
+        {
+            int slot = (xOffset + x) + (yOffset + y) * 9;
+            if(iter.hasNext())
+            {
+                var entry = entries.get(iter.next());
+
+                if(entry == null)
+                    setEntryInSlot(gui, EmptyEntry.INSTANCE, slot);
+                else
+                    setEntryInSlot(gui, entry, slot);
+            }
+            else
+            {
+                gui.clearSlot(slot);
+            }
+            x++;
+            if(x == width && y != height -1) //cause of start from 0
+            {
+                x %= width;
+                y++;
+            }
+        }
+    }
+
+    protected void buildSeparator(SimpleGui gui, int y)
+    {
+        var builder = new GuiElementBuilder();
+        builder.setItem(Items.BLACK_STAINED_GLASS_PANE);
+        for(int i = y * 9; i < (y + 1) * 9; i++)
+        {
+            gui.setSlot(i, builder.build());
         }
     }
 }

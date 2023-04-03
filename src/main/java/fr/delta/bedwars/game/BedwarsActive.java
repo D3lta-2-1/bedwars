@@ -9,11 +9,12 @@ import fr.delta.bedwars.game.behaviour.*;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.player.InventoryManager;
 import fr.delta.bedwars.game.resourceGenerator.ResourceGenerator;
+import fr.delta.bedwars.game.shop.ShopMenu.TeamShopMenu;
 import fr.delta.bedwars.game.shop.data.ShopConfigs;
 import fr.delta.bedwars.game.shop.npc.ShopKeeper;
 import fr.delta.bedwars.game.ui.FeedbackMessager;
 import fr.delta.bedwars.TextUtilities;
-import fr.delta.bedwars.game.component.TeamComponents;
+import fr.delta.bedwars.game.teamComponent.TeamComponents;
 import fr.delta.bedwars.game.shop.ShopMenu.ItemShopMenu;
 import fr.delta.bedwars.game.ui.BedwarsSideBar;
 import fr.delta.bedwars.game.map.BedwarsMap;
@@ -22,7 +23,6 @@ import fr.delta.notasword.OldAttackSpeed;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
@@ -67,7 +67,7 @@ public class BedwarsActive {
         this.defaultSwordManager = new DefaultSwordManager(activity);
         this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, teamManager, teamComponentsMap, defaultSwordManager, activity);
         this.middleGeneratorsMap = addMiddleGenerator();
-        addShopkeepers(gameMap.ShopKeepers());
+        addShopkeepers();
         var stageManager = new GameEventManager(world, new LinkedList<>(config.events()), this, activity);
         BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
         new FeedbackMessager(teamManager, activity);
@@ -133,16 +133,24 @@ public class BedwarsActive {
         }
     }
 
-    private void addShopkeepers(List<BlockBounds> shopkeepersBounds)
+    private void addShopkeepers()
     {
         var entries = ShopConfigs.ENTRIES_REGISTRY.get(config.shopEntriesId());
         if(entries == null) throw new NullPointerException("entries is null");
         ShopConfigs.initialize(entries, this);
         var categories = ShopConfigs.CATEGORIES_REGISTRY.get(config.shopCategoriesId());
-        var menu = new ItemShopMenu(this, entries, categories, activity);
-        for(var shopkeeper : shopkeepersBounds)
+        if(categories == null) throw new NullPointerException("categories is null");
+
+        var itemShopMenu = new ItemShopMenu(this, entries, categories.ItemShopCategories(), activity);
+        for(var shopkeeper : gameMap.itemShopKeepers())
         {
-           ShopKeeper.createShopKeeper(world, shopkeeper, claim, menu);
+           ShopKeeper.createShopKeeper(world, shopkeeper, claim, itemShopMenu);
+        }
+
+        var teamShopMenu = new TeamShopMenu(this, entries, categories.teamUpgrade(), categories.traps(),activity);
+        for(var shopkeeper : gameMap.teamShopKeepers())
+        {
+            ShopKeeper.createShopKeeper(world, shopkeeper, claim, teamShopMenu);
         }
     }
 
@@ -215,5 +223,9 @@ public class BedwarsActive {
 
     public Multimap<String, ResourceGenerator> getGeneratorsMap() {
         return middleGeneratorsMap;
+    }
+
+    public TeamComponents getTeamComponentsFor(ServerPlayerEntity player){
+        return teamComponentsMap.get(teamManager.teamFor(player));
     }
 }
