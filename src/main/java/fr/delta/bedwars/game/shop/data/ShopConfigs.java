@@ -8,6 +8,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import fr.delta.bedwars.Bedwars;
 import fr.delta.bedwars.game.BedwarsActive;
+import fr.delta.bedwars.game.shop.entries.ForgeUpgradeEntry;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -21,7 +22,7 @@ import xyz.nucleoid.plasmid.registry.TinyRegistry;
 import java.io.IOException;
 
 public class ShopConfigs {
-    public static final TinyRegistry<ItemShopConfig> CATEGORIES_REGISTRY = TinyRegistry.create();
+    public static final TinyRegistry<ShopCategoriesConfig> CATEGORIES_REGISTRY = TinyRegistry.create();
     public static final TinyRegistry<TinyRegistry<ShopEntry>> ENTRIES_REGISTRY = TinyRegistry.create();
     private static final String entries_path = "bedwars_entries";
     private static final String category_path = "bedwars_shop_configs";
@@ -47,7 +48,7 @@ public class ShopConfigs {
 
                             Identifier identifier = identifierFromPath(category_path, path);
 
-                            DataResult<ItemShopConfig> result = ItemShopConfig.CODEC.parse(ops, json);
+                            DataResult<ShopCategoriesConfig> result = ShopCategoriesConfig.CODEC.parse(ops, json);
 
                             result.result().ifPresent(category ->
                                 CATEGORIES_REGISTRY.register(identifier, category)
@@ -75,6 +76,9 @@ public class ShopConfigs {
 
                             result.result().ifPresent(EntriesAndIDs -> {
                                 TinyRegistry<ShopEntry> registry = TinyRegistry.create();
+                                //add defaulted entries
+                                registry.register(new Identifier(Bedwars.ID, "forge_upgrade"), ForgeUpgradeEntry.INSTANCE);
+
                                 for(var pair : EntriesAndIDs.entries())
                                     registry.register(pair.getFirst(), pair.getSecond());
                                 ENTRIES_REGISTRY.register(identifier, registry);
@@ -91,7 +95,7 @@ public class ShopConfigs {
                         Bedwars.LOGGER.error("Failed to parse game JSON at {}: {}", path, e);
                     }
                 });
-                Bedwars.LOGGER.info("shop categories loaded :");
+                Bedwars.LOGGER.info("shop ItemShopCategories loaded :");
                 CATEGORIES_REGISTRY.keySet().forEach(config -> Bedwars.LOGGER.info(config.toString()));
                 Bedwars.LOGGER.info("entries configs loaded :");
                 ENTRIES_REGISTRY.keySet().forEach(config -> Bedwars.LOGGER.info(config.toString()));
