@@ -9,31 +9,5 @@
   "void_high" : 30,
   "high_limit" : 85,
   "down_limit" : 55,
-  "game_events" :
-  [
-    {
-      "type" : "bedwars:change_generator_tier",
-      "time" : 7200,
-      "region_name" : "diamond_generator",
-      "tier" : 2
-    },
-    {
-      "type" : "bedwars:change_generator_tier",
-      "time" : 7200,
-      "region_name" : "emerald_generator",
-      "tier" : 2
-    },
-    {
-      "type" : "bedwars:change_generator_tier",
-      "time" : 7200,
-      "region_name" : "diamond_generator",
-      "tier" : 3
-    },
-    {
-      "type" : "bedwars:change_generator_tier",
-      "time" : 7200,
-      "region_name" : "emerald_generator",
-      "tier" : 3
-    }
-  ]
+  "game_events" : ["bedwars:diamond_i", "bedwars:emerald_i", "bedwars:diamond_ii", "bedwars:emerald_ii"]
 }

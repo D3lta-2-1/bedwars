@@ -7,32 +7,12 @@
   "entries_config" : "bedwars:single_duos_entries",
   "void_high" : 30,
   "high_limit" : 100,
-  "down_limit" : 60,
+  "down_limit" : 65,
   "game_events" :
   [
-    {
-        "type" : "bedwars:change_generator_tier",
-        "time" : 7200,
-        "region_name" : "diamond_generator",
-        "tier" : 2
-    },
-    {
-       "type" : "bedwars:change_generator_tier",
-       "time" : 7200,
-       "region_name" : "emerald_generator",
-       "tier" : 2
-    },
-    {
-      "type" : "bedwars:change_generator_tier",
-      "time" : 7200,
-      "region_name" : "diamond_generator",
-      "tier" : 3
-    },
-    {
-      "type" : "bedwars:change_generator_tier",
-      "time" : 7200,
-      "region_name" : "emerald_generator",
-      "tier" : 3
-    }
+    "bedwars:diamond_i",
+    "bedwars:emerald_i",
+    "bedwars:diamond_ii",
+    "bedwars:emerald_ii"
   ]
 }

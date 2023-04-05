@@ -9,6 +9,7 @@
   "high_limit" : 50,
   "down_limit" : 15,
   "game_events" :
+
   [
     {
         "type" : "bedwars:change_generator_tier",

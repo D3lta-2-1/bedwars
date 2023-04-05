@@ -1,0 +1,6 @@
+{
+  "type" : "bedwars:change_generator_tier",
+  "time" : 7200,
+  "region_name" : "emerald_generator",
+  "tier" : 1
+}

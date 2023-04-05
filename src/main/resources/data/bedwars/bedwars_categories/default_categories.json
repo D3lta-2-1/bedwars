@@ -77,7 +77,11 @@
     }
   ],
   "team_upgrade" : [
-    "bedwars:forge_upgrade"
+    "bedwars:sharpness",
+    "bedwars:protection",
+    "bedwars:haste",
+    "bedwars:forge_upgrade",
+    "bedwars:heal_pool"
   ],
   "traps" : [
   ]

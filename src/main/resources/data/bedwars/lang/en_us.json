@@ -77,6 +77,8 @@
   "shop.bedwars.goldenForgeLore" : "spawns 100% more resources",
   "shop.bedwars.emeraldForgeLore" : "spawns emeralds",
   "shop.bedwars.moltenForgeLore" : "spawns 200% more resources",
+  "shop.bedwars.upgradeMaxed" : "This upgrade is maxed",
+  "shop.bedwars.poolUpgrade" : "pool",
 
   "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one",
 
@@ -89,6 +91,8 @@
   "generator.bedwars.1" : "I",
   "generator.bedwars.2" : "II",
   "generator.bedwars.3" : "III",
+  "generator.bedwars.4" : "IV",
+  "generator.bedwars.5" : "V",
 
   "events.bedwars.in" : " in "
 }
