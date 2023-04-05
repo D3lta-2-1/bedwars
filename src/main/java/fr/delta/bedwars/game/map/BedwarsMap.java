@@ -7,6 +7,7 @@ import fr.delta.bedwars.Constants;
 import fr.delta.bedwars.data.AdditionalDataLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
+import net.minecraft.util.DyeColor;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -34,14 +35,12 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
         List<RawTeamData> dataList = new ArrayList<>();
         for(var color : Constants.TEAM_COLORS)
         {
-            var spawnKey = color.name().toLowerCase() + "_" + Constants.SPAWN;
-            var spawn = template.getMetadata().getFirstRegionBounds(spawnKey);
-            var bedKey = color.name().toLowerCase() + "_" + Constants.BED;
-            var bed = template.getMetadata().getFirstRegionBounds(bedKey);
-            var forgeKey = color.name().toLowerCase() + "_" + Constants.FORGE;
-            var forge = template.getMetadata().getFirstRegionBounds(forgeKey);
+            var spawn = getBoundsFor(color, Constants.SPAWN, template);
+            var bed = getBoundsFor(color, Constants.BED, template);
+            var forge = getBoundsFor(color, Constants.FORGE, template);
+            var effectPool = getBoundsFor(color, Constants.EFFECT_POOL, template);
             if(spawn == null || bed == null || forge == null) continue;
-            dataList.add(new RawTeamData(color, spawn, bed, forge));
+            dataList.add(new RawTeamData(color, spawn, bed, forge, effectPool));
         }
         //get item_shopkeepers
         var itemShopkeepers = template.getMetadata().getRegionBounds(Constants.ITEM_SHOPKEEPER).toList();
@@ -76,5 +75,13 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
 
     public RuntimeWorldConfig asRuntimeWorldConfig() {
         return new RuntimeWorldConfig().setGenerator(this.asGenerator()).setGameRule(GameRules.DO_FIRE_TICK, false);
+    }
+
+    private static String getKeyFor(DyeColor color, String type) {
+        return color.name().toLowerCase() + "_" + type;
+    }
+
+    private static BlockBounds getBoundsFor(DyeColor color, String type, MapTemplate template) {
+        return template.getMetadata().getFirstRegionBounds(getKeyFor(color, type));
     }
 }

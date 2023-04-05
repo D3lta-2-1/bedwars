@@ -2,8 +2,8 @@ package fr.delta.bedwars.game.behaviour;
 
 import fr.delta.bedwars.BedwarsConfig;
 import fr.delta.bedwars.TextUtilities;
+import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.TeleporterLogic;
-import fr.delta.bedwars.game.teamComponent.TeamComponents;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import fr.delta.bedwars.game.ui.PlayerCustomPacketsSender;
@@ -18,20 +18,15 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpacePlayers;
-import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
-import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 //in charge of death, final elimination, reconnection, spec connection handling
 public class DeathManager {
     static final int RESPAWN_TIME = 5;
-    private final Map<GameTeamKey, TeamComponents> teamComponentsMap;
-    private final TeamManager teamManager;
+    private final BedwarsActive bedwarsGame;
     private final ServerWorld world;
     private final GameSpacePlayers players;
     private final GameActivity activity;
@@ -49,10 +44,9 @@ public class DeathManager {
         }
     }
     private final List<DeadPlayer> deadPlayers = new ArrayList<>();
-    public DeathManager(Map<GameTeamKey, TeamComponents> teamComponentsMap, TeamManager teamManager, ServerWorld world, BedwarsMap map, BedwarsConfig config, GameActivity activity)
+    public DeathManager(BedwarsActive bedwarsGame, ServerWorld world, BedwarsMap map, BedwarsConfig config, GameActivity activity)
     {
-        this.teamComponentsMap = teamComponentsMap;
-        this.teamManager = teamManager;
+        this.bedwarsGame = bedwarsGame;
         this.world = world;
         this.players = activity.getGameSpace().getPlayers();
         this.activity = activity;
@@ -67,8 +61,7 @@ public class DeathManager {
     {
         if(isAlive(player))
         {
-            var teamKey = teamManager.teamFor(player);
-            var bed = teamComponentsMap.get(teamKey).bed;
+            var bed = bedwarsGame.getTeamComponentsFor(player).bed;
             ServerPlayerEntity attacker = null;
 
             if (source.getAttacker() != null) {
@@ -82,7 +75,7 @@ public class DeathManager {
 
             if(bed.isBroken()) {
                 //this is a final kill just remove it from the game, this may need to be moved to a dedicated listener
-                teamManager.removePlayer(player);
+                bedwarsGame.removePlayerFromTeam(player);
             }
             else {
                 var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
@@ -151,8 +144,7 @@ public class DeathManager {
     {
         PlayerCustomPacketsSender.showTitle(player, Text.translatable("death.bedwars.respawn").setStyle(Style.EMPTY.withColor(Formatting.GREEN)), 0 ,20 ,20);
         PlayerCustomPacketsSender.changeSubtitle(player, Text.empty());
-        var teamKey = teamManager.teamFor(player);
-        var spawn = teamComponentsMap.get(teamKey).spawn;
+        var spawn = bedwarsGame.getTeamComponentsFor(player).spawn;
         spawn.spawnPlayer(player);
     }
 }

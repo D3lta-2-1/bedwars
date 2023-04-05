@@ -1,7 +1,7 @@
 package fr.delta.bedwars.game.player;
 
 import com.google.common.collect.Multimap;
-import fr.delta.bedwars.game.behaviour.DefaultSwordManager;
+import fr.delta.bedwars.game.behaviour.SwordManager;
 import fr.delta.bedwars.game.teamComponent.TeamComponents;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.behaviour.DeathManager;
@@ -33,7 +33,7 @@ public class InventoryManager
     final Map<ServerPlayerEntity, Managers> playerManagerMap;
     final Map<GameTeamKey, TeamComponents> teamComponentsMap;
     final private TeamManager teamManager;
-    final private DefaultSwordManager defaultSwordManager;
+    final private SwordManager defaultSwordManager;
     static final List<ItemStack> lootable = new ArrayList<>(Arrays.asList(
             new ItemStack(Items.IRON_INGOT),
             new ItemStack(Items.GOLD_INGOT),
@@ -41,7 +41,7 @@ public class InventoryManager
             new ItemStack(Items.DIAMOND) //todo: could be added to the config
     ));
 
-    public InventoryManager(DeathManager manager, Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap, TeamManager teamManager, Map<GameTeamKey, TeamComponents> teamComponentsMap, DefaultSwordManager defaultSwordManager, GameActivity activity)
+    public InventoryManager(DeathManager manager, Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap, TeamManager teamManager, Map<GameTeamKey, TeamComponents> teamComponentsMap, SwordManager defaultSwordManager, GameActivity activity)
     {
         this.deathManager = manager;
         this.teamComponentsMap = teamComponentsMap;
@@ -50,7 +50,7 @@ public class InventoryManager
         this.defaultSwordManager = defaultSwordManager;
         for(var entry : teamPlayersMap.entries())
         {
-            playerManagerMap.put(entry.getValue(), new Managers(new PlayerArmorManager(entry.getValue(), entry.getKey()), new ArrayList<>()));
+            playerManagerMap.put(entry.getValue(), new Managers(new PlayerArmorManager(entry.getValue(), entry.getKey(), teamComponentsMap), new ArrayList<>()));
         }
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
         activity.listen(BedwarsEvents.PLAYER_RESPAWN, this::onPlayerRespawn);

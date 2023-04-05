@@ -43,8 +43,9 @@ public class BedwarsWaiting {
     static public GameOpenProcedure open(GameOpenContext<BedwarsConfig> context)
     {
         var config = context.config();
-        var map = BedwarsMap.loadMap(config, context.server() );
+        var map = BedwarsMap.loadMap(config, context.server());
         var worldConfig = map.asRuntimeWorldConfig();
+        worldConfig.setTimeOfDay(config.timeOfDay());
 
         return context.openWithWorld(worldConfig, (activity, world) ->
             new BedwarsWaiting(world, map, activity, config));

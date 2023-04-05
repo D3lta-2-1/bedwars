@@ -25,6 +25,7 @@ public class FeedbackMessager {
         this.players = activity.getGameSpace().getPlayers();
         activity.listen(BedwarsEvents.BED_BROKEN, this::onBedBreak);
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
+        activity.listen(BedwarsEvents.AFTER_PLAYER_DEATH, this::onAfterPlayerDeath);
         activity.listen(BedwarsEvents.PLAYER_BUY, this::onBuy);
     }
 
@@ -62,8 +63,12 @@ public class FeedbackMessager {
 
     void onPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer,boolean isFinal)
     {
-        player.playSound(SoundEvents.ENTITY_SQUID_DEATH, SoundCategory.PLAYERS, 1.f, 1.f);
         players.sendMessage(getDeathMessage(player, source, isFinal));
+    }
+
+    void onAfterPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer,boolean isFinal)
+    {
+        player.playSound(SoundEvents.ENTITY_SQUID_DEATH, SoundCategory.PLAYERS, 1.f, 1.f);
     }
 
     private Text getDeathMessage(ServerPlayerEntity player, DamageSource source , boolean Final) {
@@ -79,7 +84,10 @@ public class FeedbackMessager {
     {
         var text = Text.translatable("shop.bedwars.youPurchase").setStyle(Style.EMPTY.withFormatting(Formatting.GREEN));
         name.copy().setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
-        player.sendMessage(text.append(name));
         player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.f, 1.f);
+        if(entry.shouldNotifyAllTeam())
+            teamManager.playersIn(teamManager.teamFor(player)).sendMessage(text);
+        else
+            player.sendMessage(text);
     }
 }

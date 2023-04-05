@@ -2,8 +2,10 @@ package fr.delta.bedwars.game;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import fr.delta.bedwars.Bedwars;
 import fr.delta.bedwars.BedwarsConfig;
 import fr.delta.bedwars.GameRules;
+import fr.delta.bedwars.StageEvent.GameEvent;
 import fr.delta.bedwars.StageEvent.GameEventManager;
 import fr.delta.bedwars.game.behaviour.*;
 import fr.delta.bedwars.game.event.BedwarsEvents;
@@ -28,6 +30,7 @@ import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
+import xyz.nucleoid.plasmid.game.player.PlayerSet;
 import xyz.nucleoid.plasmid.game.rule.GameRuleType;
 
 import java.util.*;
@@ -44,7 +47,7 @@ public class BedwarsActive {
     final private List<GameTeam> teamsInOrder;
     final private ClaimManager claim;
     final private DeathManager deathManager;
-    final private DefaultSwordManager defaultSwordManager;
+    final private SwordManager defaultSwordManager;
     final private InventoryManager inventoryManager;
     final private Multimap<String, ResourceGenerator> middleGeneratorsMap;
 
@@ -62,13 +65,24 @@ public class BedwarsActive {
         this.claim = new ClaimManager(gameMap, config, activity);
         this.teamManager = TeamManager.addTo(activity);
         setupTeam(teamPlayers); //populate teamManager
+        this.deathManager = new DeathManager(this, world, gameMap, config, activity);
         this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
-        this.deathManager = new DeathManager(teamComponentsMap, teamManager, world, gameMap, config, activity);
-        this.defaultSwordManager = new DefaultSwordManager(activity);
+        this.defaultSwordManager = new SwordManager(this, activity);
         this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, teamManager, teamComponentsMap, defaultSwordManager, activity);
         this.middleGeneratorsMap = addMiddleGenerator();
         addShopkeepers();
-        var stageManager = new GameEventManager(world, new LinkedList<>(config.events()), this, activity);
+        var queue = new LinkedList<GameEvent>();
+        for(var gameEventId : config.events())
+        {
+            var gameEvent = AdditionalDataLoader.GAME_EVENT_REGISTRY.get(gameEventId);
+            if(gameEvent == null)
+            {
+                Bedwars.LOGGER.warn("GameEvent {} not found", gameEventId);
+                continue;
+            }
+            queue.add(gameEvent);
+        }
+        var stageManager = new GameEventManager(world, queue, this, activity);
         BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
         new FeedbackMessager(teamManager, activity);
         new WinEventSender(teamsInOrder, teamManager, activity);
@@ -115,7 +129,7 @@ public class BedwarsActive {
 
     private Map<GameTeamKey, TeamComponents> makeTeamComponents()
     {
-        var builder = new TeamComponents.Builder(teamManager, activity, world, claim, config, gameMap);
+        var builder = new TeamComponents.Builder(teamManager, activity, world, claim, deathManager, config, gameMap);
         var teamComponentsMap = new HashMap<GameTeamKey, TeamComponents>();
         for(var team : teamManager)
         {
@@ -160,7 +174,11 @@ public class BedwarsActive {
         for(var generatorTypeId : config.generatorTypeIdList())
         {
             var generatorType = AdditionalDataLoader.GENERATOR_TYPE_REGISTRY.get(generatorTypeId);
-            if(generatorType == null) throw new NullPointerException(generatorTypeId.toString() + "generatorType is null");
+            if(generatorType == null)
+            {
+                Bedwars.LOGGER.warn("GeneratorType {} not found", generatorTypeId);
+                continue;
+            }
             for(var bounds : gameMap.generatorsRegions().get(generatorType.getInternalId()))
             {
                 middleGeneratorsMap.put(generatorType.getInternalId(), generatorType.createGenerator(bounds, world, claim, activity));
@@ -210,7 +228,7 @@ public class BedwarsActive {
         return null;
     }
 
-    public DefaultSwordManager getDefaultSwordManager() { return defaultSwordManager; }
+    public SwordManager getDefaultSwordManager() { return defaultSwordManager; }
 
     public InventoryManager getInventoryManager()
     {
@@ -229,5 +247,16 @@ public class BedwarsActive {
 
     public TeamComponents getTeamComponentsFor(ServerPlayerEntity player){
         return teamComponentsMap.get(teamManager.teamFor(player));
+    }
+
+    public void removePlayerFromTeam(ServerPlayerEntity player)
+    {
+        var team = teamManager.teamFor(player);
+        teamManager.removePlayerFrom(player, team);
+    }
+
+    public PlayerSet getPlayersInTeam(GameTeam team)
+    {
+        return teamManager.playersIn(team.key());
     }
 }

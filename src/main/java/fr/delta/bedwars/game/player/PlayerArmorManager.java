@@ -1,17 +1,21 @@
 package fr.delta.bedwars.game.player;
 
+import fr.delta.bedwars.game.teamComponent.TeamComponents;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
+import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class PlayerArmorManager {
     final private ServerPlayerEntity player;
     final private GameTeam team;
+    final private Map<GameTeamKey, TeamComponents> teamComponentsMap;
 
     public enum ArmorLevel
     {
@@ -37,10 +41,11 @@ public class PlayerArmorManager {
     }
     private ArmorLevel armorLevel;
 
-    public PlayerArmorManager(ServerPlayerEntity player, GameTeam team)
+    public PlayerArmorManager(ServerPlayerEntity player, GameTeam team, Map<GameTeamKey, TeamComponents> teamComponentsMap)
     {
         this.player = player;
         this.team = team;
+        this.teamComponentsMap = teamComponentsMap;
         this.armorLevel = ArmorLevel.LEATHER;
     }
 
@@ -66,8 +71,14 @@ public class PlayerArmorManager {
             {
                 builder.addEnchantment(Enchantments.AQUA_AFFINITY, 1);
             }
+            var enchantments = teamComponentsMap.get(team.key()).enchantments;
+            for(var enchantment : enchantments.entrySet())
+            {
+                if(enchantment.getKey().isAcceptableItem(builder.build()))
+                    builder.addEnchantment(enchantment.getKey(), enchantment.getValue());
+            }
             //Todo : fixe the sound played when the armor is equipped
-           player.getInventory().armor.set(piece.getSlotType().getEntitySlotId(), builder.build());
+            player.getInventory().armor.set(piece.getSlotType().getEntitySlotId(), builder.build());
         }
     }
     private List<ArmorItem> getArmor()

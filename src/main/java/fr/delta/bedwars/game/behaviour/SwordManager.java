@@ -1,9 +1,11 @@
 package fr.delta.bedwars.game.behaviour;
 
+import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.event.ItemThrowEvent;
 import fr.delta.bedwars.event.SlotInteractionEvent;
 import fr.delta.notasword.item.OldSwords;
+import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,12 +21,14 @@ import xyz.nucleoid.stimuli.event.item.ItemPickupEvent;
 
 import java.util.List;
 
-public class DefaultSwordManager {
+public class SwordManager {
     static final Item defaultSword = OldSwords.WOODEN_SWORD;
     private final GameActivity activity;
+    private final BedwarsActive bedwarsGame;
 
-    public DefaultSwordManager(GameActivity activity)
+    public SwordManager(BedwarsActive bedwarsGame, GameActivity activity)
     {
+        this.bedwarsGame = bedwarsGame;
         this.activity = activity;
         activity.listen(BedwarsEvents.PLAYER_RESPAWN, this::giveDefaultSword);
         activity.listen(SlotInteractionEvent.BEFORE, this::onInteract);
@@ -105,13 +109,33 @@ public class DefaultSwordManager {
         {
             giveDefaultSword(player);
         }
+        else if(lastSwordIndex == -2)
+        {
+            handler.setCursorStack(getUpdatedStack(player, handler.getCursorStack().getItem()));
+        }
+        else
+        {
+            container.set(lastSwordIndex, getUpdatedStack(player, container.get(lastSwordIndex).getItem()));
+        }
     }
-
 
     void giveDefaultSword(ServerPlayerEntity player)
     {
         BedwarsEvents.ensureInventoryIsNotFull(player, activity);
-        player.getInventory().offerOrDrop(ItemStackBuilder.of(defaultSword).setUnbreakable().build()); //may can be a bug since the sword can theoretically drop here
+        player.getInventory().offerOrDrop(getUpdatedStack(player, defaultSword));
+    }
+
+    ItemStack getUpdatedStack(ServerPlayerEntity player, Item item)
+    {
+        bedwarsGame.getDefaultSwordManager().removeDefaultSword(player);
+        var builder = ItemStackBuilder.of(item).setUnbreakable();
+        var enchantment = bedwarsGame.getTeamComponentsFor(player).enchantments;
+        for(var entry : enchantment.entrySet())
+        {
+            if(entry.getKey().target == EnchantmentTarget.WEAPON)
+                builder.addEnchantment(entry.getKey(), entry.getValue());
+        }
+        return builder.build();
     }
 
     ActionResult onInteract(ServerPlayerEntity player, ScreenHandler handler, int slotIndex, int button, SlotActionType actionType)

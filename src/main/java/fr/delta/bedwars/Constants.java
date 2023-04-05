@@ -37,10 +37,9 @@ public class Constants {
     static public final String SPAWN = "spawn";
     static public final String BED = "bed";
     static public final String FORGE = "forge";
+    static public final String EFFECT_POOL = "effect_pool";
     static public final String ITEM_SHOPKEEPER = "item_shopkeeper";
     static public final String TEAM_SHOPKEEPER = "team_shopkeeper";
-
-    //TODO : must be completed with other flowers and fluids
     static public final List<Block> BreakableBlocks = new ArrayList<>(Arrays.asList(
             Blocks.TALL_GRASS,
             Blocks.WATER,
@@ -66,6 +65,13 @@ public class Constants {
             Blocks.PEONY,
             Blocks.LILY_PAD,
             Blocks.SUGAR_CANE,
-            Blocks.CACTUS)
+            Blocks.CACTUS,
+            Blocks.BAMBOO,
+            Blocks.BAMBOO_SAPLING,
+            Blocks.BROWN_MUSHROOM,
+            Blocks.RED_MUSHROOM,
+            Blocks.COBWEB,
+            Blocks.GRASS,
+            Blocks.FERN)
     );
 }
