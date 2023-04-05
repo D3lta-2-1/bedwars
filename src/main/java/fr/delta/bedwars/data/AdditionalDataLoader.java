@@ -3,14 +3,17 @@ package fr.delta.bedwars.data;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import fr.delta.bedwars.Bedwars;
+import fr.delta.bedwars.StageEvent.GameEvent;
+import fr.delta.bedwars.StageEvent.GameEventConfig;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.resourceGenerator.GeneratorBuilder;
 import fr.delta.bedwars.game.shop.data.ShopCategoriesConfig;
-import fr.delta.bedwars.game.shop.data.ShopEntriesAndIDs;
+import fr.delta.bedwars.game.shop.data.ShopEntryConfig;
 import fr.delta.bedwars.game.shop.entries.ForgeUpgradeEntry;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import fr.delta.bedwars.game.teamComponent.Forge;
@@ -31,10 +34,12 @@ public class AdditionalDataLoader {
     public static final TinyRegistry<TinyRegistry<ShopEntry>> SHOP_ENTRIES_REGISTRY = TinyRegistry.create();
     public static final TinyRegistry<List<Forge.Tier>> FORGE_CONFIG_REGISTRY = TinyRegistry.create();
     public static final TinyRegistry<GeneratorBuilder> GENERATOR_TYPE_REGISTRY = TinyRegistry.create();
+    public static final TinyRegistry<GameEvent> GAME_EVENT_REGISTRY = TinyRegistry.create();
     private static final String ENTRIES_PATH = "bedwars_entries";
     private static final String CATEGORY_PATH = "bedwars_categories";
     private static final String FORGE_PATH = "bedwars_forges";
     private static final String GENERATOR_PATH = "bedwars_generators";
+    private static final String GAME_EVENTS_PATH = "bedwars_events";
 
     private static void loadEntries(ResourceManager manager, DynamicOps<JsonElement> ops)
     {
@@ -46,14 +51,14 @@ public class AdditionalDataLoader {
 
                     Identifier identifier = identifierFromPath(ENTRIES_PATH, path);
 
-                    DataResult<ShopEntriesAndIDs> result = ShopEntriesAndIDs.CODEC.parse(ops, json);
+                    DataResult<List<Pair<Identifier, ShopEntry>>> result = ShopEntryConfig.CODEC.listOf().parse(ops, json);
 
                     result.result().ifPresent(EntriesAndIDs -> {
                                 TinyRegistry<ShopEntry> registry = TinyRegistry.create();
                                 //add defaulted entries
                                 registry.register(new Identifier(Bedwars.ID, "forge_upgrade"), ForgeUpgradeEntry.INSTANCE);
 
-                                for(var pair : EntriesAndIDs.entries())
+                                for(var pair : EntriesAndIDs)
                                     registry.register(pair.getFirst(), pair.getSecond());
                                 SHOP_ENTRIES_REGISTRY.register(identifier, registry);
                             }
@@ -161,6 +166,34 @@ public class AdditionalDataLoader {
         });
     }
 
+    private static void loadGameEvent(ResourceManager manager, DynamicOps<JsonElement> ops)
+    {
+        GAME_EVENT_REGISTRY.clear();
+        manager.findResources(GAME_EVENTS_PATH, path -> path.getPath().endsWith(".json")).forEach((path, resource) -> {
+            try {
+                try (var reader = resource.getReader()) {
+                    JsonElement json = JsonParser.parseReader(reader);
+
+                    Identifier identifier = identifierFromPath(GAME_EVENTS_PATH, path);
+
+                    DataResult<GameEvent> result = GameEventConfig.CODEC.parse(ops, json);
+
+                    result.result().ifPresent(event ->
+                            GAME_EVENT_REGISTRY.register(identifier, event)
+                    );
+
+                    result.error().ifPresent(error ->
+                            Bedwars.LOGGER.error("Failed to parse game at {}: {}", path, error)
+                    );
+                }
+            } catch (IOException e) {
+                Bedwars.LOGGER.error("Failed to read configured game at {}", path, e);
+            } catch (JsonParseException e) {
+                Bedwars.LOGGER.error("Failed to parse game JSON at {}: {}", path, e);
+            }
+        });
+    }
+
     public static void register()
     {
         ResourceManagerHelper serverData = ResourceManagerHelper.get(ResourceType.SERVER_DATA);
@@ -177,6 +210,7 @@ public class AdditionalDataLoader {
                 loadCategories(manager, ops);
                 loadForgeConfig(manager, ops);
                 loadGeneratorTypes(manager, ops);
+                loadGameEvent(manager, ops);
             }
         });
     }
