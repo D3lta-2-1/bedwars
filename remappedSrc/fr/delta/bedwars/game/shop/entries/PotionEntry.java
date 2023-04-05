@@ -22,36 +22,16 @@ public class PotionEntry extends ShopEntry
     static Codec<StatusEffectInstance> STATUS_EFFECT_INSTANCE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Registries.STATUS_EFFECT.getCodec().fieldOf("effect").forGetter(StatusEffectInstance::getEffectType),
             Codec.FLOAT.fieldOf("duration").forGetter((effectInstance) -> effectInstance.getAmplifier() / 20.f),
-            Codec.INT.optionalFieldOf("amplifier", 1).forGetter((effectInstance) -> effectInstance.getAmplifier() - 1),
+            Codec.INT.fieldOf("amplifier").forGetter((effectInstance) -> effectInstance.getAmplifier() - 1),
             Codec.BOOL.optionalFieldOf("ambient", false).forGetter(StatusEffectInstance::isAmbient),
             Codec.BOOL.optionalFieldOf("showParticles", true).forGetter(StatusEffectInstance::shouldShowParticles),
             Codec.BOOL.optionalFieldOf("showIcon", true).forGetter(StatusEffectInstance::shouldShowIcon)
     ).apply(instance, (type, duration, amplifier, ambient, showParticles, showIcon) -> new StatusEffectInstance(type, Math.round(duration * 20), amplifier - 1, ambient, showParticles, showIcon)));
 
-    enum PotionType
-    {
-        normal,
-        splash,
-        lingering;
-
-        public Item asItem()
-        {
-            return switch (this)
-                    {
-                        case normal -> Items.POTION;
-                        case splash -> Items.SPLASH_POTION;
-                        case lingering -> Items.LINGERING_POTION;
-                    };
-        }
-        public static Codec<PotionType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.STRING.fieldOf("type").forGetter(PotionType::name)
-        ).apply(instance, PotionType::valueOf));
-    }
 
     public static Codec<PotionEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Cost.CODEC.fieldOf("cost").forGetter(PotionEntry::getCostNoArguments),
-            STATUS_EFFECT_INSTANCE_CODEC.listOf().fieldOf("effects").forGetter(PotionEntry::getEffects),
-            PotionType.CODEC.optionalFieldOf("type", PotionType.normal).forGetter(PotionEntry::getPotionType)
+            STATUS_EFFECT_INSTANCE_CODEC.listOf().fieldOf("effects").forGetter(PotionEntry::getEffects)
     ).apply(instance, PotionEntry::new));
 
     public Cost getCostNoArguments() {
@@ -62,28 +42,21 @@ public class PotionEntry extends ShopEntry
         return effects;
     }
 
-    public PotionType getPotionType() {
-        return potionType;
-    }
-
     private final Cost cost;
     private final List<StatusEffectInstance> effects;
     private final ItemStack templatePotion;
-    private final PotionType potionType;
 
-    public PotionEntry(Cost cost, List<StatusEffectInstance> effects, PotionType potionType) {
+    public PotionEntry(Cost cost, List<StatusEffectInstance> effects) {
         this.cost = cost;
         this.effects = effects;
-        this.potionType = potionType;
-        var stack = PotionUtil.setCustomPotionEffects(new ItemStack(potionType.asItem()), effects);
+        var stack = PotionUtil.setCustomPotionEffects(new ItemStack(Items.POTION), effects);
         stack.setCustomName(getName(null, null).setStyle(Style.EMPTY.withItalic(false)));
-        assert stack.getNbt() != null;
         stack.getNbt().putInt("CustomPotionColor", PotionUtil.getColor(effects));
         this.templatePotion = stack;
     }
 
     @Override
-    public MutableText getName(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
+    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
         var text = Text.empty();
         for(var effect : effects)
         {
@@ -94,10 +67,10 @@ public class PotionEntry extends ShopEntry
         return text;
     }
 
-    public Cost getCost(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return cost; }
+    public Cost getCost(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return cost; }
 
     @Override
-    public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
+    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
         return Items.POTION;
     }
 

@@ -67,4 +67,9 @@ public class ForgeUpgradeEntry extends ShopEntry {
         forge.upgrade();
         return ItemStack.EMPTY;
     }
+
+    @Override
+    public boolean shouldNotifyAllTeam() {
+        return true;
+    }
 }

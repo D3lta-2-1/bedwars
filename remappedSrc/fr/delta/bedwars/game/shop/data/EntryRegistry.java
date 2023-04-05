@@ -25,8 +25,5 @@ public class EntryRegistry {
         register("armor_entry", ArmorEntry.CODEC);
         register("tool_entry", ToolEntry.CODEC);
         register("potion_entry", PotionEntry.CODEC);
-        register("team_effect_entry", EffectEntry.CODEC);
-        register("enchantment_entry", EnchantmentEntry.CODEC);
-        register("effect_pool_entry", EffectPoolEntry.CODEC);
     }
 }
