@@ -48,7 +48,6 @@ public class StatusEffectPool {
             }
             else//if the player is not in the pool region
             {
-                System.out.println(effectGivenToPlayer.get(player));
                 for(var effectToRemove : effectGivenToPlayer.get(player)) //for each effect given to the player
                 {
                     player.removeStatusEffect(effectToRemove); //remove the effect

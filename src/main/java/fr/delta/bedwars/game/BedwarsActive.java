@@ -86,7 +86,7 @@ public class BedwarsActive {
         BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
         new FeedbackMessager(teamManager, activity);
         new WinEventSender(teamsInOrder, teamManager, activity);
-        new OldAttackSpeed(20D ,activity);
+        new OldAttackSpeed(12D ,activity);
         new InvisibilityArmorHider(teamManager, activity);
         new ChestLocker(teamComponentsMap, teamManager, activity);
         destroySpawn();
@@ -106,6 +106,7 @@ public class BedwarsActive {
         activity.deny(GameRuleType.SATURATED_REGENERATION);
         activity.deny(NotASword.ATTACK_SOUND);
         activity.allow(NotASword.OLD_KNOCKBACK);
+        activity.allow(NotASword.FAST_ATTACK);
         activity.deny(GameRules.BED_INTERACTION);
         activity.allow(GameRules.BLAST_PROOF_GLASS_RULE);
         activity.deny(GameRules.ENDER_PEARL_DAMAGE);

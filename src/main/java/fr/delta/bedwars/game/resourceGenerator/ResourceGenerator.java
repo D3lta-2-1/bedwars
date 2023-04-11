@@ -36,12 +36,11 @@ public class ResourceGenerator {
     private final World world;
     private final BlockDisplayElement blockElement;
     private final int maxItems;
-    private final TextDisplayElement typeText;
     private final TextDisplayElement countText;
     private final TextDisplayElement tierText;
     private final SinusAnimation rotationAnimation;
     private final SinusAnimation YAnimation;
-    private ElementHolder holder = null;
+    private final static float SCALE = 0.75f;
 
     public ResourceGenerator(BlockBounds bounds, Item spawnedItem, int rgbColor, Block display, World world, List<Integer> timeToGenerateTierList, ClaimManager claimManager, int maxItems, GameActivity activity)
     {
@@ -53,13 +52,21 @@ public class ResourceGenerator {
         this.blockElement = new BlockDisplayElement(display.getDefaultState());
         this.tierText = createText(getTierText(), 1.85f);
         this.lastSpawnItemTime = world.getTime();
-        this.typeText = createText(Text.translatable(spawnedItem.getTranslationKey()).setStyle(Style.EMPTY.withColor(rgbColor)), 1.55f);
+        var typeText = createText(Text.translatable(spawnedItem.getTranslationKey()).setStyle(Style.EMPTY.withColor(rgbColor)), 1.55f);
         this.countText = createText(getCountText(lastSpawnItemTime + timeToGenerateTierList.get(currentTier) - world.getTime()), 1.25f);
         this.rotationAnimation = new SinusAnimation(Math.PI * 2, 300, world.getTime());
         this.YAnimation = new SinusAnimation(0.125, 300, world.getTime());
         this.maxItems = maxItems;
         claimManager.addRegion(bounds);
         activity.listen(GameActivityEvents.TICK, this::tick);
+
+        //set up the virtual entity
+        var holder = new ElementHolder();
+        holder.addElement(blockElement);
+        holder.addElement(tierText);
+        holder.addElement(typeText);
+        holder.addElement(countText);
+        new ChunkAttachment(holder, world.getWorldChunk(asBlockPos(pos)), pos, true);
     }
 
     private TextDisplayElement createText(Text text, float y) {
@@ -97,16 +104,6 @@ public class ResourceGenerator {
 
     void tick()
     {
-        // restore the block if it was unloaded
-        if(holder == null)
-        {
-            holder = new ElementHolder();
-            holder.addElement(blockElement);
-            holder.addElement(tierText);
-            holder.addElement(typeText);
-            holder.addElement(countText);
-            new ChunkAttachment(this.holder, world.getWorldChunk(asBlockPos(pos)), pos, true);
-        }
         // update the text counter
         var timeBeforeNextSpawn = lastSpawnItemTime + timeToGenerateTierList.get(currentTier - 1) - world.getTime();
         if(timeBeforeNextSpawn % 20 == 0)
@@ -121,7 +118,8 @@ public class ResourceGenerator {
         // animate the block
         blockElement.setTransformation(new Matrix4f()
                 .rotateY(rotationAnimation.get(world.getTime()))
-                .translate(-0.5f, 0, -0.5f));
+                .translate(-0.5f * SCALE, 0, -0.5f * SCALE));
+        blockElement.setScale(new Vector3f(SCALE, SCALE, SCALE));
         blockElement.setOffset(new Vec3d(0, YAnimation.get(world.getTime()), 0));
         blockElement.setInterpolationDuration(1);
         blockElement.startInterpolation();
