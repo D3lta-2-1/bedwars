@@ -9,11 +9,11 @@ import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 
 import java.util.List;
 
-public class WinEventSender {
+public class WinChecker {
     final private List<GameTeam> teamInOrder;
     final private TeamManager teamManager;
     final private GameActivity activity;
-    public WinEventSender(List<GameTeam> teamInOrder, TeamManager teamManager, GameActivity activity)
+    public WinChecker(List<GameTeam> teamInOrder, TeamManager teamManager, GameActivity activity)
     {
         this.teamManager = teamManager;
         this.teamInOrder = teamInOrder;

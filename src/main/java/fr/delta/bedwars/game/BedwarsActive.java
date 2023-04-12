@@ -15,7 +15,6 @@ import fr.delta.bedwars.game.shop.ShopMenu.TeamShopMenu;
 import fr.delta.bedwars.data.AdditionalDataLoader;
 import fr.delta.bedwars.game.shop.npc.ShopKeeper;
 import fr.delta.bedwars.game.ui.FeedbackMessager;
-import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.teamComponent.TeamComponents;
 import fr.delta.bedwars.game.shop.ShopMenu.ItemShopMenu;
 import fr.delta.bedwars.game.ui.BedwarsSideBar;
@@ -84,14 +83,16 @@ public class BedwarsActive {
         }
         var stageManager = new GameEventManager(world, queue, this, activity);
         BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
-        new FeedbackMessager(teamManager, activity);
-        new WinEventSender(teamsInOrder, teamManager, activity);
+        new FeedbackMessager(teamManager, teamPlayersMap, activity);
+        new WinChecker(teamsInOrder, teamManager, activity);
         new OldAttackSpeed(12D ,activity);
         new InvisibilityArmorHider(teamManager, activity);
         new ChestLocker(teamComponentsMap, teamManager, activity);
         destroySpawn();
         startGame();
         breakBedForEmptyTeam();
+
+        //should be the last thing registered to enforce the order of the events
         activity.listen(BedwarsEvents.TEAM_WIN, this::onTeamWin);
     }
     private void setupGameRules()
@@ -210,8 +211,7 @@ public class BedwarsActive {
 
     private void onTeamWin(GameTeam team)
     {
-        //todo : add messages into Messenger Class
-        gameSpace.getPlayers().sendMessage(TextUtilities.getTranslation("name", team.config().blockDyeColor().name()).append(" win"));
+        //end this phase and start tne End phase
         new BedwarsEnd(gameSpace, world, teamPlayersMap, team);
     }
 
@@ -249,15 +249,27 @@ public class BedwarsActive {
     public TeamComponents getTeamComponentsFor(ServerPlayerEntity player){
         return teamComponentsMap.get(teamManager.teamFor(player));
     }
+    public TeamComponents getTeamComponentsFor(GameTeam team){
+        return teamComponentsMap.get(team.key());
+    }
 
     public void removePlayerFromTeam(ServerPlayerEntity player)
     {
         var team = teamManager.teamFor(player);
         teamManager.removePlayerFrom(player, team);
     }
-
     public PlayerSet getPlayersInTeam(GameTeam team)
     {
         return teamManager.playersIn(team.key());
+    }
+
+    public TeamManager getTeamManager()
+    {
+        return teamManager;
+    }
+
+    public ServerWorld getWorld()
+    {
+        return world;
     }
 }

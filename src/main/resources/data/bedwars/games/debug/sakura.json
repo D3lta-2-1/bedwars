@@ -1,6 +1,5 @@
 {
   "type": "bedwars:bedwars",
-  "team_size" : 4,
   "map": "bedwars:sakura",
   "forge" : "bedwars:trios_fours",
   "generator_types" : ["bedwars:emerald", "bedwars:diamond"],
@@ -10,9 +9,6 @@
   "high_limit" : 85,
   "down_limit" : 55,
   "game_events" : [
-    "bedwars:diamond_i",
-    "bedwars:emerald_i",
-    "bedwars:diamond_ii",
-    "bedwars:emerald_ii",
-    "bedwars:bed_destruction"]
+    "bedwars:bed_destruction"
+  ]
 }

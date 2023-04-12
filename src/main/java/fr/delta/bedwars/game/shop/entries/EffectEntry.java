@@ -52,7 +52,7 @@ public class EffectEntry extends ShopEntry{
 
     @Override
     public Cost getCost(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        var handler = bedwarsGame.getTeamComponentsFor(player).effectPool;
+        var handler = bedwarsGame.getTeamComponentsFor(player).statusEffectHandler;
         var level = handler.getAmplifier(effect);
         if(level + 1 >= availableTiers.size())
             return null;
@@ -61,7 +61,7 @@ public class EffectEntry extends ShopEntry{
 
     @Override
     public int displayCount(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        var handler = bedwarsGame.getTeamComponentsFor(player).effectPool;
+        var handler = bedwarsGame.getTeamComponentsFor(player).statusEffectHandler;
         var level = handler.getAmplifier(effect);
         if(level + 1 >= availableTiers.size())
             return level + 1;
@@ -70,7 +70,7 @@ public class EffectEntry extends ShopEntry{
 
     @Override
     public MutableText getName(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        var handler = bedwarsGame.getTeamComponentsFor(player).effectPool;
+        var handler = bedwarsGame.getTeamComponentsFor(player).statusEffectHandler;
         var level = handler.getAmplifier(effect);
         if(level + 1 >= availableTiers.size())
         {
@@ -85,14 +85,14 @@ public class EffectEntry extends ShopEntry{
 
     @Override
     public BuyOffer canBeBough(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        var handler = bedwarsGame.getTeamComponentsFor(player).effectPool;
+        var handler = bedwarsGame.getTeamComponentsFor(player).statusEffectHandler;
         var level = handler.getAmplifier(effect);
         return new BuyOffer(level + 1 < availableTiers.size(), Text.translatable("shop.bedwars.upgradeMaxed").formatted(Formatting.RED));
     }
 
     @Override
     public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        var handler = bedwarsGame.getTeamComponentsFor(player).effectPool;
+        var handler = bedwarsGame.getTeamComponentsFor(player).statusEffectHandler;
         var level = handler.getAmplifier(effect);
         handler.setEffect(effect, level + 1);
         return ItemStack.EMPTY;

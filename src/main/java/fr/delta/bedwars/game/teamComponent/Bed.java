@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Style;
@@ -44,10 +45,12 @@ public class Bed {
 
     public void breakIt(ServerWorld world, ServerPlayerEntity breaker)
     {
+        if(isBroken) return;
         this.isBroken = true;
-        for(var blocks : bounds)
+        for(var blockPos : bounds)
         {
-            world.setBlockState(blocks, Blocks.AIR.getDefaultState(), Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
+            world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.FORCE_STATE | Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
+            world.getPlayers().forEach(player -> player.networkHandler.sendPacket(new BlockUpdateS2CPacket(blockPos, Blocks.AIR.getDefaultState())));
         }
         activity.invoker(BedwarsEvents.BED_BROKEN).onBreak(owner, breaker);
     }

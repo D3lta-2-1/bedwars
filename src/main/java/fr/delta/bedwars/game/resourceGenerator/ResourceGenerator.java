@@ -40,7 +40,11 @@ public class ResourceGenerator {
     private final TextDisplayElement tierText;
     private final SinusAnimation rotationAnimation;
     private final SinusAnimation YAnimation;
+
+    private final int rgbColor;
     private final static float SCALE = 0.75f;
+
+
 
     public ResourceGenerator(BlockBounds bounds, Item spawnedItem, int rgbColor, Block display, World world, List<Integer> timeToGenerateTierList, ClaimManager claimManager, int maxItems, GameActivity activity)
     {
@@ -52,6 +56,7 @@ public class ResourceGenerator {
         this.blockElement = new BlockDisplayElement(display.getDefaultState());
         this.tierText = createText(getTierText(), 1.85f);
         this.lastSpawnItemTime = world.getTime();
+        this.rgbColor = rgbColor;
         var typeText = createText(Text.translatable(spawnedItem.getTranslationKey()).setStyle(Style.EMPTY.withColor(rgbColor)), 1.55f);
         this.countText = createText(getCountText(lastSpawnItemTime + timeToGenerateTierList.get(currentTier) - world.getTime()), 1.25f);
         this.rotationAnimation = new SinusAnimation(Math.PI * 2, 300, world.getTime());
@@ -90,6 +95,10 @@ public class ResourceGenerator {
 
     public Item getSpawnedItem() {
         return spawnedItem;
+    }
+
+    public int getRgbColor() {
+        return rgbColor;
     }
 
     public void setTier(int tier) {
