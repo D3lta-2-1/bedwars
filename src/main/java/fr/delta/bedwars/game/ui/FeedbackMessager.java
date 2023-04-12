@@ -116,8 +116,6 @@ public class FeedbackMessager {
         players.sendMessage(winMessage);
         for(var entries : teamPlayersMap.entries())
         {
-            System.out.println(entries.getKey());
-            System.out.println(entries.getValue());
             var player = entries.getValue();
             if(player == null) continue;
             if(entries.getKey() == team)
