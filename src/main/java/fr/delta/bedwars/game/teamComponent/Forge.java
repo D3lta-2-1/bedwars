@@ -3,6 +3,7 @@ package fr.delta.bedwars.game.teamComponent;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.behaviour.ClaimManager;
+import fr.delta.bedwars.game.behaviour.DeathManager;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
@@ -53,13 +54,16 @@ public class Forge {
     private final List<Tier> config;
     private Map<Item, SpawnData> itemSpawnData;
     private final  Map<Item, Long> lastSpawnTime = new HashMap<>();
+    private final DeathManager deathManager;
     int concurrentTier;
 
-    public Forge(BlockBounds bounds, ClaimManager claim, List<Tier> config, ServerWorld world, TeamManager teamManager, GameActivity activity)
+
+    public Forge(BlockBounds bounds, ClaimManager claim, List<Tier> config, ServerWorld world, TeamManager teamManager, DeathManager deathManager, GameActivity activity)
     {
         this.bounds = bounds;
         this.world = world;
         this.teamManager = teamManager;
+        this.deathManager = deathManager;
         this.config = config;
         this.setTier(0);
         claim.addRegion(this.bounds);
@@ -189,6 +193,7 @@ public class Forge {
         for(var teamMate : teamManager.playersIn(team) )
         {
             if(teamMate.equals(player)) continue;
+            if(!deathManager.isAlive(player)) continue;
             var teamMateBox = teamMate.getBoundingBox();
             if(forgeBox.intersects(teamMateBox))
             {
