@@ -259,7 +259,7 @@
     ]
   },
   {
-    "type" : "bedwars:potion_entry",
+    "type" : "bedwars:potion_item_entry",
     "id" : "bedwars:jump_boost",
     "cost" : { "item" : "minecraft:emerald", "count": 1 },
     "effects" : [
@@ -267,7 +267,7 @@
     ]
   },
   {
-    "type" : "bedwars:potion_entry",
+    "type" : "bedwars:potion_item_entry",
     "id" : "bedwars:speed",
     "cost" : { "item" : "minecraft:emerald", "count": 1 },
     "effects" : [
@@ -275,7 +275,7 @@
     ]
   },
   {
-    "type" : "bedwars:potion_entry",
+    "type" : "bedwars:potion_item_entry",
     "id" : "bedwars:invisibility",
     "cost" : { "item" : "minecraft:emerald", "count": 2 },
     "effects" : [
