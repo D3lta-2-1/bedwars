@@ -21,12 +21,14 @@ import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerS2CPacketEvent;
 
-import java.util.List;
+import java.util.*;
 
 public class InvisibilityArmorHider {
 
     private final GameSpacePlayers players;
     private final TeamManager teamManager;
+
+    private final Set<ServerPlayerEntity> playerInvisible = new HashSet<>();
 
     public InvisibilityArmorHider(TeamManager teamManager, GameActivity activity) {
         this.players = activity.getGameSpace().getPlayers();
@@ -48,6 +50,7 @@ public class InvisibilityArmorHider {
             {
                 if(teamManager.teamFor(player) == teamKey) continue;
                 player.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(AffectedPlayer.getId(), equipmentList));
+                playerInvisible.add(player);
             }
         }
     }
@@ -63,6 +66,7 @@ public class InvisibilityArmorHider {
             for(var player : this.players)
             {
                 if(teamManager.teamFor(player) == teamKey) continue;
+                playerInvisible.remove(player);
                 player.networkHandler.sendPacket(new EntityEquipmentUpdateS2CPacket(AffectedPlayer.getId(), equipmentList));
             }
         }
@@ -83,10 +87,9 @@ public class InvisibilityArmorHider {
         if(packet instanceof EntityEquipmentUpdateS2CPacket equipmentPacket)
         {
             var entity = player.getWorld().getEntityById(equipmentPacket.getId());
-            if(entity instanceof ServerPlayerEntity affectedPlayer)
+            if(entity instanceof ServerPlayerEntity)
             {
-                var effect = affectedPlayer.getStatusEffect(StatusEffects.INVISIBILITY);
-                if(effect != null) return ActionResult.FAIL;
+                if(playerInvisible.contains(player)) return ActionResult.FAIL;
             }
         }
         return ActionResult.PASS;
