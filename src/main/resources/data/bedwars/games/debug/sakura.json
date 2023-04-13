@@ -9,6 +9,10 @@
   "high_limit" : 85,
   "down_limit" : 55,
   "game_events" : [
+    "bedwars:diamond_i",
+    "bedwars:emerald_i",
+    "bedwars:diamond_ii",
+    "bedwars:emerald_ii",
     "bedwars:bed_destruction"
   ]
 }

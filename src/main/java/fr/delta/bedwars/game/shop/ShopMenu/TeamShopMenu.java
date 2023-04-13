@@ -1,8 +1,11 @@
 package fr.delta.bedwars.game.shop.ShopMenu;
 
+import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
+import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -34,8 +37,40 @@ public class TeamShopMenu extends ShopMenu {
         buildListAt(gui, teamUpgrade, 1, 1, 3, 2);
         buildListAt(gui, traps, 5, 1, 3, 2);
         buildSeparator(gui, 3);
+        buildTrapQueueView(gui);
         gui.open();
     }
 
+    @Override
+    protected void afterPurchase(SlotGuiInterface gui) {
+        buildTrapQueueView(gui);
+        buildListAt(gui, traps, 5, 1, 3, 2);
+    }
 
+    private void buildTrapQueueView(SlotGuiInterface gui)
+    {
+        var player = gui.getPlayer();
+        var trapHandler = getBedwarsGame().getTeamComponentsFor(player).trapHandler;
+        var trapIterator = trapHandler.iterator();
+        for(int i = 0; i < 3; i++)
+        {
+            GuiElementBuilder element;
+            int slot = (3 + i) + 4 * 9;
+            if(trapIterator.hasNext())
+            {
+                //build trap view
+                var trap = trapIterator.next();
+                element = new GuiElementBuilder(trap.getItem());
+                element.setName(trap.getName());
+                element.getOrCreateNbt().putByte("HideFlags", (byte) 127);
+            }
+            else
+            {
+                element = new GuiElementBuilder(Items.LIGHT_GRAY_STAINED_GLASS);
+                element.setName(Text.translatable("trap.bedwars.slot").append(Text.literal(String.valueOf(i + 1))));
+            }
+            element.setCount(i + 1); //0 offset
+            gui.setSlot(slot, element);
+        }
+    }
 }

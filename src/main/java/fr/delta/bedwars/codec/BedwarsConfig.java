@@ -1,4 +1,4 @@
-package fr.delta.bedwars;
+package fr.delta.bedwars.codec;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

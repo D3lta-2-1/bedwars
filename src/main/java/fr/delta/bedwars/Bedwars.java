@@ -3,6 +3,7 @@ package fr.delta.bedwars;
 import eu.pb4.polymer.core.api.block.PolymerBlockUtils;
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import eu.pb4.polymer.core.api.item.PolymerBlockItem;
+import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.custom.blocks.LaunchPadBlockEntity;
 import fr.delta.bedwars.custom.blocks.Launchpad;
 import fr.delta.bedwars.game.BedwarsWaiting;

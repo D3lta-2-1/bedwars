@@ -2,7 +2,6 @@ package fr.delta.bedwars.game.shop.ShopMenu;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
@@ -36,7 +35,7 @@ public abstract class ShopMenu {
         this.entries = entries;
     }
     public abstract void open(ServerPlayerEntity player);
-    protected void setEntryInSlot(SimpleGui gui, ShopEntry entry, int slot)
+    protected void setEntryInSlot(SlotGuiInterface gui, ShopEntry entry, int slot)
     {
         var player = gui.getPlayer();
         var display = entry.getDisplay(bedwarsGame, player);
@@ -142,6 +141,7 @@ public abstract class ShopMenu {
             var boughStack = entry.onBuy(bedwarsGame, player);
 
             activity.invoker(BedwarsEvents.PLAYER_BUY).onBuy(player, name, entry);
+            afterPurchase(gui);
             if(boughStack.isEmpty()) return;
             boughStack.setCount(entry.getCount());
             if(type.numKey)
@@ -159,6 +159,8 @@ public abstract class ShopMenu {
             player.playSound(SoundEvents.ENTITY_SILVERFISH_HURT, SoundCategory.PLAYERS, 1.f, 1.f);
         }
     }
+
+    protected void afterPurchase(SlotGuiInterface gui){}
 
     private void addStackInSlot(ServerPlayerEntity player, int slot, ItemStack stack)
     {
@@ -194,7 +196,7 @@ public abstract class ShopMenu {
         }
     }
 
-    protected void buildListAt(SimpleGui gui, List<Identifier> entriesIDs, int xOffset, int yOffset, int width, int height)
+    protected void buildListAt(SlotGuiInterface gui, List<Identifier> entriesIDs, int xOffset, int yOffset, int width, int height)
     {
         int x = 0;
         int y = 0;
@@ -224,7 +226,7 @@ public abstract class ShopMenu {
         }
     }
 
-    protected void buildSeparator(SimpleGui gui, int y)
+    protected void buildSeparator(SlotGuiInterface gui, int y)
     {
         var builder = new GuiElementBuilder();
         builder.setItem(Items.BLACK_STAINED_GLASS_PANE);
@@ -232,5 +234,9 @@ public abstract class ShopMenu {
         {
             gui.setSlot(i, builder.build());
         }
+    }
+
+    public BedwarsActive getBedwarsGame() {
+        return bedwarsGame;
     }
 }

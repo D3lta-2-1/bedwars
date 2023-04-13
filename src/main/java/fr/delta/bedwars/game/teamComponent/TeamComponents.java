@@ -1,6 +1,6 @@
 package fr.delta.bedwars.game.teamComponent;
 
-import fr.delta.bedwars.BedwarsConfig;
+import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.data.AdditionalDataLoader;
 import fr.delta.bedwars.game.behaviour.ClaimManager;
 import fr.delta.bedwars.game.behaviour.DeathManager;
@@ -21,6 +21,7 @@ public class TeamComponents
     public StatusEffectHandler statusEffectHandler;
     public Map<Enchantment, Integer> enchantments;
     public StatusEffectPool effectPool;
+    public TrapHandler trapHandler;
 
     static public class Builder
     {
@@ -57,10 +58,11 @@ public class TeamComponents
 
                     components.bed = new Bed(rawData.bedLocation, gameMap, team, teamManager, activity);
                     components.spawn = new Spawn(rawData.spawnLocation, claimManager, world, rawData.bedLocation.center(),activity);
-                    components.forge = new Forge(rawData.forge, claimManager, forgeConfig, world, teamManager ,activity);
+                    components.forge = new Forge(rawData.forge, claimManager, forgeConfig, world, teamManager, deathManager, activity);
                     components.statusEffectHandler = new StatusEffectHandler(team.key(), teamManager, deathManager, activity);
                     components.enchantments = new Object2IntArrayMap<>();
                     components.effectPool = new StatusEffectPool(rawData.effectPool, team.key(), teamManager, activity);
+                    components.trapHandler = new TrapHandler(TrapHandler.createFromBedBlockBound(rawData.bedLocation), world, teamManager, team, deathManager,activity);
                 }
             }
             return components;

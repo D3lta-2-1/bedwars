@@ -28,5 +28,6 @@ public class EntryRegistry {
         register("team_effect_entry", EffectEntry.CODEC);
         register("enchantment_entry", EnchantmentEntry.CODEC);
         register("effect_pool_entry", EffectPoolEntry.CODEC);
+        register("trap_entry", TrapEntry.CODEC);
     }
 }

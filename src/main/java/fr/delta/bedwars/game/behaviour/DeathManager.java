@@ -1,6 +1,6 @@
 package fr.delta.bedwars.game.behaviour;
 
-import fr.delta.bedwars.BedwarsConfig;
+import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.TeleporterLogic;

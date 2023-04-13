@@ -84,5 +84,9 @@
     "bedwars:heal_pool"
   ],
   "traps" : [
+    "bedwars:alarm_trap",
+    "bedwars:counter_trap",
+    "bedwars:blindness_trap",
+    "bedwars:mining_fatigue_trap"
   ]
 }

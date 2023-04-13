@@ -19,7 +19,7 @@ public record BedDestruction(int time) implements GameEvent {
 
     @Override
     public Text getStageName(BedwarsActive game) {
-        return Text.translatable("events.bedwars.bedDestruction");
+        return Text.translatable("events.bedwars.bedDestructionIn");
     }
 
     @Override

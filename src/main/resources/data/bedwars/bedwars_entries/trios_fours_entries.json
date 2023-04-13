@@ -319,5 +319,53 @@
     "icon" : "minecraft:beacon",
     "effect" : "minecraft:regeneration",
     "costs" : [ { "item" : "minecraft:diamond", "count": 1 } ]
+  },
+  {
+    "type" : "bedwars:trap_entry",
+    "id" : "bedwars:mining_fatigue_trap",
+    "icon" : "minecraft:iron_pickaxe",
+    "cost" : { "item" : "minecraft:diamond", "count": 1 },
+    "translation_key" : "trap.bedwars.mining_fatigue",
+    "cooldown" : 600,
+    "effects_for_trigger" : [
+      { "effect" : "minecraft:mining_fatigue", "duration" : 10, "amplifier" : 1 }
+    ]
+  },
+  {
+    "type" : "bedwars:trap_entry",
+    "id" : "bedwars:blindness_trap",
+    "icon" : "minecraft:tripwire_hook",
+    "cost" : { "item" : "minecraft:diamond", "count": 1 },
+    "translation_key" : "trap.bedwars.blindness_trap",
+    "cooldown" : 600,
+    "effects_for_trigger" : [
+      { "effect" : "minecraft:blindness", "duration" : 8, "amplifier" : 1 },
+      { "effect" : "minecraft:slowness", "duration" : 8, "amplifier" : 1 }
+    ]
+  },
+  {
+    "type" : "bedwars:trap_entry",
+    "id" : "bedwars:alarm_trap",
+    "icon" : "minecraft:redstone_torch",
+    "cost" : { "item" : "minecraft:diamond", "count": 1 },
+    "translation_key" : "trap.bedwars.alarm_trap",
+    "cooldown" : 600,
+    "alarm_duration" : 200,
+    "effect_to_remove_for_trigger" : [ "minecraft:invisibility" ],
+    "effects_for_trigger" : [
+         { "effect" : "minecraft:glowing", "duration" : 10, "amplifier" : 1 }
+    ]
+  },
+  {
+    "type" : "bedwars:trap_entry",
+    "id" : "bedwars:counter_trap",
+    "icon" : "minecraft:feather",
+    "cost" : { "item" : "minecraft:diamond", "count": 1 },
+    "translation_key" : "trap.bedwars.counter_trap",
+    "cooldown" : 600,
+    "effects_for_owner" : [
+      { "effect" : "minecraft:jump_boost", "duration" : 10, "amplifier" : 2 },
+      { "effect" : "minecraft:speed", "duration" : 10, "amplifier" : 1 }
+    ]
   }
 ]

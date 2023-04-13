@@ -98,7 +98,7 @@ public class FeedbackMessager {
     private void onBuy(ServerPlayerEntity player, Text name, ShopEntry entry)
     {
         var text = Text.translatable("shop.bedwars.youPurchase").setStyle(Style.EMPTY.withFormatting(Formatting.GREEN));
-        name.copy().setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW));
+        text.append(name.copy().setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)));
         player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.f, 1.f);
         if(entry.shouldNotifyAllTeam())
             teamManager.playersIn(teamManager.teamFor(player)).sendMessage(text);
@@ -110,7 +110,7 @@ public class FeedbackMessager {
     {
         if(team == null) return;
         var winMessage = TextUtilities.concatenate(TextUtilities.getTranslation("name", team.config().blockDyeColor().name()).formatted(team.config().chatFormatting()),
-                Text.translatable("win.bedwars.win").formatted(Formatting.GRAY, Formatting.BOLD));
+                Text.translatable("win.bedwars.win").formatted(Formatting.GRAY));
 
 
         players.sendMessage(winMessage);

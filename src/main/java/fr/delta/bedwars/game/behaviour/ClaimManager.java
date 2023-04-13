@@ -1,6 +1,6 @@
 package fr.delta.bedwars.game.behaviour;
 
-import fr.delta.bedwars.BedwarsConfig;
+import fr.delta.bedwars.codec.BedwarsConfig;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import fr.delta.bedwars.Constants;
 import fr.delta.bedwars.TextUtilities;

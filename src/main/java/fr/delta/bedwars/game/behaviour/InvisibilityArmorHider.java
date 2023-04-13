@@ -40,6 +40,7 @@ public class InvisibilityArmorHider {
     void onStatusEffectAdd(LivingEntity entity, StatusEffectInstance effect, @Nullable Entity source) {
         if(entity instanceof ServerPlayerEntity AffectedPlayer)
         {
+            if(effect.getEffectType() != StatusEffects.INVISIBILITY) return;
             var teamKey = teamManager.teamFor(AffectedPlayer);
             var equipmentList = getEmptyEquipmentList();
             if(teamKey == null) return;
@@ -54,6 +55,8 @@ public class InvisibilityArmorHider {
     void onStatusEffectRemove(LivingEntity entity, StatusEffectInstance effect) {
         if(entity instanceof ServerPlayerEntity AffectedPlayer)
         {
+            if(effect.getEffectType() != StatusEffects.INVISIBILITY) return;
+
             var teamKey = teamManager.teamFor(AffectedPlayer);
             var equipmentList = getEquipmentList(AffectedPlayer);
             if(teamKey == null) return;

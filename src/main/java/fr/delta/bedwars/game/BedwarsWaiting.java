@@ -2,7 +2,7 @@ package fr.delta.bedwars.game;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import fr.delta.bedwars.BedwarsConfig;
+import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.network.ServerPlayerEntity;

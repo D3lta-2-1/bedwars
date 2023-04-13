@@ -3,7 +3,7 @@ package fr.delta.bedwars.game;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import fr.delta.bedwars.Bedwars;
-import fr.delta.bedwars.BedwarsConfig;
+import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.GameRules;
 import fr.delta.bedwars.StageEvent.GameEvent;
 import fr.delta.bedwars.StageEvent.GameEventManager;
@@ -85,7 +85,7 @@ public class BedwarsActive {
         BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
         new FeedbackMessager(teamManager, teamPlayersMap, activity);
         new WinChecker(teamsInOrder, teamManager, activity);
-        new OldAttackSpeed(12D ,activity);
+        new OldAttackSpeed(20D ,activity);
         new InvisibilityArmorHider(teamManager, activity);
         new ChestLocker(teamComponentsMap, teamManager, activity);
         destroySpawn();

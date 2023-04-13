@@ -82,8 +82,19 @@
   "shop.bedwars.moltenForgeLore" : "spawns 200% more resources",
   "shop.bedwars.upgradeMaxed" : "This upgrade is maxed",
   "shop.bedwars.poolUpgrade" : "pool",
+  "shop.bedwars.trapQueueFull" : "Trap queue is full",
 
   "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one",
+
+  "trap.bedwars.mining_fatigue" : "Mining fatigue trap",
+  "trap.bedwars.blindness_trap" : "It's a trap",
+  "trap.bedwars.alarm_trap" : "Alarm trap",
+  "trap.bedwars.counter_trap" : "Counter-offensive trap",
+
+  "trap.bedwars.slot" : "trap slot ",
+  "trap.bedwars.triggered" : "TRAP TRIGGERED!",
+  "trap.bedwars.your" : "Your ",
+  "trap.bedwars.haveBeenSetOff" : " as been set off",
 
   "block.bedwars.launch_pad" : "launch pad",
   "item.bedwars.fire_ball" : "fire ball",
@@ -100,7 +111,7 @@
 
   "events.bedwars.in" : " in ",
   "events.bedwars.bedDestruction" : "BED DESTRUCTION!",
-  "events.bedwars.bedDestructionIn" : "bed destruction in ",
+  "events.bedwars.bedDestructionIn" : "bed destruction",
   "events.bedwars.allBedsHaveBeenDestroyed" : "All beds have been destroyed !",
 
   "win.bedwars.win" : " win",
