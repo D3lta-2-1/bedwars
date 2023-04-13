@@ -2,6 +2,7 @@ package fr.delta.bedwars.game.shop.entries;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.BedwarsActive;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
@@ -32,7 +33,8 @@ public class PotionEntry extends ShopEntry
     {
         normal,
         splash,
-        lingering;
+        lingering,
+        arrow;
 
         public Item asItem()
         {
@@ -41,6 +43,7 @@ public class PotionEntry extends ShopEntry
                         case normal -> Items.POTION;
                         case splash -> Items.SPLASH_POTION;
                         case lingering -> Items.LINGERING_POTION;
+                        case arrow -> Items.TIPPED_ARROW;
                     };
         }
         public static Codec<PotionType> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -51,7 +54,8 @@ public class PotionEntry extends ShopEntry
     public static Codec<PotionEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Cost.CODEC.fieldOf("cost").forGetter(PotionEntry::getCostNoArguments),
             STATUS_EFFECT_INSTANCE_CODEC.listOf().fieldOf("effects").forGetter(PotionEntry::getEffects),
-            PotionType.CODEC.optionalFieldOf("type", PotionType.normal).forGetter(PotionEntry::getPotionType)
+            PotionType.CODEC.optionalFieldOf("type", PotionType.normal).forGetter(PotionEntry::getPotionType),
+            Codec.INT.optionalFieldOf("count", 1).forGetter(PotionEntry::count)
     ).apply(instance, PotionEntry::new));
 
     public Cost getCostNoArguments() {
@@ -65,16 +69,21 @@ public class PotionEntry extends ShopEntry
     public PotionType getPotionType() {
         return potionType;
     }
+    public int count() {
+        return count;
+    }
 
     private final Cost cost;
     private final List<StatusEffectInstance> effects;
     private final ItemStack templatePotion;
     private final PotionType potionType;
+    private final int count;
 
-    public PotionEntry(Cost cost, List<StatusEffectInstance> effects, PotionType potionType) {
+    public PotionEntry(Cost cost, List<StatusEffectInstance> effects, PotionType potionType, int count) {
         this.cost = cost;
         this.effects = effects;
         this.potionType = potionType;
+        this.count = count;
         var stack = PotionUtil.setCustomPotionEffects(new ItemStack(potionType.asItem()), effects);
         stack.setCustomName(getName(null, null).setStyle(Style.EMPTY.withItalic(false)));
         assert stack.getNbt() != null;
@@ -88,9 +97,9 @@ public class PotionEntry extends ShopEntry
         for(var effect : effects)
         {
             text.append(Text.translatable(effect.getTranslationKey()));
-            text.append(Text.literal(" "));
+            text.append(TextUtilities.SPACE);
         }
-        text.append(Text.translatable("shop.bedwars.potion"));
+        text.append(Text.translatable("shop.bedwars.potion." + potionType.name()));
         return text;
     }
 
@@ -99,6 +108,11 @@ public class PotionEntry extends ShopEntry
     @Override
     public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return Items.POTION;
+    }
+
+    @Override
+    public int getCount() {
+        return count;
     }
 
     @Override
