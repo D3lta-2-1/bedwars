@@ -27,7 +27,6 @@ public class InvisibilityArmorHider {
 
     private final GameSpacePlayers players;
     private final TeamManager teamManager;
-
     private final Set<ServerPlayerEntity> playerInvisible = new HashSet<>();
 
     public InvisibilityArmorHider(TeamManager teamManager, GameActivity activity) {
