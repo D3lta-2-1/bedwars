@@ -3,7 +3,6 @@ package fr.delta.bedwars.game.teamComponent;
 import fr.delta.bedwars.game.behaviour.DeathManager;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.traps.Trap;
-import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -11,12 +10,12 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.BlockPos;
 import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
-import xyz.nucleoid.plasmid.game.player.PlayerSet;
 
 import java.util.*;
 
@@ -29,7 +28,7 @@ public class TrapHandler {
     private final List<Trap> traps = new ArrayList<>();
     private final Map<ServerPlayerEntity, Pair<Trap, Long>> playerTrapMap = new HashMap<>();
     private long playAlarmToTick = 0;
-    private final PlayerSet gamePlayers;
+    private final BlockPos alarmPos;
 
 
     public static BlockBounds createFromBedBlockBound(BlockBounds bedBounds)
@@ -46,7 +45,7 @@ public class TrapHandler {
         this.teamManager = teamManager;
         this.deathManager = deathManager;
         this.team = team;
-        this.gamePlayers = activity.getGameSpace().getPlayers();
+        this.alarmPos = new BlockPos((int)bounds.center().x, (int)bounds.center().y, (int)bounds.center().z);
         activity.listen(GameActivityEvents.TICK, this::tick);
         //remove the trap when the player dies
         activity.listen(BedwarsEvents.PLAYER_DEATH, (player, source, killer, isFinalKill) -> playerTrapMap.remove(player));
@@ -101,9 +100,9 @@ public class TrapHandler {
         if(playAlarmToTick > world.getTime())
         {
             if(world.getTime() % 2 == 0)
-                gamePlayers.forEach(player -> player.networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, bounds.center().x, bounds.center().y, bounds.center().z, 10.f,1.8f, 0L)));
+                world.playSound(null, alarmPos, SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), SoundCategory.BLOCKS, 1.f, 1.8f);
             else
-                gamePlayers.forEach(player -> player.networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.BLOCKS, bounds.center().x, bounds.center().y, bounds.center().z, 10.f,1.6f, 0L)));
+                world.playSound(null, alarmPos, SoundEvents.BLOCK_NOTE_BLOCK_BASS.value(), SoundCategory.BLOCKS, 1.f, 1.6f);
         }
     }
 
