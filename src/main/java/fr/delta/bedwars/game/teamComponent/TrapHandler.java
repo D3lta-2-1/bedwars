@@ -3,6 +3,7 @@ package fr.delta.bedwars.game.teamComponent;
 import fr.delta.bedwars.game.behaviour.DeathManager;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.traps.Trap;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -15,6 +16,7 @@ import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
+import xyz.nucleoid.plasmid.game.player.PlayerSet;
 
 import java.util.*;
 
@@ -27,6 +29,7 @@ public class TrapHandler {
     private final List<Trap> traps = new ArrayList<>();
     private final Map<ServerPlayerEntity, Pair<Trap, Long>> playerTrapMap = new HashMap<>();
     private long playAlarmToTick = 0;
+    private final PlayerSet gamePlayers;
 
 
     public static BlockBounds createFromBedBlockBound(BlockBounds bedBounds)
@@ -43,6 +46,7 @@ public class TrapHandler {
         this.teamManager = teamManager;
         this.deathManager = deathManager;
         this.team = team;
+        this.gamePlayers = activity.getGameSpace().getPlayers();
         activity.listen(GameActivityEvents.TICK, this::tick);
         //remove the trap when the player dies
         activity.listen(BedwarsEvents.PLAYER_DEATH, (player, source, killer, isFinalKill) -> playerTrapMap.remove(player));
@@ -86,7 +90,7 @@ public class TrapHandler {
         playAlarmToTick = trap.trigger(teamManager, team.key(), player) + world.getTime();
         var players = teamManager.playersIn(team.key());
         players.showTitle(Text.translatable("trap.bedwars.triggered").formatted(Formatting.RED),
-                            Text.translatable("trap.bedwars.your").append(trap.getName()),
+                            Text.translatable("trap.bedwars.your").append(trap.getName()).append(Text.translatable("trap.bedwars.haveBeenSetOff")),
                             0, 60, 20);
         players.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT);
         playerTrapMap.put(player, new Pair<>(trap, world.getTime()));
@@ -97,9 +101,9 @@ public class TrapHandler {
         if(playAlarmToTick > world.getTime())
         {
             if(world.getTime() % 2 == 0)
-               world.playSound(bounds.center().x, bounds.center().y, bounds.center().z, SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), SoundCategory.AMBIENT, 1.f,1.6f, true);
+                gamePlayers.forEach(player -> player.networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, bounds.center().x, bounds.center().y, bounds.center().z, 10.f,1.8f, 0L)));
             else
-                world.playSound(bounds.center().x, bounds.center().y, bounds.center().z, SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), SoundCategory.AMBIENT, 1.f,1.8f, true);
+                gamePlayers.forEach(player -> player.networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.BLOCKS, bounds.center().x, bounds.center().y, bounds.center().z, 10.f,1.6f, 0L)));
         }
     }
 

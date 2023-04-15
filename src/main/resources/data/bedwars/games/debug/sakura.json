@@ -1,7 +1,7 @@
 {
   "type": "bedwars:bedwars",
   "map": "bedwars:sakura",
-  "forge" : "bedwars:trios_fours",
+  "forge" : "bedwars:debug",
   "generator_types" : ["bedwars:emerald", "bedwars:diamond"],
   "category_config" : "bedwars:default_categories",
   "entries_config" : "bedwars:trios_fours_entries",

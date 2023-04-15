@@ -1,0 +1,8 @@
+[
+  {
+    "items_to_spawn" : {
+      "minecraft:iron_ingot" : {"spawn_time" : 10, "max_in_forge" : 32},
+      "minecraft:gold_ingot" : {"spawn_time" : 20, "max_in_forge" : 8}
+    }
+  }
+]

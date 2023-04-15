@@ -15,6 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TrapEntry extends ShopEntry{
@@ -116,13 +117,20 @@ public class TrapEntry extends ShopEntry{
     public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player)
     {
         var trapHandler = bedwarsGame.getTeamComponentsFor(player).trapHandler;
-        trapHandler.addTrap(new Trap(icon, Text.translatable(translationKey), cooldown, playAlarmDuration, List.copyOf(effectsForTrigger),  List.copyOf(effectsForOwner), List.copyOf(effectToRemoveForTrigger)));
+        trapHandler.addTrap(new Trap(icon, Text.translatable(translationKey), cooldown, playAlarmDuration, copyList(effectsForTrigger),  copyList(effectsForOwner), effectToRemoveForTrigger));
         return ItemStack.EMPTY;
     }
 
     @Override
     public void editNbt(NbtCompound nbt) {
         nbt.putByte("HideFlags", (byte) 127); //hide specificity
+    }
+
+    private List<StatusEffectInstance> copyList(List<StatusEffectInstance> list) {
+        var newList = new ArrayList<StatusEffectInstance>();
+        for (StatusEffectInstance statusEffectInstance : list)
+            newList.add(new StatusEffectInstance(statusEffectInstance));
+        return newList;
     }
 
 }
