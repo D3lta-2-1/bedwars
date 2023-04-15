@@ -31,7 +31,7 @@ public class Forge {
     {
         public static final Codec<SpawnData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.INT.fieldOf("spawn_time").forGetter(SpawnData::spawnTime),
-                Codec.INT.optionalFieldOf("max_in_Forge", 64).forGetter(SpawnData::maxInForge),
+                Codec.INT.optionalFieldOf("max_in_forge", 64).forGetter(SpawnData::maxInForge),
                 Codec.BOOL.optionalFieldOf("splittable", true).forGetter(SpawnData::splittable)
         ).apply(instance, SpawnData::new));
     }
@@ -47,7 +47,7 @@ public class Forge {
     }
 
     public static final Codec<List<Tier>> CODEC = Tier.CODEC.listOf();
-    private static final String SPLITTABLE_KEY = "splittable";
+    private static final String SPLITTABLE_KEY = "splitForgeKey"; //also used to determine how many items have been spawned in the forge
     private final BlockBounds bounds;
     private final ServerWorld world;
     private final TeamManager teamManager;
@@ -131,32 +131,29 @@ public class Forge {
     private ItemStack getStack(Item item, boolean splittable)
     {
         var ingot = new ItemStack(item);
-        if(splittable)
-        {
-            var nbt = new NbtCompound();
-            nbt.putBoolean(SPLITTABLE_KEY, true);
-            ingot.setNbt(nbt);
-        }
+        var nbt = new NbtCompound();
+        nbt.putBoolean(SPLITTABLE_KEY, splittable);
+        ingot.setNbt(nbt);
         return ingot;
     }
 
     private boolean isFullOf(Item item, int maxCount)
     {
-        int count = 0;
         var items = world.getEntitiesByClass(ItemEntity.class, bounds.asBox(), (itemEntity) -> {
             var stack = itemEntity.getStack();
             if(!stack.getItem().equals(item)) return false;
             if(!stack.hasNbt()) return false;
             var nbt = stack.getNbt();
-            assert nbt != null;
-            return (nbt.contains(SPLITTABLE_KEY) && nbt.getBoolean(SPLITTABLE_KEY));
+            assert nbt != null; //to make the compiler happy
+            return (nbt.contains(SPLITTABLE_KEY));
         });
 
+
+        int count = 0;
         for(var itemEntity :items)
         {
             count += itemEntity.getStack().getCount();
         }
-
         return count >= maxCount;
     }
 
@@ -182,14 +179,20 @@ public class Forge {
         //remove the splittable_tag
         var nbt = stack.getNbt();
         assert nbt != null;
-        if(!nbt.contains(SPLITTABLE_KEY) || !nbt.getBoolean(SPLITTABLE_KEY) ) return ActionResult.PASS;
+        if(!nbt.contains(SPLITTABLE_KEY)) return ActionResult.PASS;
+        var splittable = nbt.getBoolean(SPLITTABLE_KEY);
         stack.setNbt(null);
-        var forgeBox = bounds.asBox();
+        if(!splittable) return ActionResult.PASS;
+
         //check if the item was picked up in this forge
+        var forgeBox = bounds.asBox();
         if(!player.getBoundingBox().intersects(forgeBox)) return ActionResult.PASS;
+
         //get teamMates
         var team = teamManager.teamFor(player);
         if(team == null) return ActionResult.PASS;
+
+        //check if any teamMates are in the forge
         for(var teamMate : teamManager.playersIn(team) )
         {
             if(teamMate.equals(player)) continue;
