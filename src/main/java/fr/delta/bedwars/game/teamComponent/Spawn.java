@@ -27,7 +27,7 @@ public class Spawn {
         var x2 = bedPos.x;
         var y2 = bedPos.z;
         var pos = bounds.centerBottom();
-        this.yaw = ((float)Math.toDegrees(Math.atan2(y2 - y1, x2 - x1)) + 270) % 360;
+        this.yaw = ((float)Math.toDegrees(Math.atan2(y1 - y2, x1 - x2)) + 90);
         while (!world.getBlockState(asBlockPos(pos)).isAir())
         {
             pos = pos.add(0,1,0);
