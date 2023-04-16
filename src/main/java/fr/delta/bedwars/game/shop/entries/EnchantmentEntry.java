@@ -88,7 +88,7 @@ public class EnchantmentEntry extends ShopEntry{
         enchantments.put(enchantment, level + 1);
 
         bedwarsGame.getPlayersInTeam(bedwarsGame.getTeamForPlayer(buyer)).forEach(player -> {
-            bedwarsGame.getInventoryManager().getArmorManager(player).updateArmor();
+            bedwarsGame.getInventoryManager().getArmorManager(player).updateArmor(player);
             bedwarsGame.getDefaultSwordManager().updatePlayer(player, null);
         });
         return ItemStack.EMPTY;
