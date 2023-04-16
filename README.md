@@ -13,5 +13,18 @@ This a bedwars mini game for plasmid, still in developpement, some features are 
 * old regeneration  
 * primitive shops with num_key support 
 * add modded sword which emulate the old pvp, with old damage set  
-* customizable shop system configurable with json files   
-* already over 25 items implemented, even some fully modded such as fireball or launchpad
+* customizable from A to Z, whether forge speed, map, items in shop, genertors in the middle, phase count    
+* over 40 items implemented, even some fully modded such as fireball or launchpad  
+* shopkeepers for item and team upgrades  
+* fancy looking middle generator like hypixel one 
+* blindness, slowness, mining fatigue and alarm traps  
+* reconnection available  
+
+# what planned ? 
+
+* adding tracker, popup tower and bridge egg
+* add cosmetics, kill effect
+* implements statics
+
+I'm also working with Nullptr-rs on a port of Grim-Ac for fabric
+
