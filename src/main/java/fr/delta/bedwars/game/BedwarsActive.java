@@ -31,6 +31,7 @@ import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.player.PlayerSet;
 import xyz.nucleoid.plasmid.game.rule.GameRuleType;
+import xyz.nucleoid.plasmid.util.PlayerRef;
 
 import java.util.*;
 
@@ -41,7 +42,7 @@ public class BedwarsActive {
     final private ServerWorld world;
     private GameActivity activity;
     final private TeamManager teamManager;
-    final private Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap;
+    final private Multimap<GameTeam, PlayerRef> teamPlayersMap;
     final private Map<GameTeamKey, TeamComponents> teamComponentsMap;
     final private List<GameTeam> teamsInOrder;
     final private ClaimManager claim;
@@ -50,7 +51,7 @@ public class BedwarsActive {
     final private InventoryManager inventoryManager;
     final private Multimap<String, ResourceGenerator> middleGeneratorsMap;
 
-    BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, ServerPlayerEntity> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
+    BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, PlayerRef> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
     {
         //set members
         this.gameSpace = gameSpace;
@@ -59,35 +60,41 @@ public class BedwarsActive {
         this.world = world;
         this.teamPlayersMap = teamPlayers;
         this.teamsInOrder = teamsInOrder;
+
+        //recreate new activity
         gameSpace.setActivity(gameActivity -> activity = gameActivity);
-        setupGameRules(); //set gameRules
+
+        //set gameRules
+        setupGameRules();
+
+        //setup things that aren't related to teams
         this.claim = new ClaimManager(gameMap, config, activity);
+        this.middleGeneratorsMap = addMiddleGenerator();
+        this.defaultSwordManager = new SwordManager(this, activity);
+
+        //this must be setup before the teamManager to ensure event are fired in the right order
+        this.deathManager = new DeathManager(this, teamPlayersMap, world, gameMap, config, activity);
+        this.inventoryManager = new InventoryManager(deathManager, this, activity);
+        new FeedbackMessager(this, teamPlayersMap, world, activity);
+
+        //setup teamManager only here because of automated remove of player from team when leaving the gameSpace
         this.teamManager = TeamManager.addTo(activity);
         setupTeam(teamPlayers); //populate teamManager
-        this.deathManager = new DeathManager(this, world, gameMap, config, activity);
         this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
-        this.defaultSwordManager = new SwordManager(this, activity);
-        this.inventoryManager = new InventoryManager(deathManager, teamPlayersMap, teamManager, teamComponentsMap, defaultSwordManager, activity);
-        this.middleGeneratorsMap = addMiddleGenerator();
-        addShopkeepers();
-        var queue = new LinkedList<GameEvent>();
-        for(var gameEventId : config.events())
-        {
-            var gameEvent = AdditionalDataLoader.GAME_EVENT_REGISTRY.get(gameEventId);
-            if(gameEvent == null)
-            {
-                Bedwars.LOGGER.warn("GameEvent {} not found", gameEventId);
-                continue;
-            }
-            queue.add(gameEvent);
-        }
+
+
+        this.inventoryManager.init(teamPlayersMap); //split the init in to part cause of event priority
+
+        var queue = loadEvents();
+        //things that aren't store as private members
         var stageManager = new GameEventManager(world, queue, this, activity);
         BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
-        new FeedbackMessager(teamManager, teamPlayersMap, activity);
+
         new WinChecker(teamsInOrder, teamManager, activity);
         new OldAttackSpeed(20D ,activity);
         new InvisibilityArmorHider(teamManager, activity);
         new ChestLocker(teamComponentsMap, teamManager, activity);
+        addShopkeepers();
         destroySpawn();
         startGame();
         breakBedForEmptyTeam();
@@ -97,7 +104,6 @@ public class BedwarsActive {
     }
     private void setupGameRules()
     {
-        //set gameRules
         activity.deny(GameRuleType.CRAFTING);
         activity.deny(GameRuleType.PORTALS);
         activity.deny(GameRuleType.HUNGER);
@@ -117,7 +123,23 @@ public class BedwarsActive {
         GameProperties.add(activity);
     }
 
-    private void setupTeam(Multimap<GameTeam, ServerPlayerEntity> teamPlayers)
+    private Queue<GameEvent> loadEvents()
+    {
+        var queue = new LinkedList<GameEvent>();
+        for(var gameEventId : config.events())
+        {
+            var gameEvent = AdditionalDataLoader.GAME_EVENT_REGISTRY.get(gameEventId);
+            if(gameEvent == null)
+            {
+                Bedwars.LOGGER.warn("GameEvent {} not found", gameEventId);
+                continue;
+            }
+            queue.add(gameEvent);
+        }
+        return queue;
+    }
+
+    private void setupTeam(Multimap<GameTeam, PlayerRef> teamPlayers)
     {
         for (GameTeam team : teamPlayers.keySet()) {
             //add players to their team
@@ -212,7 +234,7 @@ public class BedwarsActive {
     private void onTeamWin(GameTeam team)
     {
         //end this phase and start tne End phase
-        new BedwarsEnd(gameSpace, world, teamPlayersMap, team);
+        new BedwarsEnd(gameSpace, world);
     }
 
     //accessors
@@ -238,7 +260,7 @@ public class BedwarsActive {
 
     public GameActivity getActivity() { return activity; }
 
-    public Multimap<GameTeam, ServerPlayerEntity> getTeamPlayersMap() {
+    public Multimap<GameTeam, PlayerRef> getTeamPlayersMap() {
         return teamPlayersMap;
     }
 
@@ -247,10 +269,17 @@ public class BedwarsActive {
     }
 
     public TeamComponents getTeamComponentsFor(ServerPlayerEntity player){
-        return teamComponentsMap.get(teamManager.teamFor(player));
+        var team = teamManager.teamFor(player);
+        if(team == null) return null;
+        return teamComponentsMap.get(team);
     }
     public TeamComponents getTeamComponentsFor(GameTeam team){
         return teamComponentsMap.get(team.key());
+    }
+
+    public void addPlayerToTeam(ServerPlayerEntity player, GameTeam team)
+    {
+        teamManager.addPlayerTo(player, team.key());
     }
 
     public void removePlayerFromTeam(ServerPlayerEntity player)

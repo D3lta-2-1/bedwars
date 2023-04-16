@@ -14,6 +14,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import xyz.nucleoid.plasmid.util.PlayerRef;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,14 +44,14 @@ public class ToolEntry extends ShopEntry{
     List<Tier> availableTiers;
 
     private ToolManager getOrCreateManager(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        var toolManagers = bedwarsGame.getInventoryManager().getToolManagers(player);
+        var toolManagers = bedwarsGame.getInventoryManager().getToolManagers(PlayerRef.of(player));
         for (var manager : toolManagers) {
 
             if (manager.getAvailableTiers() == this.availableTiers) {
                 return manager;
             }
         }
-        var toolManager = new ToolManager(player, availableTiers, bedwarsGame.getActivity());
+        var toolManager = new ToolManager(availableTiers);
         toolManagers.add(toolManager);
         return toolManager;
     }
@@ -59,7 +60,9 @@ public class ToolEntry extends ShopEntry{
     public void setup(BedwarsActive bedwarsGame) {
         for(var player : bedwarsGame.getTeamPlayersMap().values())
         {
-            bedwarsGame.getInventoryManager().getToolManagers(player).add(new ToolManager(player, availableTiers, bedwarsGame.getActivity()));
+            if(player == null)
+                continue;
+            bedwarsGame.getInventoryManager().getToolManagers(player).add(new ToolManager(availableTiers));
         }
         super.setup(bedwarsGame);
     }
@@ -120,6 +123,6 @@ public class ToolEntry extends ShopEntry{
     public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         var manager = getOrCreateManager(bedwarsGame, player);
         if(manager.isEmpty()) BedwarsEvents.ensureInventoryIsNotFull(player, bedwarsGame.getActivity());
-        return manager.upgrade();
+        return manager.upgrade(player);
     }
 }

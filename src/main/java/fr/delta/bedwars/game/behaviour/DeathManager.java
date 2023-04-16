@@ -1,5 +1,6 @@
 package fr.delta.bedwars.game.behaviour;
 
+import com.google.common.collect.Multimap;
 import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.BedwarsActive;
@@ -18,12 +19,17 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpacePlayers;
+import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
+import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
+import xyz.nucleoid.plasmid.game.player.PlayerOffer;
+import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
+import xyz.nucleoid.plasmid.util.PlayerRef;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-//in charge of death, final elimination, reconnection, spec connection handling
+//in charge of death, final elimination, and reconnection, spec connection handling
 public class DeathManager {
     static final int RESPAWN_TIME = 5;
     private final BedwarsActive bedwarsGame;
@@ -32,6 +38,7 @@ public class DeathManager {
     private final GameActivity activity;
     private final Vec3d respawnPos;
     private final int voidHigh;
+    private final Multimap<GameTeam, PlayerRef> teamPlayersMap;
 
     static class DeadPlayer
     {
@@ -44,7 +51,7 @@ public class DeathManager {
         }
     }
     private final List<DeadPlayer> deadPlayers = new ArrayList<>();
-    public DeathManager(BedwarsActive bedwarsGame, ServerWorld world, BedwarsMap map, BedwarsConfig config, GameActivity activity)
+    public DeathManager(BedwarsActive bedwarsGame, Multimap<GameTeam, PlayerRef> teamPlayersMap, ServerWorld world, BedwarsMap map, BedwarsConfig config, GameActivity activity)
     {
         this.bedwarsGame = bedwarsGame;
         this.world = world;
@@ -52,9 +59,12 @@ public class DeathManager {
         this.activity = activity;
         this.respawnPos = map.waiting().center();
         this.voidHigh = config.voidHigh();
+        this.teamPlayersMap = teamPlayersMap;
         //register events
         activity.listen(PlayerDeathEvent.EVENT, this::onPlayerDeath);
         activity.listen(GameActivityEvents.TICK, this::tick);
+        activity.listen(GamePlayerEvents.LEAVE, this::onPlayerLeft);
+        activity.listen(GamePlayerEvents.OFFER, this::onPlayerJoin);
     }
 
     public ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source)
@@ -86,6 +96,21 @@ public class DeathManager {
         }
         spawnSpec(player);
         return ActionResult.FAIL;
+    }
+
+    private void onPlayerLeft(ServerPlayerEntity player)
+    {
+        if(isAlive(player))
+        {
+            ServerPlayerEntity attacker = null;
+            if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary) {
+                attacker = adversary;
+            }
+            var bed = bedwarsGame.getTeamComponentsFor(player).bed;
+            activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, player.getDamageSources().outOfWorld(), attacker, bed.isBroken());
+            activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, player.getDamageSources().outOfWorld(), attacker, bed.isBroken());
+            //no need to do anything to remove it, the player will be removed from the game by the team manager, we only need to fire the death event
+        }
     }
 
     private void tick()
@@ -127,7 +152,7 @@ public class DeathManager {
             if(deadPlayer.player == player)
                 return false;
         }
-        return true;
+        return bedwarsGame.getTeamForPlayer(player) != null;
     }
 
     public void spawnSpec(ServerPlayerEntity player)
@@ -146,5 +171,34 @@ public class DeathManager {
         PlayerCustomPacketsSender.changeSubtitle(player, Text.empty());
         var spawn = bedwarsGame.getTeamComponentsFor(player).spawn;
         spawn.spawnPlayer(player);
+    }
+
+    private PlayerOfferResult onPlayerJoin(PlayerOffer offer)
+    {
+        //check if the player was assigned to a team, we can't use the team manager because it's always refer to in-game players
+        var offeredPlayer = offer.player();
+        GameTeam team = null;
+        for(var entry : teamPlayersMap.entries())
+        {
+            var player = entry.getValue();
+            if(PlayerRef.of(offeredPlayer).equals(player))
+            {
+                team = entry.getKey();
+                break;
+            }
+        }
+        //do the player was even in game? or have he a bed?
+        if(team == null || bedwarsGame.getTeamComponentsFor(team).bed.isBroken())
+            return offer.accept(world, respawnPos).and(() -> spawnSpec(offeredPlayer)); //make him a spectator, we could also just deny him
+
+        //he was in game, so we need to respawn him
+        final var teamFinal = team; //we need to make a final copy of the team because it's used in the lambda
+        return offer.accept(world, respawnPos).and(() -> {
+            spawnSpec(offeredPlayer);
+            bedwarsGame.addPlayerToTeam(offeredPlayer, teamFinal);
+            var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            PlayerCustomPacketsSender.showTitle(offeredPlayer, title, 0, 20 * 6, 1);
+            deadPlayers.add(new DeadPlayer(offeredPlayer, world.getTime()));
+        });
     }
 }

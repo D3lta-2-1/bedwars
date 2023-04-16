@@ -1,10 +1,10 @@
 package fr.delta.bedwars.game.player;
 
 import com.google.common.collect.Multimap;
-import fr.delta.bedwars.game.behaviour.SwordManager;
-import fr.delta.bedwars.game.teamComponent.TeamComponents;
+import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.behaviour.DeathManager;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
@@ -12,8 +12,7 @@ import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
-import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
-import xyz.nucleoid.plasmid.game.common.team.TeamManager;
+import xyz.nucleoid.plasmid.util.PlayerRef;
 
 import java.util.*;
 
@@ -30,10 +29,8 @@ public class InventoryManager
         }
     }
     final private DeathManager deathManager;
-    final Map<ServerPlayerEntity, Managers> playerManagerMap;
-    final Map<GameTeamKey, TeamComponents> teamComponentsMap;
-    final private TeamManager teamManager;
-    final private SwordManager defaultSwordManager;
+    final Map<PlayerRef, Managers> playerManagerMap = new Object2ObjectArrayMap<>();
+    final private BedwarsActive game;
     static final List<ItemStack> lootable = new ArrayList<>(Arrays.asList(
             new ItemStack(Items.IRON_INGOT),
             new ItemStack(Items.GOLD_INGOT),
@@ -41,19 +38,21 @@ public class InventoryManager
             new ItemStack(Items.DIAMOND) //todo: could be added to the config
     ));
 
-    public InventoryManager(DeathManager manager, Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap, TeamManager teamManager, Map<GameTeamKey, TeamComponents> teamComponentsMap, SwordManager defaultSwordManager, GameActivity activity)
+    public InventoryManager(DeathManager manager, BedwarsActive game, GameActivity activity)
     {
         this.deathManager = manager;
-        this.teamComponentsMap = teamComponentsMap;
-        this.teamManager = teamManager;
-        this.playerManagerMap = new HashMap<>();
-        this.defaultSwordManager = defaultSwordManager;
-        for(var entry : teamPlayersMap.entries())
-        {
-            playerManagerMap.put(entry.getValue(), new Managers(new PlayerArmorManager(entry.getValue(), entry.getKey(), teamComponentsMap), new ArrayList<>()));
-        }
+        this.game = game;
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
         activity.listen(BedwarsEvents.PLAYER_RESPAWN, this::onPlayerRespawn);
+        ToolManager.init(activity);
+    }
+
+    public void init(Multimap<GameTeam, PlayerRef> teamPlayersMap)
+    {
+        for(var team : teamPlayersMap.keySet())
+        {
+            game.getPlayersInTeam(team).forEach(player -> playerManagerMap.put(PlayerRef.of(player), new Managers(new PlayerArmorManager(team.config().blockDyeColor(), game.getTeamComponentsFor(player).enchantments), new ArrayList<>())));
+        }
     }
 
     List<ItemStack> generateDrop(ServerPlayerEntity player)
@@ -90,9 +89,9 @@ public class InventoryManager
         }
         if(isFinal)
         {
-            playerManagerMap.get(player).toolManagers.forEach(ToolManager::removeTool);
-            defaultSwordManager.removeDefaultSword(player);
-            var forge = teamComponentsMap.get(teamManager.teamFor(player)).forge;
+            playerManagerMap.get(PlayerRef.of(player)).toolManagers.forEach((tool) -> tool.removeTool(player));
+            game.getDefaultSwordManager().removeDefaultSword(player);
+            var forge =game.getTeamComponentsFor(player).forge;
             var world = forge.getWorld();
             for(var stack : player.getInventory().main)
             {
@@ -106,28 +105,28 @@ public class InventoryManager
             {
                 world.spawnEntity(new ItemEntity(world, forge.getCenter().getX(), forge.getCenter().getY(), forge.getCenter().getZ(), stack));
             }
-            playerManagerMap.remove(player);
+            playerManagerMap.remove(PlayerRef.of(player));
         }
         else
         {
             player.getInventory().clear();
-            playerManagerMap.get(player).toolManagers.forEach(ToolManager::decrementTier);
+            playerManagerMap.get(PlayerRef.of(player)).toolManagers.forEach(ToolManager::decrementTier);
         }
     }
 
     private void onPlayerRespawn(ServerPlayerEntity player)
     {
-        var managers= playerManagerMap.get(player);
-        managers.armorManager.updateArmor();
+        var managers= playerManagerMap.get(PlayerRef.of(player));
+        managers.armorManager.updateArmor(player);
         managers.toolManagers.forEach(toolManager -> player.getInventory().offerOrDrop(toolManager.createTool()));
     }
 
     public PlayerArmorManager getArmorManager(ServerPlayerEntity player)
     {
-        return playerManagerMap.get(player).armorManager;
+        return playerManagerMap.get(PlayerRef.of(player)).armorManager;
     }
 
-    public List<ToolManager> getToolManagers(ServerPlayerEntity player)
+    public List<ToolManager> getToolManagers(PlayerRef player)
     {
         return playerManagerMap.get(player).toolManagers;
     }

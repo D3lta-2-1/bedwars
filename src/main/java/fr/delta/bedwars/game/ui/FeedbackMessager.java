@@ -2,10 +2,12 @@ package fr.delta.bedwars.game.ui;
 
 import com.google.common.collect.Multimap;
 import fr.delta.bedwars.TextUtilities;
+import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Style;
@@ -14,19 +16,21 @@ import net.minecraft.util.Formatting;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpacePlayers;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
-import xyz.nucleoid.plasmid.game.common.team.TeamManager;
-
+import xyz.nucleoid.plasmid.util.PlayerRef;
 
 public class FeedbackMessager {
-    final private GameSpacePlayers players;
-    final private TeamManager teamManager;
-    final private Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap;
 
-    public FeedbackMessager(TeamManager teamManager, Multimap<GameTeam, ServerPlayerEntity> teamPlayersMap, GameActivity activity)
+    final BedwarsActive game;
+    final private GameSpacePlayers players;
+    final private Multimap<GameTeam, PlayerRef> teamPlayersMap;
+    final private ServerWorld world;
+
+    public FeedbackMessager(BedwarsActive game, Multimap<GameTeam, PlayerRef> teamPlayersMap, ServerWorld world, GameActivity activity)
     {
-        this.teamManager = teamManager;
+        this.game = game;
         this.players = activity.getGameSpace().getPlayers();
         this.teamPlayersMap = teamPlayersMap;
+        this.world = world;
         activity.listen(BedwarsEvents.BED_BROKEN, this::onBedBreak);
         activity.listen(BedwarsEvents.BED_DESTRUCTION, this::onBedDestruction);
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
@@ -51,7 +55,7 @@ public class FeedbackMessager {
             players.sendMessage(Text.empty());
             for(var player : players)
             {
-                if(teamManager.teamFor(player) == owner.key())
+                if(game.getTeamForPlayer(player) == owner)
                 {
 
                     var title = Text.translatable("bed.bedwars.bedBrokenTitle").setStyle(Style.EMPTY.withColor(Formatting.RED));
@@ -101,7 +105,7 @@ public class FeedbackMessager {
         text.append(name.copy().setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)));
         player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.f, 1.f);
         if(entry.shouldNotifyAllTeam())
-            teamManager.playersIn(teamManager.teamFor(player)).sendMessage(text);
+            game.getPlayersInTeam(game.getTeamForPlayer(player)).sendMessage(text);
         else
             player.sendMessage(text);
     }
@@ -116,7 +120,9 @@ public class FeedbackMessager {
         players.sendMessage(winMessage);
         for(var entries : teamPlayersMap.entries())
         {
-            var player = entries.getValue();
+            var playerRef = entries.getValue();
+            if(playerRef == null) continue;
+            var player = playerRef.getEntity(world);
             if(player == null) continue;
             if(entries.getKey() == team)
             {

@@ -19,26 +19,30 @@ public class WinChecker {
         this.teamInOrder = teamInOrder;
         this.activity = activity;
         activity.listen(BedwarsEvents.AFTER_PLAYER_DEATH, this::onPlayerDeath);
+        activity.listen(BedwarsEvents.BED_DESTRUCTION, this::checkForWin);
     }
 
     void onPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer, boolean isFinal)
     {
         if(isFinal)
+            checkForWin();
+    }
+
+    void checkForWin()
+    {
+        GameTeam lastTeam = null;
+        for(var team : teamInOrder)
         {
-            GameTeam lastTeam = null;
-            for(var team : teamInOrder)
+            if(teamManager.playersIn(team.key()).size() !=0)
             {
-                if(teamManager.playersIn(team.key()).size() !=0)
+                if(lastTeam == null)
+                    lastTeam = team;
+                else
                 {
-                    if(lastTeam == null)
-                        lastTeam = team;
-                    else
-                    {
-                        return;
-                    }
+                    return; //more than one team alive
                 }
             }
-            activity.invoker(BedwarsEvents.TEAM_WIN).onTeamWin(lastTeam);
         }
+        activity.invoker(BedwarsEvents.TEAM_WIN).onTeamWin(lastTeam);
     }
 }

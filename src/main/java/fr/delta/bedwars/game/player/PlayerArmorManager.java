@@ -1,21 +1,19 @@
 package fr.delta.bedwars.game.player;
-
-import fr.delta.bedwars.game.teamComponent.TeamComponents;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
-import xyz.nucleoid.plasmid.game.common.team.GameTeam;
-import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
+import net.minecraft.util.DyeColor;
 import xyz.nucleoid.plasmid.util.ItemStackBuilder;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class PlayerArmorManager {
-    final private ServerPlayerEntity player;
-    final private GameTeam team;
-    final private Map<GameTeamKey, TeamComponents> teamComponentsMap;
+    final private DyeColor armorColor;
+    final private Map<Enchantment, Integer> enchantments;
 
     public enum ArmorLevel
     {
@@ -41,18 +39,17 @@ public class PlayerArmorManager {
     }
     private ArmorLevel armorLevel;
 
-    public PlayerArmorManager(ServerPlayerEntity player, GameTeam team, Map<GameTeamKey, TeamComponents> teamComponentsMap)
+    public PlayerArmorManager(DyeColor armorColor, Map<Enchantment, Integer> enchantments)
     {
-        this.player = player;
-        this.team = team;
-        this.teamComponentsMap = teamComponentsMap;
+        this.armorColor = armorColor;
+        this.enchantments = enchantments;
         this.armorLevel = ArmorLevel.LEATHER;
     }
 
-    public void setLevel(ArmorLevel level)
+    public void setLevel(ServerPlayerEntity player, ArmorLevel level)
     {
         this.armorLevel = level;
-        updateArmor();
+        updateArmor(player);
     }
 
     public ArmorLevel getLevel()
@@ -60,19 +57,17 @@ public class PlayerArmorManager {
         return armorLevel;
     }
 
-    public void updateArmor()
+    public void updateArmor(ServerPlayerEntity player)
     {
         var armor = getArmor();
-        var config = team.config();
         for(var piece : armor)
         {
-            var builder = ItemStackBuilder.of(piece).setUnbreakable().setDyeColor(config.dyeColor().getRgb());
+            var builder = ItemStackBuilder.of(piece).setUnbreakable().setDyeColor(armorColor.getSignColor());
             if(piece.getSlotType() == EquipmentSlot.HEAD)
             {
                 builder.addEnchantment(Enchantments.AQUA_AFFINITY, 1);
             }
-            var enchantments = teamComponentsMap.get(team.key()).enchantments;
-            for(var enchantment : enchantments.entrySet())
+            for(var enchantment : this.enchantments.entrySet())
             {
                 if(enchantment.getKey().isAcceptableItem(builder.build()))
                     builder.addEnchantment(enchantment.getKey(), enchantment.getValue());

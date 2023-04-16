@@ -91,7 +91,7 @@ public class ArmorEntry extends ShopEntry {
 
     @Override
     public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        bedwarsGame.getInventoryManager().getArmorManager(player).setLevel(armorLevel);
+        bedwarsGame.getInventoryManager().getArmorManager(player).setLevel(player, armorLevel);
         return ItemStack.EMPTY;
     }
 

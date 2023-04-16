@@ -1,12 +1,9 @@
 package fr.delta.bedwars.game;
 
-import com.google.common.collect.Multimap;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameCloseReason;
 import xyz.nucleoid.plasmid.game.GameSpace;
-import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 
 //Activity handler for the end of the Game, manage the close and should be suitable for victory dances
@@ -18,7 +15,7 @@ public class BedwarsEnd {
     long date;
     static final int timeBeforeClose = 10 * 20; //5s
 
-    BedwarsEnd(GameSpace gameSpace, ServerWorld world, Multimap<GameTeam, ServerPlayerEntity> teamPlayers, GameTeam winner)
+    BedwarsEnd(GameSpace gameSpace, ServerWorld world)
     {
         this.space = gameSpace;
         this.date = world.getTime();

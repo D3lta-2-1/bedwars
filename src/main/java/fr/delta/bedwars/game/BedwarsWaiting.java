@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import xyz.nucleoid.plasmid.game.*;
 import xyz.nucleoid.plasmid.game.common.GameWaitingLobby;
@@ -15,6 +14,7 @@ import xyz.nucleoid.plasmid.game.common.team.GameTeamConfig;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
+import xyz.nucleoid.plasmid.util.PlayerRef;
 
 import java.util.*;
 
@@ -75,14 +75,14 @@ public class BedwarsWaiting {
         //to a scoreboard ordered
         var teamsInOrder = new ArrayList<>(teams);
         //make teams... without TeamAllocator because it auto delete empty teams and I prefer have a key associated with null for empty team
-        Multimap<GameTeam, ServerPlayerEntity> teamPlayers = HashMultimap.create();
+        Multimap<GameTeam, PlayerRef> teamPlayers = HashMultimap.create();
         var players = this.gameSpace.getPlayers().iterator();
         Collections.shuffle(teams, new Random());
         for(var team : teams)
         {
             for(int i = 0; i < config.teamSize(); i++)
             {
-                teamPlayers.put(team, (players.hasNext() ? players.next() : null));
+                teamPlayers.put(team, (players.hasNext() ? PlayerRef.of(players.next()) : null));
             }
         }
 
