@@ -61,6 +61,7 @@ public class BedwarsActive {
         this.teamPlayersMap = teamPlayers;
         this.teamsInOrder = teamsInOrder;
 
+
         //recreate new activity
         gameSpace.setActivity(gameActivity -> activity = gameActivity);
 
@@ -74,7 +75,7 @@ public class BedwarsActive {
 
         //this must be setup before the teamManager to ensure event are fired in the right order
         this.deathManager = new DeathManager(this, teamPlayersMap, world, gameMap, config, activity);
-        this.inventoryManager = new InventoryManager(deathManager, this, activity);
+        this.inventoryManager = new InventoryManager(deathManager, this, config, activity);
         new FeedbackMessager(this, teamPlayersMap, world, activity);
 
         //setup teamManager only here because of automated remove of player from team when leaving the gameSpace
@@ -82,8 +83,8 @@ public class BedwarsActive {
         setupTeam(teamPlayers); //populate teamManager
         this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
 
-
-        this.inventoryManager.init(teamPlayersMap); //split the init in to part cause of event priority
+        //split the inventory manager init in to part cause of event priority
+        this.inventoryManager.init(teamPlayersMap);
 
         var queue = loadEvents();
         //things that aren't store as private members
@@ -153,7 +154,10 @@ public class BedwarsActive {
 
     private Map<GameTeamKey, TeamComponents> makeTeamComponents()
     {
-        var builder = new TeamComponents.Builder(teamManager, activity, world, claim, deathManager, config, gameMap);
+        var forgeConfig = AdditionalDataLoader.FORGE_CONFIG_REGISTRY.get(config.forgeConfigId());
+        if(forgeConfig == null)
+            throw new NullPointerException(config.forgeConfigId().toString() + " forge does not exist");
+        var builder = new TeamComponents.Builder(teamManager, activity, world, claim, deathManager, forgeConfig, gameMap);
         var teamComponentsMap = new HashMap<GameTeamKey, TeamComponents>();
         for(var team : teamManager)
         {

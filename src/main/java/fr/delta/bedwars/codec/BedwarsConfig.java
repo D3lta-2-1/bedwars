@@ -5,7 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Identifier;
 import java.util.List;
 
-public record BedwarsConfig(int teamSize, Identifier mapId, Identifier forgeConfigId, List<Identifier> generatorTypeIdList, List<Identifier> events, Identifier shopCategoriesId, Identifier shopEntriesId, int highLimit, int downLimit, int voidHigh, long timeOfDay) {
+public record BedwarsConfig(int teamSize, Identifier mapId, Identifier forgeConfigId, List<Identifier> generatorTypeIdList, List<Identifier> events, Identifier shopCategoriesId, Identifier shopEntriesId, int highLimit, int downLimit, int voidHigh, long timeOfDay)
+{
     public static final Codec<BedwarsConfig> CODEC = RecordCodecBuilder.create(instance ->
         instance.group(
                 Codec.INT.optionalFieldOf("team_size", 1).forGetter(BedwarsConfig::teamSize),

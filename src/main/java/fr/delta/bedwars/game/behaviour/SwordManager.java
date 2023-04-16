@@ -4,6 +4,7 @@ import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.event.ItemThrowEvent;
 import fr.delta.bedwars.event.SlotInteractionEvent;
+import fr.delta.bedwars.mixin.PlayerInventoryAccessor;
 import fr.delta.notasword.item.OldSwords;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.ItemEntity;
@@ -42,63 +43,45 @@ public class SwordManager {
 
     public void removeDefaultSword(ServerPlayerEntity player)
     {
-        var stackList= player.getInventory().main;
-        for(int i =0; i < stackList.size(); i++)
+        for(var stackList : ((PlayerInventoryAccessor)player.getInventory()).getCombinedInventory())
         {
-            if(stackList.get(i).isOf(defaultSword))
-                stackList.set(i, ItemStack.EMPTY);
+            for(int i =0; i < stackList.size(); i++)
+            {
+                if(stackList.get(i).isOf(defaultSword))
+                    stackList.set(i, ItemStack.EMPTY);
+            }
         }
     }
 
     public void updatePlayer(ServerPlayerEntity player, ScreenHandler handler)
     {
-        var main= player.getInventory().main;
-        var offHand= player.getInventory().offHand;
         int lastSwordIndex = -1; //should always refer a sword, if it's on -1 at the end, the player should get a sword
-        List<ItemStack> container = main;
-
-        for(int i =0; i < main.size(); i++)
+        List<ItemStack> container = null;
+        for(var iteratedContainer : ((PlayerInventoryAccessor)player.getInventory()).getCombinedInventory())
         {
-            if(main.get(i).getItem() instanceof SwordItem)
+            for(int i =0; i < iteratedContainer.size(); i++)
             {
-                if(lastSwordIndex == -1) //first sword we find
+                if(iteratedContainer.get(i).getItem() instanceof SwordItem)
                 {
-                    lastSwordIndex = i;
-                }
-                else if (main.get(i).isOf(defaultSword)) //if it's not the first sword, and it's a defaultSword
-                {
-                    main.set(i, ItemStack.EMPTY);
-                }
-                else if(container.get(lastSwordIndex).isOf(defaultSword))
-                {
-                    container.set(lastSwordIndex, ItemStack.EMPTY);
-                    lastSwordIndex = i;
+                    if(lastSwordIndex == -1) //first sword we find
+                    {
+                        lastSwordIndex = i;
+                        container = iteratedContainer;
+                    }
+                    else if (iteratedContainer.get(i).isOf(defaultSword)) //if it's not the first sword, and it's a defaultSword
+                    {
+                        iteratedContainer.set(i, ItemStack.EMPTY);
+                    }
+                    else if(container.get(lastSwordIndex).isOf(defaultSword))
+                    {
+                        container.set(lastSwordIndex, ItemStack.EMPTY);
+                        lastSwordIndex = i;
+                        container = iteratedContainer;
+                    }
                 }
             }
         }
-        for(int i =0; i < offHand.size(); i++)
-        {
-            if(offHand.get(i).getItem() instanceof SwordItem)
-            {
-                if(lastSwordIndex == -1) //first sword we find
-                {
-                    lastSwordIndex = i;
-                    container = offHand;
-                }
-                else if (offHand.get(i).isOf(defaultSword)) //if it's not the first sword, and it's a defaultSword
-                {
-                    offHand.set(i, ItemStack.EMPTY);
-                }
-                else if(container.get(lastSwordIndex).isOf(defaultSword))
-                {
-                    container.set(lastSwordIndex, ItemStack.EMPTY);
-                    lastSwordIndex = i;
-                    container = offHand;
-                }
-            }
-        }
-
-        if((handler != null && handler.getCursorStack().getItem() instanceof SwordItem))
+        if((handler != null && handler.getCursorStack().getItem() instanceof SwordItem)) //check if the cursor is a sword
         {
 
             if(lastSwordIndex != -1 && container.get(lastSwordIndex).isOf(defaultSword))

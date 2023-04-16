@@ -21,9 +21,7 @@ import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 import xyz.nucleoid.stimuli.event.item.ItemPickupEvent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Forge {
 
@@ -44,6 +42,21 @@ public class Forge {
                 Codec.STRING.optionalFieldOf("description_key", "").forGetter(Tier::descriptionKey),
                 Codec.unboundedMap(Registries.ITEM.getCodec(), SpawnData.CODEC).fieldOf("items_to_spawn").forGetter(Tier::itemsToSpawn)
         ).apply(instance, Tier::new));
+
+        public Set<Item> itemsSpawned()
+        {
+            return itemsToSpawn.keySet();
+        }
+
+        public static Set<Item> itemsSpawned(List<Tier> tiers)
+        {
+            Set<Item> items = new HashSet<>();
+            for(var tier : tiers)
+            {
+                items.addAll(tier.itemsSpawned());
+            }
+            return items;
+        }
     }
 
     public static final Codec<List<Tier>> CODEC = Tier.CODEC.listOf();

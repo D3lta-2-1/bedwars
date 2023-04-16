@@ -1,14 +1,18 @@
 package fr.delta.bedwars.game.player;
 
 import com.google.common.collect.Multimap;
+import fr.delta.bedwars.codec.BedwarsConfig;
+import fr.delta.bedwars.data.AdditionalDataLoader;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.behaviour.DeathManager;
+import fr.delta.bedwars.game.teamComponent.Forge;
+import fr.delta.bedwars.mixin.PlayerInventoryAccessor;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
@@ -28,23 +32,34 @@ public class InventoryManager
             this.toolManagers = toolManagers;
         }
     }
-    final private DeathManager deathManager;
-    final Map<PlayerRef, Managers> playerManagerMap = new Object2ObjectArrayMap<>();
-    final private BedwarsActive game;
-    static final List<ItemStack> lootable = new ArrayList<>(Arrays.asList(
-            new ItemStack(Items.IRON_INGOT),
-            new ItemStack(Items.GOLD_INGOT),
-            new ItemStack(Items.EMERALD),
-            new ItemStack(Items.DIAMOND) //todo: could be added to the config
-    ));
+    private final DeathManager deathManager;
+    private final Map<PlayerRef, Managers> playerManagerMap = new Object2ObjectArrayMap<>();
+    private final BedwarsActive game;
+    private final Set<Item> lootable;
 
-    public InventoryManager(DeathManager manager, BedwarsActive game, GameActivity activity)
+    public InventoryManager(DeathManager manager, BedwarsActive game, BedwarsConfig config, GameActivity activity)
     {
         this.deathManager = manager;
         this.game = game;
+        this.lootable = getLootable(config);
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
         activity.listen(BedwarsEvents.PLAYER_RESPAWN, this::onPlayerRespawn);
         ToolManager.init(activity);
+    }
+
+    public Set<Item> getLootable(BedwarsConfig config)
+    {
+        var items = new HashSet<Item>();
+        var forgeConfig = AdditionalDataLoader.FORGE_CONFIG_REGISTRY.get(config.forgeConfigId());
+        if(forgeConfig != null) //silently fail if forge config is not found, because the error be thrown here
+            items.addAll(Forge.Tier.itemsSpawned(forgeConfig));
+        for(var generatorType : config.generatorTypeIdList())
+        {
+            var generatorBuilder = AdditionalDataLoader.GENERATOR_TYPE_REGISTRY.get(generatorType);
+            if(generatorBuilder != null)
+                items.add(generatorBuilder.getItem());
+        }
+        return items;
     }
 
     public void init(Multimap<GameTeam, PlayerRef> teamPlayersMap)
@@ -57,17 +72,21 @@ public class InventoryManager
 
     List<ItemStack> generateDrop(ServerPlayerEntity player)
     {
-        var itemList = new ArrayList<ItemStack>();
+        var loots = new ArrayList<ItemStack>();
         var inventory = player.getInventory();
-        for(var lootableStack : lootable)
+        for(var Lists : ((PlayerInventoryAccessor)inventory).getCombinedInventory())
         {
-            while(inventory.contains(lootableStack)){
-                var index = inventory.getSlotWithStack(lootableStack);
-                inventory.removeStack(index);
-                itemList.add(inventory.removeStack(index));
+            for(int i = 0; i < Lists.size(); i++)
+            {
+                var stack = Lists.get(i);
+                if(lootable.contains(stack.getItem()))
+                {
+                    loots.add(stack);
+                    Lists.set(i, ItemStack.EMPTY);
+                }
             }
         }
-        return itemList;
+        return loots;
     }
 
     private void onPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer, boolean isFinal)
@@ -82,6 +101,7 @@ public class InventoryManager
         else if(!source.equals(player.getDamageSources().outOfWorld()) && !isFinal)
         {
             var loots = generateDrop(player);
+            //todo: add a fancy message that says how many items the player earned
             for(var item : loots)
             {
                 player.dropStack(item);
