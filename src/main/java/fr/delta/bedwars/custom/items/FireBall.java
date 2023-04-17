@@ -1,6 +1,9 @@
 package fr.delta.bedwars.custom.items;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
+import eu.pb4.polymer.core.api.item.PolymerItemUtils;
+import fr.delta.bedwars.game.BedwarsActiveTracker;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -24,7 +27,8 @@ public class FireBall extends Item implements PolymerItem {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand)
+    {
         ItemStack itemStack = user.getStackInHand(hand);
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {
@@ -50,12 +54,29 @@ public class FireBall extends Item implements PolymerItem {
     }
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand)
+    {
         return ActionResult.PASS;
     }
 
     @Override
     public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
         return Items.FIREWORK_STAR;
+    }
+
+    @Override
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipContext context, @Nullable ServerPlayerEntity viewer)
+    {
+        var holder = itemStack.getHolder();
+        var player = holder instanceof ServerPlayerEntity ? (ServerPlayerEntity) holder : viewer;
+        ItemStack out = PolymerItemUtils.createItemStack(itemStack, context, player);
+        var bedwarsActive = BedwarsActiveTracker.getBedwarsActive(player);
+        if(bedwarsActive == null) return out;
+        var team = bedwarsActive.getTeamForPlayer(player);
+        if(team == null) return out;
+        var nbt = out.getOrCreateSubNbt("Explosion");
+        nbt.putIntArray("Colors", new int[]{team.config().blockDyeColor().getFireworkColor()});
+        nbt.putByte("Type", (byte)0);
+        return out;
     }
 }

@@ -52,6 +52,7 @@ public class BedwarsActive {
     final private InventoryManager inventoryManager;
     final private Multimap<String, ResourceGenerator> middleGeneratorsMap;
 
+
     BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, PlayerRef> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
     {
         //set members
@@ -104,6 +105,8 @@ public class BedwarsActive {
 
         //should be the last thing registered to enforce the order of the events
         activity.listen(BedwarsEvents.TEAM_WIN, this::onTeamWin);
+
+        BedwarsActiveTracker.addGame(this.gameSpace, this);
     }
     private void setupGameRules()
     {
@@ -242,6 +245,7 @@ public class BedwarsActive {
     {
         //end this phase and start tne End phase
         new BedwarsEnd(gameSpace, world);
+        BedwarsActiveTracker.removeGame(this.gameSpace);
     }
 
     //accessors
