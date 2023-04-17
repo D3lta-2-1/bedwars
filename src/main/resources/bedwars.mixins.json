@@ -13,6 +13,7 @@
     "rules.EnderPearlEntityMixin",
     "rules.ExplosionBehaviorMixin",
     "rules.ExplosionMixin",
+    "rules.FireBlockMixin",
     "slotInteractionEvent.ScreenHandlerMixin",
     "statusEffectEvent.LivingEntityMixin"
   ],
