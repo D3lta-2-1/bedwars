@@ -28,6 +28,7 @@ import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
+import xyz.nucleoid.plasmid.game.common.team.TeamChat;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.player.PlayerSet;
 import xyz.nucleoid.plasmid.game.rule.GameRuleType;
@@ -80,6 +81,7 @@ public class BedwarsActive {
 
         //setup teamManager only here because of automated remove of player from team when leaving the gameSpace
         this.teamManager = TeamManager.addTo(activity);
+        TeamChat.addTo(activity, teamManager);
         setupTeam(teamPlayers); //populate teamManager
         this.teamComponentsMap = makeTeamComponents(); //forge bed, spawn ect
 
@@ -121,6 +123,7 @@ public class BedwarsActive {
         activity.deny(GameRules.RECIPE_BOOK_USAGE);
         activity.allow(GameRules.AMPLIFIED_EXPLOSION_KNOCKBACK);
         activity.allow(GameRules.REDUCED_EXPLOSION_DAMAGE);
+        activity.deny(GameRules.FIRE_SPREAD);
         GameProperties.add(activity);
     }
 

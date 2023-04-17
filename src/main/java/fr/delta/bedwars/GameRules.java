@@ -14,4 +14,6 @@ public class GameRules {
 
     public static final GameRuleType REDUCED_EXPLOSION_DAMAGE = GameRuleType.create();
     public static final GameRuleType AMPLIFIED_EXPLOSION_KNOCKBACK = GameRuleType.create();
+
+    public static final GameRuleType FIRE_SPREAD = GameRuleType.create();
 }

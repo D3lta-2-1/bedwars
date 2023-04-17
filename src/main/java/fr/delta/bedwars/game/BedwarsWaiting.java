@@ -6,6 +6,7 @@ import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.GameRules;
 import xyz.nucleoid.plasmid.game.*;
 import xyz.nucleoid.plasmid.game.common.GameWaitingLobby;
 import xyz.nucleoid.plasmid.game.common.config.PlayerConfig;
@@ -46,6 +47,8 @@ public class BedwarsWaiting {
         var map = BedwarsMap.loadMap(config, context.server());
         var worldConfig = map.asRuntimeWorldConfig();
         worldConfig.setTimeOfDay(config.timeOfDay());
+        worldConfig.setGameRule(GameRules.DO_FIRE_TICK, true);
+        worldConfig.setGameRule(GameRules.RANDOM_TICK_SPEED, 100);
 
         return context.openWithWorld(worldConfig, (activity, world) ->
             new BedwarsWaiting(world, map, activity, config));
