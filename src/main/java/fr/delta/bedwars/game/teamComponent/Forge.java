@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -188,35 +189,26 @@ public class Forge {
 
     private ActionResult onPickupItem(ServerPlayerEntity player, ItemEntity entity, ItemStack stack)
     {
-        if(!stack.hasNbt()) return ActionResult.PASS;
-        //remove the splittable_tag
+        //check if the item was picked up in this forge
+        var forgeBox = bounds.asBox();
+        if(!entity.getBoundingBox().intersects(forgeBox)) return ActionResult.PASS;
+
         var nbt = stack.getNbt();
-        assert nbt != null;
+        if(nbt == null) return ActionResult.PASS;
+
         if(!nbt.contains(SPLITTABLE_KEY)) return ActionResult.PASS;
         var splittable = nbt.getBoolean(SPLITTABLE_KEY);
         stack.setNbt(null);
         if(!splittable) return ActionResult.PASS;
 
-        //check if the item was picked up in this forge
-        var forgeBox = bounds.asBox();
-        if(!player.getBoundingBox().intersects(forgeBox)) return ActionResult.PASS;
-
-        //get teamMates
         var team = teamManager.teamFor(player);
         if(team == null) return ActionResult.PASS;
 
-        //check if any teamMates are in the forge
-        for(var teamMate : teamManager.playersIn(team) )
-        {
-            if(teamMate.equals(player)) continue;
-            if(!deathManager.isAlive(player)) continue;
-            var teamMateBox = teamMate.getBoundingBox();
-            if(forgeBox.intersects(teamMateBox))
-            {
-                teamMate.giveItemStack(stack.copy());
-            }
-
-        }
+        var players = world.getEntitiesByClass(ServerPlayerEntity.class, forgeBox, (playerEntity) -> team == teamManager.teamFor(playerEntity) && deathManager.isAlive(playerEntity) && playerEntity != player);
+        players.forEach((teammate) -> {
+            teammate.giveItemStack(stack.copy());
+            teammate.networkHandler.sendPacket(new ItemPickupAnimationS2CPacket(entity.getId(), teammate.getId(), stack.getCount()));
+        });
         return ActionResult.PASS;
     }
 }
