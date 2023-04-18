@@ -66,6 +66,8 @@ public class BedwarsActive {
 
         //recreate new activity
         gameSpace.setActivity(gameActivity -> activity = gameActivity);
+        //var statisticBundle = gameSpace.getStatistics().bundle(Bedwars.ID);
+        //statisticBundle.forPlayer().
 
         //set gameRules
         setupGameRules();
@@ -104,9 +106,8 @@ public class BedwarsActive {
         breakBedForEmptyTeam();
 
         //should be the last thing registered to enforce the order of the events
+        BedwarsStatistic.addTo(gameSpace.getStatistics().bundle(Bedwars.ID), activity);
         activity.listen(BedwarsEvents.TEAM_WIN, this::onTeamWin);
-
-        BedwarsActiveTracker.addGame(this.gameSpace, this);
     }
     private void setupGameRules()
     {
@@ -245,7 +246,6 @@ public class BedwarsActive {
     {
         //end this phase and start tne End phase
         new BedwarsEnd(gameSpace, world);
-        BedwarsActiveTracker.removeGame(this.gameSpace);
     }
 
     //accessors
