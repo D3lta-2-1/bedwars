@@ -97,7 +97,7 @@ public abstract class ShopEntry {
         return null;
     }
 
-    public void editNbt(NbtCompound nbt) {}
+    public void editNbt(NbtCompound nbt, BedwarsActive bedwarsGame, ServerPlayerEntity player) {}
 
     public void setup(BedwarsActive bedwarsGame) {}
 

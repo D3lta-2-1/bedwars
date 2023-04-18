@@ -95,7 +95,7 @@ public class EnchantmentEntry extends ShopEntry{
     }
 
     @Override
-    public void editNbt(NbtCompound nbt) {
+    public void editNbt(NbtCompound nbt, BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         nbt.putByte("HideFlags", (byte) 127); //hide specificity
     }
 

@@ -106,7 +106,7 @@ public class PotionEntry extends ShopEntry
     }
 
     @Override
-    public void editNbt(NbtCompound nbt) {
+    public void editNbt(NbtCompound nbt, BedwarsActive bedwarsGame, ServerPlayerEntity player) {
        nbt.copyFrom(templatePotion.getNbt());
     }
 

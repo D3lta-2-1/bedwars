@@ -74,11 +74,12 @@ public class DeathManager {
             var bed = bedwarsGame.getTeamComponentsFor(player).bed;
             ServerPlayerEntity attacker = null;
 
-            if (source.getAttacker() != null) {
-                if (source.getAttacker() instanceof ServerPlayerEntity adversary) {
-                    attacker = adversary;
-                }
-            } else if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary) {
+            if (source.getAttacker() != null && source.getAttacker() instanceof ServerPlayerEntity adversary && adversary != player)
+            {
+                attacker = adversary;
+            }
+            else if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary && adversary != player)
+            {
                 attacker = adversary;
             }
             activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, source, attacker, bed.isBroken());
@@ -103,7 +104,7 @@ public class DeathManager {
         if(isAlive(player))
         {
             ServerPlayerEntity attacker = null;
-            if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary) {
+            if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary && adversary != player) {
                 attacker = adversary;
             }
             var bed = bedwarsGame.getTeamComponentsFor(player).bed;

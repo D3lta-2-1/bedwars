@@ -2,7 +2,6 @@ package fr.delta.bedwars.custom.items;
 
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.core.api.item.PolymerItemUtils;
-import fr.delta.bedwars.game.BedwarsActiveTracker;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -67,16 +66,13 @@ public class FireBall extends Item implements PolymerItem {
     @Override
     public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipContext context, @Nullable ServerPlayerEntity viewer)
     {
-        var holder = itemStack.getHolder();
-        var player = holder instanceof ServerPlayerEntity ? (ServerPlayerEntity) holder : viewer;
-        ItemStack out = PolymerItemUtils.createItemStack(itemStack, context, player);
-        var bedwarsActive = BedwarsActiveTracker.getBedwarsActive(player);
-        if(bedwarsActive == null) return out;
-        var team = bedwarsActive.getTeamForPlayer(player);
-        if(team == null) return out;
+        ItemStack out = PolymerItemUtils.createItemStack(itemStack, context, viewer);
         var nbt = out.getOrCreateSubNbt("Explosion");
-        nbt.putIntArray("Colors", new int[]{team.config().blockDyeColor().getFireworkColor()});
+        if(itemStack.getNbt() == null || !itemStack.getNbt().contains("Color")) return out;
+        nbt.putIntArray("Colors", new int[]{itemStack.getNbt().getInt("Color")});
         nbt.putByte("Type", (byte)0);
+        if(out.getNbt() != null && out.getNbt().contains("Color"))
+            out.getNbt().remove("Color");
         return out;
     }
 }
