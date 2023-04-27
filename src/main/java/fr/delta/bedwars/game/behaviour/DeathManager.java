@@ -158,6 +158,8 @@ public class DeathManager {
 
     public void spawnSpec(ServerPlayerEntity player)
     {
+        player.closeHandledScreen();
+        PlayerCustomPacketsSender.showOverlay(player, Text.empty());
         player.clearStatusEffects();
         player.changeGameMode(GameMode.SPECTATOR);
         TeleporterLogic.spawnPlayer(player, respawnPos, world);

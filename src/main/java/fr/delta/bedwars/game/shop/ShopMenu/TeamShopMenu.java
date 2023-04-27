@@ -17,11 +17,13 @@ import java.util.List;
 public class TeamShopMenu extends ShopMenu {
     private final List<Identifier> teamUpgrade;
     private final List<Identifier> traps;
+    private final TinyRegistry<ShopEntry> entries;
     public TeamShopMenu(BedwarsActive bedwarsActive, TinyRegistry<ShopEntry> entries, List<Identifier> teamUpgrade, List<Identifier> traps, GameActivity activity)
     {
-        super(bedwarsActive, entries, activity);
+        super(bedwarsActive, activity);
         this.teamUpgrade = teamUpgrade;
         this.traps = traps;
+        this.entries = entries;
     }
     @Override
     public void open(ServerPlayerEntity player) {
@@ -34,8 +36,8 @@ public class TeamShopMenu extends ShopMenu {
         };
         gui.setAutoUpdate(false);
         gui.setTitle(Text.translatable("teamShop.bedwars.title"));
-        buildListAt(gui, teamUpgrade, 1, 1, 3, 2);
-        buildListAt(gui, traps, 5, 1, 3, 2);
+        buildListAt(gui, teamUpgrade, entries,1, 1, 3, 2);
+        buildListAt(gui, traps, entries,5, 1, 3, 2);
         buildSeparator(gui, 3);
         buildTrapQueueView(gui);
         gui.open();
@@ -44,7 +46,7 @@ public class TeamShopMenu extends ShopMenu {
     @Override
     protected void afterPurchase(SlotGuiInterface gui) {
         buildTrapQueueView(gui);
-        buildListAt(gui, traps, 5, 1, 3, 2);
+        buildListAt(gui, traps, entries, 5, 1, 3, 2);
     }
 
     private void buildTrapQueueView(SlotGuiInterface gui)

@@ -14,11 +14,13 @@ import java.util.List;
 
 public class ItemShopMenu extends ShopMenu {
     final List<ShopCategoriesConfig.Category> categories;
+    final TinyRegistry<ShopEntry> entries;
 
     public ItemShopMenu(BedwarsActive bedwarsActive, TinyRegistry<ShopEntry> entries, List<ShopCategoriesConfig.Category> categories, GameActivity activity)
     {
-        super(bedwarsActive, entries, activity);
+        super(bedwarsActive, activity);
         this.categories = categories;
+        this.entries = entries;
     }
     public void open(ServerPlayerEntity player)
     {
@@ -45,7 +47,7 @@ public class ItemShopMenu extends ShopMenu {
             builder.setItem(category.icon());
             builder.setName(Text.translatable(category.name()));
             builder.getOrCreateNbt().putByte("HideFlags", (byte) 127);
-            builder.setCallback( click -> buildListAt(gui, category.entries(), 1,2,7,3));
+            builder.setCallback( click -> buildListAt(gui, category.entries(), entries,1,2,7,3));
             gui.setSlot(slot, builder);
             slot++;
         }

@@ -26,6 +26,7 @@ public class InventoryManager
     {
         PlayerArmorManager armorManager;
         List<ToolManager> toolManagers;
+
         public Managers(PlayerArmorManager armorManager, List<ToolManager> toolManagers)
         {
             this.armorManager = armorManager;
@@ -111,6 +112,7 @@ public class InventoryManager
         {
             playerManagerMap.get(PlayerRef.of(player)).toolManagers.forEach((tool) -> tool.removeTool(player));
             game.getDefaultSwordManager().removeDefaultSword(player);
+            game.getCompassManager().removeCompass(player);
             var forge =game.getTeamComponentsFor(player).forge;
             var world = forge.getWorld();
             for(var stack : player.getInventory().main)

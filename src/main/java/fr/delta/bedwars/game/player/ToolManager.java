@@ -137,9 +137,8 @@ public class ToolManager {
         {
             var playerStack = player.getInventory().getStack(button);
             if(isTool(playerStack))
-            {
                 return ActionResult.FAIL;
-            }
+
         }
         return ActionResult.PASS;
     }

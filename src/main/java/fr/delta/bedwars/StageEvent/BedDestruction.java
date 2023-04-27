@@ -6,7 +6,7 @@ import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import net.minecraft.text.Text;
 
-public record BedDestruction(int time) implements GameEvent {
+public record BedDestruction(int time) implements StageEvent {
 
     public static final Codec<BedDestruction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("time").forGetter(BedDestruction::time)

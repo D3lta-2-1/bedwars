@@ -8,7 +8,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import fr.delta.bedwars.Bedwars;
-import fr.delta.bedwars.StageEvent.GameEvent;
+import fr.delta.bedwars.StageEvent.StageEvent;
 import fr.delta.bedwars.StageEvent.GameEventConfig;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.resourceGenerator.GeneratorBuilder;
@@ -34,7 +34,7 @@ public class AdditionalDataLoader {
     public static final TinyRegistry<TinyRegistry<ShopEntry>> SHOP_ENTRIES_REGISTRY = TinyRegistry.create();
     public static final TinyRegistry<List<Forge.Tier>> FORGE_CONFIG_REGISTRY = TinyRegistry.create();
     public static final TinyRegistry<GeneratorBuilder> GENERATOR_TYPE_REGISTRY = TinyRegistry.create();
-    public static final TinyRegistry<GameEvent> GAME_EVENT_REGISTRY = TinyRegistry.create();
+    public static final TinyRegistry<StageEvent> GAME_EVENT_REGISTRY = TinyRegistry.create();
     private static final String ENTRIES_PATH = "bedwars_entries";
     private static final String CATEGORY_PATH = "bedwars_categories";
     private static final String FORGE_PATH = "bedwars_forges";
@@ -176,7 +176,7 @@ public class AdditionalDataLoader {
 
                     Identifier identifier = identifierFromPath(GAME_EVENTS_PATH, path);
 
-                    DataResult<GameEvent> result = GameEventConfig.CODEC.parse(ops, json);
+                    DataResult<StageEvent> result = GameEventConfig.CODEC.parse(ops, json);
 
                     result.result().ifPresent(event ->
                             GAME_EVENT_REGISTRY.register(identifier, event)

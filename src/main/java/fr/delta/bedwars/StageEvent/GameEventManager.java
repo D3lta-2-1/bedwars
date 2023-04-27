@@ -13,11 +13,11 @@ import java.util.Queue;
 public class GameEventManager {
 
     private final World world;
-    private final Queue<GameEvent> events;
+    private final Queue<StageEvent> events;
     private final BedwarsActive game;
     private long stageBeginTime;
 
-    public GameEventManager(World world, Queue<GameEvent> stages, BedwarsActive game, GameActivity activity) {
+    public GameEventManager(World world, Queue<StageEvent> stages, BedwarsActive game, GameActivity activity) {
         this.world = world;
         this.events = stages;
         this.game = game;
@@ -27,7 +27,7 @@ public class GameEventManager {
 
     private void tick() {
         if (events.isEmpty()) return;
-        GameEvent stage = events.peek();
+        StageEvent stage = events.peek();
         if (stage.getTimeToWait() + stageBeginTime <= world.getTime()) {
             stage.run(game);
             events.poll();

@@ -78,7 +78,7 @@ public abstract class ShopEntry {
      * @param player the player who opened the shop
      * @return the stack bough, the stack's count will be overwritten by the count return by $getCount
      */
-    public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return null; }
+    public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return ItemStack.EMPTY; }
 
     /**
      *

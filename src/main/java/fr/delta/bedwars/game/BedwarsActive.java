@@ -5,7 +5,7 @@ import com.google.common.collect.Multimap;
 import fr.delta.bedwars.Bedwars;
 import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.GameRules;
-import fr.delta.bedwars.StageEvent.GameEvent;
+import fr.delta.bedwars.StageEvent.StageEvent;
 import fr.delta.bedwars.StageEvent.GameEventManager;
 import fr.delta.bedwars.game.behaviour.*;
 import fr.delta.bedwars.game.event.BedwarsEvents;
@@ -49,6 +49,7 @@ public class BedwarsActive {
     final private ClaimManager claim;
     final private DeathManager deathManager;
     final private SwordManager defaultSwordManager;
+    final private CompassManager compassManager;
     final private InventoryManager inventoryManager;
     final private Multimap<String, ResourceGenerator> middleGeneratorsMap;
 
@@ -76,6 +77,7 @@ public class BedwarsActive {
         this.claim = new ClaimManager(gameMap, config, activity);
         this.middleGeneratorsMap = addMiddleGenerator();
         this.defaultSwordManager = new SwordManager(this, activity);
+        this.compassManager = new CompassManager(this, activity);
 
         //this must be setup before the teamManager to ensure event are fired in the right order
         this.deathManager = new DeathManager(this, teamPlayersMap, world, gameMap, config, activity);
@@ -131,9 +133,9 @@ public class BedwarsActive {
         GameProperties.add(activity);
     }
 
-    private Queue<GameEvent> loadEvents()
+    private Queue<StageEvent> loadEvents()
     {
-        var queue = new LinkedList<GameEvent>();
+        var queue = new LinkedList<StageEvent>();
         for(var gameEventId : config.events())
         {
             var gameEvent = AdditionalDataLoader.GAME_EVENT_REGISTRY.get(gameEventId);
@@ -263,6 +265,7 @@ public class BedwarsActive {
     }
 
     public SwordManager getDefaultSwordManager() { return defaultSwordManager; }
+    public CompassManager getCompassManager() { return compassManager; }
 
     public InventoryManager getInventoryManager()
     {
@@ -303,6 +306,11 @@ public class BedwarsActive {
         return teamManager.playersIn(team.key());
     }
 
+    public PlayerSet getPlayersInTeam(GameTeamKey team)
+    {
+        return teamManager.playersIn(team);
+    }
+
     public TeamManager getTeamManager()
     {
         return teamManager;
@@ -311,5 +319,10 @@ public class BedwarsActive {
     public ServerWorld getWorld()
     {
         return world;
+    }
+
+    public List<GameTeam> getTeamsInOrder()
+    {
+        return teamsInOrder;
     }
 }

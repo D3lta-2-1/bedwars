@@ -26,13 +26,11 @@ import java.util.List;
 public abstract class ShopMenu {
     final private GameActivity activity;
     final private BedwarsActive bedwarsGame;
-    final private TinyRegistry<ShopEntry> entries;
 
-    public ShopMenu(BedwarsActive bedwarsGame, TinyRegistry<ShopEntry> entries, GameActivity activity)
+    public ShopMenu(BedwarsActive bedwarsGame, GameActivity activity)
     {
         this.bedwarsGame = bedwarsGame;
         this.activity = activity;
-        this.entries = entries;
     }
     public abstract void open(ServerPlayerEntity player);
     protected void setEntryInSlot(SlotGuiInterface gui, ShopEntry entry, int slot)
@@ -196,7 +194,7 @@ public abstract class ShopMenu {
         }
     }
 
-    protected void buildListAt(SlotGuiInterface gui, List<Identifier> entriesIDs, int xOffset, int yOffset, int width, int height)
+    protected void buildListAt(SlotGuiInterface gui, List<Identifier> entriesIDs, TinyRegistry<ShopEntry> entries, int xOffset, int yOffset, int width, int height)
     {
         int x = 0;
         int y = 0;

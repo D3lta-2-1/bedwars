@@ -58,6 +58,11 @@
 
   "itemShop.bedwars.title" : "Item Shop",
   "teamShop.bedwars.title" : "Team Upgrade Shop",
+  "trackerShop.bedwars.title" : "Tracker Shop",
+  "trackerSetting.bedwars.title" : "Tracker",
+  "tracker.bedwars.is" : " is ",
+  "tracker.bedwars.blocksAway" : " blocks away",
+
   "shop.bedwars.youPurchase" : "you purchase ",
   "shop.bedwars.itemShop" : "Item Shop",
   "shop.bedwars.wool" : "Wool",
@@ -83,6 +88,9 @@
   "shop.bedwars.upgradeMaxed" : "This upgrade is maxed",
   "shop.bedwars.poolUpgrade" : "pool",
   "shop.bedwars.trapQueueFull" : "Trap queue is full",
+  "shop.bedwars.Tracker" : " Team Tracker",
+  "shop.bedwars.teamEliminated" : "Team Eliminated",
+  "shop.bedwars.teamAlive" : "Team Alive",
 
   "armor.bedwars.alreadyGotBetterArmor" : "You can't purchase this armor you already got a better one",
 
@@ -97,7 +105,7 @@
   "trap.bedwars.haveBeenSetOff" : " as been set off",
 
   "block.bedwars.launch_pad" : "launch pad",
-  "item.bedwars.fire_ball" : "fire ball",
+  "item.bedwars.fire_ball" : "Fire Ball",
 
   "generator.bedwars.tier" : "Tier ",
   "generator.bedwars.spawnIn" : "spawn in ",

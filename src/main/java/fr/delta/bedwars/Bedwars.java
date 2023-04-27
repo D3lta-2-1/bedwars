@@ -38,12 +38,12 @@ public class Bedwars implements DedicatedServerModInitializer {
     public static final Block LAUNCH_PAD = new Launchpad(AbstractBlock.Settings.copy(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE).hardness(0.5f).noCollision().resistance(6.f), Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE);
     public static final BlockEntityType<LaunchPadBlockEntity> LAUNCH_PAD_ENTITY = FabricBlockEntityTypeBuilder.create(LaunchPadBlockEntity::new, LAUNCH_PAD).build();
     public static final EntityType<ShopKeeperEntity> SHOP_ENTITY = Registry.register(Registries.ENTITY_TYPE, new Identifier(ID, "shop_entity"), FabricEntityTypeBuilder.create(SpawnGroup.MISC, ShopKeeperEntity::createEmpty).dimensions(EntityDimensions.fixed(0.6F, 1.8F)).build());
+    public static Item FIRE_BALL = Registry.register(Registries.ITEM, new Identifier("bedwars:fire_ball"), new FireBall(new FabricItemSettings()));
 
     @Override
     public void onInitializeServer() {
 
         //register items
-        Registry.register(Registries.ITEM, new Identifier("bedwars:fire_ball"), new FireBall(new FabricItemSettings()));
         Registry.register(Registries.ITEM, new Identifier(ID, "launch_pad"), new PolymerBlockItem(LAUNCH_PAD, new Item.Settings(), Items.HEAVY_WEIGHTED_PRESSURE_PLATE));
         //register blocks
         Registry.register(Registries.BLOCK, new Identifier(ID, "launch_pad"), LAUNCH_PAD);

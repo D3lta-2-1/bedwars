@@ -8,7 +8,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-public record UpdateGeneratorTier(int time, String internalId, int tier) implements GameEvent {
+public record UpdateGeneratorTier(int time, String internalId, int tier) implements StageEvent {
     public static final Codec<UpdateGeneratorTier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("time").forGetter(UpdateGeneratorTier::time),
             Codec.STRING.fieldOf("region_name").forGetter(UpdateGeneratorTier::internalId),
