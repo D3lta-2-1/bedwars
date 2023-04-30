@@ -16,7 +16,6 @@ import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
-import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 
@@ -27,7 +26,7 @@ public class BedwarsSideBar {
     public static Sidebar build(Map<GameTeamKey, TeamComponents> teamComponents, TeamManager manager, List<GameTeam> teamsInOrder, GameEventManager gameEventManager, BedwarsActive game, GameActivity activity)
     {
         var sidebar = new Sidebar(Sidebar.Priority.MEDIUM);
-        sidebar.setTitle(Text.translatable("sidebar.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.GOLD).withBold(true)));
+        sidebar.setTitle(Text.translatable("sidebar.bedwars.title").formatted(Formatting.GOLD, Formatting.BOLD));
 
         sidebar.set( b -> {
             b.add(ScreenTexts.EMPTY);
@@ -51,12 +50,8 @@ public class BedwarsSideBar {
             sidebar.addPlayer(player);
         sidebar.show();
         //register events
-        activity.listen(GameActivityEvents.DISABLE, () -> {
-            for(var player : activity.getGameSpace().getPlayers())
-                sidebar.removePlayer(player);
-        });
         activity.listen(GamePlayerEvents.JOIN, sidebar::addPlayer);
-        activity.listen(GamePlayerEvents.LEAVE, sidebar::removePlayer);
+        activity.listen(GamePlayerEvents.REMOVE, sidebar::removePlayer);
         return sidebar;
     }
 

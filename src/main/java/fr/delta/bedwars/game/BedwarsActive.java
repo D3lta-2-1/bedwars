@@ -130,6 +130,7 @@ public class BedwarsActive {
         activity.allow(GameRules.AMPLIFIED_EXPLOSION_KNOCKBACK);
         activity.allow(GameRules.REDUCED_EXPLOSION_DAMAGE);
         activity.deny(GameRules.FIRE_SPREAD);
+        activity.allow(GameRules.REDUCED_FALL_DAMAGE);
         GameProperties.add(activity);
     }
 

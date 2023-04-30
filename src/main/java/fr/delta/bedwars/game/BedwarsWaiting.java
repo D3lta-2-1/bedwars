@@ -60,7 +60,8 @@ public class BedwarsWaiting {
         activity.listen(GamePlayerEvents.OFFER, offer -> offer.accept(world, map.waiting().centerTop()));
     }
 
-    private GameResult requestStart() {
+    private GameResult requestStart()
+    {
         List<GameTeam> teams = new ArrayList<>();
         for (var mapTeamData : map.teamData()) {
             GameTeam team = new GameTeam(

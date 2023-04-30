@@ -25,6 +25,7 @@ public class FireBall extends Item implements PolymerItem {
         super(settings);
     }
 
+    static float velocity = 1.2f;
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand)
     {
@@ -34,9 +35,9 @@ public class FireBall extends Item implements PolymerItem {
             var yaw = user.getYaw();
             var pitch = user.getPitch();
             var playerVel = user.getVelocity();
-            float velX = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * 1.2f;
-            float velY = -MathHelper.sin(pitch* 0.017453292F) * 1.2f;
-            float velZ = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * 1.2f;
+            float velX = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * velocity;
+            float velY = -MathHelper.sin(pitch* 0.017453292F) * velocity;
+            float velZ = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * velocity;
             FireballEntity fireball = new FireballEntity(world, user, velX, velY, velZ, 2);
             fireball.addVelocity(playerVel);
             fireball.setPos(user.getX(), user.getEyeY() - 0.2, user.getZ());
