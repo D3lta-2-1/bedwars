@@ -12,15 +12,8 @@ public class GameRules {
     public static final GameRuleType RECIPE_BOOK_USAGE = GameRuleType.create()
             .enforces(RecipeClickedEvent.EVENT, result -> (player, recipe, craftAll) -> result == ActionResult.SUCCESS ? ActionResult.PASS : result);
 
-    /* public static GameRuleType CRAFTING_INVENTORIES_USAGE = GameRuleType.create()
-            .enforces(SlotInteractionEvent.BEFORE, result -> (player, handler, slotIndex, button, actionType) -> {
-                System.out.println("called");
-                if (result == ActionResult.SUCCESS) return ActionResult.PASS;
-                var screenHandler = handler instanceof AbstractRecipeScreenHandler ? (AbstractRecipeScreenHandler<?>) handler : null;
-                if (screenHandler == null) return ActionResult.PASS;
-                if (slotIndex >= screenHandler.getCraftingResultSlotIndex() && slotIndex <= screenHandler.getCraftingSlotCount())
-                    return ActionResult.FAIL;
-                return ActionResult.PASS;
-            });
-     */
+    public static final GameRuleType REDUCED_EXPLOSION_DAMAGE = GameRuleType.create();
+    public static final GameRuleType AMPLIFIED_EXPLOSION_KNOCKBACK = GameRuleType.create();
+    public static final GameRuleType FIRE_SPREAD = GameRuleType.create();
+    public static final GameRuleType REDUCED_FALL_DAMAGE = GameRuleType.create();
 }

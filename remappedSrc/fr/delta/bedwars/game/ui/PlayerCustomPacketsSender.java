@@ -1,8 +1,6 @@
 package fr.delta.bedwars.game.ui;
 
-import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -26,5 +24,15 @@ public class PlayerCustomPacketsSender {
     static public void changeSubtitle(ServerPlayerEntity player, Text subtitle)
     {
         player.networkHandler.sendPacket(new SubtitleS2CPacket(subtitle));
+    }
+
+    static public void showOverlay(ServerPlayerEntity player, Text overlay)
+    {
+        player.networkHandler.sendPacket(new OverlayMessageS2CPacket(overlay));
+    }
+
+    static public void clearTitleAndOverLays(ServerPlayerEntity player)
+    {
+        player.networkHandler.sendPacket(new ClearTitleS2CPacket(false));
     }
 }

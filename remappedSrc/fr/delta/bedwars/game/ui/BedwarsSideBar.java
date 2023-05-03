@@ -1,6 +1,8 @@
 package fr.delta.bedwars.game.ui;
 
 import eu.pb4.sidebars.api.Sidebar;
+import fr.delta.bedwars.StageEvent.GameEventManager;
+import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.teamComponent.TeamComponents;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.teamComponent.Bed;
@@ -16,7 +18,6 @@ import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamConfig;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
-import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 
@@ -24,12 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 public class BedwarsSideBar {
-    public static Sidebar build(Map<GameTeamKey, TeamComponents> teamComponents, TeamManager manager, List<GameTeam> teamsInOrder, GameActivity activity)
+    public static Sidebar build(Map<GameTeamKey, TeamComponents> teamComponents, TeamManager manager, List<GameTeam> teamsInOrder, GameEventManager gameEventManager, BedwarsActive game, GameActivity activity)
     {
         var sidebar = new Sidebar(Sidebar.Priority.MEDIUM);
-        sidebar.setTitle(Text.translatable("sidebar.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.GOLD).withBold(true)));
+        sidebar.setTitle(Text.translatable("sidebar.bedwars.title").formatted(Formatting.GOLD, Formatting.BOLD));
 
         sidebar.set( b -> {
+            b.add(ScreenTexts.EMPTY);
+            b.add(player -> gameEventManager.getStageStatue(game));
             b.add(ScreenTexts.EMPTY);
             for(var team : teamsInOrder)
             {
@@ -37,9 +40,9 @@ public class BedwarsSideBar {
                     var bed = teamComponents.get(team.key()).bed;
                     var dyeColor = team.config().blockDyeColor();
                     var config = team.config();
-                    var prefix = TextUtilities.getTranslation("prefix", dyeColor.name()).setStyle(Style.EMPTY.withFormatting(config.chatFormatting()));
+                    var prefix = TextUtilities.getTranslation("prefix", dyeColor.name()).formatted(config.chatFormatting());
                     var teamName = TextUtilities.getTranslation("name", dyeColor.name());
-                    var mark =getMark(bed, manager, team);
+                    var mark = getMark(bed, manager, team);
                     var you = getYouMarker(player, team, manager);
                     return TextUtilities.concatenate(prefix, TextUtilities.SPACE, teamName, TextUtilities.DOTS, TextUtilities.SPACE, mark, TextUtilities.SPACE, you);
                 });
@@ -49,12 +52,8 @@ public class BedwarsSideBar {
             sidebar.addPlayer(player);
         sidebar.show();
         //register events
-        activity.listen(GameActivityEvents.DISABLE, () -> {
-            for(var player : activity.getGameSpace().getPlayers())
-                sidebar.removePlayer(player);
-        });
         activity.listen(GamePlayerEvents.JOIN, sidebar::addPlayer);
-        activity.listen(GamePlayerEvents.LEAVE, sidebar::removePlayer);
+        activity.listen(GamePlayerEvents.REMOVE, sidebar::removePlayer);
         return sidebar;
     }
 

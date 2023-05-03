@@ -2,14 +2,12 @@ package fr.delta.bedwars.game;
 
 import fr.delta.bedwars.event.PotionDrankEvent;
 import fr.delta.bedwars.event.SlotInteractionEvent;
-import fr.delta.bedwars.event.StatusEffectEvent;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.event.GameEvent;
 import xyz.nucleoid.plasmid.game.GameActivity;
@@ -17,11 +15,8 @@ import xyz.nucleoid.stimuli.event.block.BlockPlaceEvent;
 
 public class GameProperties {
     public static void add(GameActivity activity) {
-
-        System.out.println("GameProperties.add");
         //avoid empty bottles
         activity.listen(PotionDrankEvent.EVENT, (stack, world, user) -> ItemStack.EMPTY);
-
         //avoid crafting
         activity.listen(SlotInteractionEvent.BEFORE, (player, handler, slotIndex, button, actionType)-> {
             var screenHandler = handler instanceof AbstractRecipeScreenHandler ? (AbstractRecipeScreenHandler<?>)handler : null;
@@ -41,14 +36,6 @@ public class GameProperties {
                 world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos);
                 world.setBlockState(pos, Blocks.AIR.getDefaultState());
             }
-        });
-
-        activity.listen(StatusEffectEvent.ADD, (entity, effect, source) -> {
-            entity.sendMessage(Text.literal("You have been applied a status effect"));
-        });
-
-        activity.listen(StatusEffectEvent.REMOVE, (entity, effect) -> {
-            entity.sendMessage(Text.literal("You have been applied a status effect"));
         });
     }
 }

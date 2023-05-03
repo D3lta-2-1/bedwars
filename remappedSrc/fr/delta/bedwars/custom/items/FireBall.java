@@ -2,12 +2,15 @@ package fr.delta.bedwars.custom.items;
 
 import F;
 import eu.pb4.polymer.core.api.item.PolymerItem;
+import eu.pb4.polymer.core.api.item.PolymerItemUtils;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -25,17 +28,19 @@ public class FireBall extends Item implements PolymerItem {
         super(settings);
     }
 
+    static float velocity = 1.2f;
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand)
+    {
         ItemStack itemStack = user.getStackInHand(hand);
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
         if (!world.isClient) {
             var yaw = user.getYaw();
             var pitch = user.getPitch();
             var playerVel = user.getVelocity();
-            float velX = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * 1.2f;
-            float velY = -MathHelper.sin(pitch* 0.017453292F) * 1.2f;
-            float velZ = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * 1.2f;
+            float velX = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * velocity;
+            float velY = -MathHelper.sin(pitch* 0.017453292F) * velocity;
+            float velZ = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * velocity;
             FireballEntity fireball = new FireballEntity(world, user, velX, velY, velZ, 2);
             fireball.addVelocity(playerVel);
             fireball.setPos(user.getX(), user.getEyeY() - 0.2, user.getZ());
@@ -52,12 +57,26 @@ public class FireBall extends Item implements PolymerItem {
     }
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand)
+    {
         return ActionResult.PASS;
     }
 
     @Override
     public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
         return Items.FIREWORK_STAR;
+    }
+
+    @Override
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipContext context, @Nullable ServerPlayerEntity viewer)
+    {
+        ItemStack out = PolymerItemUtils.createItemStack(itemStack, context, viewer);
+        var nbt = out.getOrCreateSubNbt("Explosion");
+        if(itemStack.getNbt() == null || !itemStack.getNbt().contains("Color")) return out;
+        nbt.putIntArray("Colors", new int[]{itemStack.getNbt().getInt("Color")});
+        nbt.putByte("Type", (byte)0);
+        if(out.getNbt() != null && out.getNbt().contains("Color"))
+            out.getNbt().remove("Color");
+        return out;
     }
 }

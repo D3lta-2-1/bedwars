@@ -28,30 +28,30 @@ public abstract class ShopEntry {
 
     /**
      * set the cost of an entry
-     * @param BedwarsGame the game were this item is displayed
+     * @param bedwarsGame the game were this item is displayed
      * @param player the player who opened the shop
      */
-    public Cost getCost(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return new Cost(Items.IRON_INGOT, 4); }
+    public Cost getCost(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return new Cost(Items.IRON_INGOT, 4); }
 
     /**
      * set the name of an entry
      */
-    public MutableText getName(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return Text.literal("Unnamed"); }
+    public MutableText getName(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return Text.literal("Unnamed"); }
 
     /**
      * set the item display in the gui of the shopkeeper
      */
-    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return Items.STRUCTURE_VOID; }
+    public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return Items.STRUCTURE_VOID; }
 
     /**
      * set how many item should be display in the gui of the shopkeeper
      */
-    public int displayCount(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return 1; }
+    public int displayCount(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return 1; }
 
     /**
      * set if the item should glint in the gui of the shopkeeper
      */
-    public boolean hasGlint(BedwarsActive BedwarsGame, ServerPlayerEntity player) { return false; }
+    public boolean hasGlint(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return false; }
 
     /**
      * set additobnal lore of an item
@@ -78,7 +78,7 @@ public abstract class ShopEntry {
      * @param player the player who opened the shop
      * @return the stack bough, the stack's count will be overwritten by the count return by $getCount
      */
-    public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return null; }
+    public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) { return ItemStack.EMPTY; }
 
     /**
      *
@@ -97,7 +97,9 @@ public abstract class ShopEntry {
         return null;
     }
 
-    public void editNbt(NbtCompound nbt) {}
+    public void editNbt(NbtCompound nbt, BedwarsActive bedwarsGame, ServerPlayerEntity player) {}
 
     public void setup(BedwarsActive bedwarsGame) {}
+
+    public boolean shouldNotifyAllTeam() { return false; }
 }

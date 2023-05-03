@@ -3,12 +3,13 @@ package fr.delta.bedwars.game;
 import I;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import fr.delta.bedwars.BedwarsConfig;
+import fr.delta.bedwars.TextUtilities;
+import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import fr.delta.bedwars.game.map.RawTeamData;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.GameRules;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.plasmid.game.*;
 import xyz.nucleoid.plasmid.game.common.GameWaitingLobby;
@@ -18,6 +19,7 @@ import xyz.nucleoid.plasmid.game.common.team.GameTeamConfig;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.event.GameActivityEvents;
 import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
+import xyz.nucleoid.plasmid.util.PlayerRef;
 
 import java.util.*;
 
@@ -46,8 +48,11 @@ public class BedwarsWaiting {
     static public GameOpenProcedure open(GameOpenContext<BedwarsConfig> context)
     {
         var config = context.config();
-        var map = BedwarsMap.loadMap(config, context.server() );
+        var map = BedwarsMap.loadMap(config, context.server());
         var worldConfig = map.asRuntimeWorldConfig();
+        worldConfig.setTimeOfDay(config.timeOfDay());
+        worldConfig.setGameRule(GameRules.DO_FIRE_TICK, true);
+        worldConfig.setGameRule(GameRules.RANDOM_TICK_SPEED, 100);
 
         return context.openWithWorld(worldConfig, (activity, world) ->
             new BedwarsWaiting(world, map, activity, config));
@@ -59,7 +64,8 @@ public class BedwarsWaiting {
         activity.listen(GamePlayerEvents.OFFER, offer -> offer.accept(world, map.waiting().centerTop()));
     }
 
-    private GameResult requestStart() {
+    private GameResult requestStart()
+    {
         List<GameTeam> teams = new ArrayList<>();
         for (var mapTeamData : map.teamData()) {
             GameTeam team = new GameTeam(
@@ -69,6 +75,7 @@ public class BedwarsWaiting {
                             .setFriendlyFire(true)
                             .setNameTagVisibility(AbstractTeam.VisibilityRule.ALWAYS)
                             .setColors(GameTeamConfig.Colors.from(mapTeamData.color))
+                            .setPrefix(TextUtilities.getTranslation("prefix", mapTeamData.color.name()))
                             .build()
             );
             teams.add(team);
@@ -77,14 +84,14 @@ public class BedwarsWaiting {
         //to a scoreboard ordered
         var teamsInOrder = new ArrayList<>(teams);
         //make teams... without TeamAllocator because it auto delete empty teams and I prefer have a key associated with null for empty team
-        Multimap<GameTeam, ServerPlayerEntity> teamPlayers = HashMultimap.create();
+        Multimap<GameTeam, PlayerRef> teamPlayers = HashMultimap.create();
         var players = this.gameSpace.getPlayers().iterator();
         Collections.shuffle(teams, new Random());
         for(var team : teams)
         {
             for(int i = 0; i < config.teamSize(); i++)
             {
-                teamPlayers.put(team, (players.hasNext() ? players.next() : null));
+                teamPlayers.put(team, (players.hasNext() ? PlayerRef.of(players.next()) : null));
             }
         }
 

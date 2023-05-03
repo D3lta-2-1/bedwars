@@ -1,30 +1,39 @@
 package fr.delta.bedwars.mixin.rules;
 
-import D;
+import fr.delta.bedwars.GameRules;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+import xyz.nucleoid.plasmid.game.manager.GameSpaceManager;
+import xyz.nucleoid.plasmid.game.manager.ManagedGameSpace;
 
 @Mixin(Explosion.class)
 public class ExplosionMixin {
 
-    private static final int knockbackMultiplier = 4;
+    @Shadow @Final
+    private World world;
+    private static final int knockbackMultiplier = 2;
+    private static final float damageMultiplier = 0.25F;
 
     @ModifyArg(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private float overwriteDamage(float damage)
     {
-        return damage/4;
+        var gameSpace = GameSpaceManager.get().byWorld(world);
+        if (gameSpace != null && gameSpace.getBehavior().testRule(GameRules.REDUCED_EXPLOSION_DAMAGE) != ActionResult.SUCCESS) return damage;
+        return damage * damageMultiplier;
     }
 
-    @ModifyArgs(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"))
-    private void overwriteVelocity(Args args)
+    @ModifyArg(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Vec3d;add(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;"))
+    private Vec3d overwriteVelocity(Vec3d vec3d)
     {
-        var x = (double)args.get(0);
-        var y = (double)args.get(1);
-        var z = (double)args.get(2);
-        args.setAll(x * knockbackMultiplier, y, z * knockbackMultiplier);
+        var gameSpace = GameSpaceManager.get().byWorld(world);
+        if (gameSpace != null && gameSpace.getBehavior().testRule(GameRules.AMPLIFIED_EXPLOSION_KNOCKBACK) != ActionResult.SUCCESS) return vec3d;
+        return vec3d.multiply(knockbackMultiplier);
     }
 }

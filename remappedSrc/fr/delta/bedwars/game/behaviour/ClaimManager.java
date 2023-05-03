@@ -1,6 +1,6 @@
 package fr.delta.bedwars.game.behaviour;
 
-import fr.delta.bedwars.BedwarsConfig;
+import fr.delta.bedwars.codec.BedwarsConfig;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import fr.delta.bedwars.Constants;
 import fr.delta.bedwars.TextUtilities;
@@ -37,6 +37,7 @@ public class ClaimManager {
         activity.listen(ExplosionDetonatedEvent.EVENT, this::onExplosionDetonated);
         activity.listen(BlockPlaceEvent.BEFORE, this::onPlace);
     }
+
 
     public void addRegion(BlockBounds region)
     {

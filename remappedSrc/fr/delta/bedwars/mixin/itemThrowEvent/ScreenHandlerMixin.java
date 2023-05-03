@@ -25,7 +25,7 @@ public class ScreenHandlerMixin {
         return result;
     }
 
-    @Redirect(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;"))
+    @Redirect(method = "onClosed", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;"))
     private ItemEntity dropItem2(PlayerEntity player, ItemStack stack, boolean retainOwnership)
     {
         var result = player.dropItem(stack, retainOwnership);

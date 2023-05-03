@@ -1,9 +1,11 @@
 package fr.delta.bedwars.game.player;
+import fr.delta.bedwars.Bedwars;
 import fr.delta.bedwars.event.SlotInteractionEvent;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.shop.entries.ToolEntry;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
@@ -17,35 +19,28 @@ import xyz.nucleoid.stimuli.event.item.ItemThrowEvent;
 import java.util.List;
 
 public class ToolManager {
-    List<ToolEntry.Tier> availableTiers;
-    ServerPlayerEntity player;
-    int currentTier;
-    ItemStack currentTool = ItemStack.EMPTY;
+    private final List<ToolEntry.Tier> availableTiers;
+    private int currentTier;
+    private ItemStack currentTool = ItemStack.EMPTY;
+    static public final String TOOL_KEY = "bedwarsTool";
 
-    public ToolManager(ServerPlayerEntity player, List<ToolEntry.Tier> availableTiers, GameActivity activity)
+    public static void init(GameActivity activity)
     {
-        this.player = player;
+        activity.listen(SlotInteractionEvent.BEFORE, ToolManager::onInteract);
+        activity.listen(ItemThrowEvent.EVENT, ToolManager::onThrowItem);
+        activity.listen(BedwarsEvents.IS_STACK_THROWABLE, (stack, playerTested) -> isTool(stack) ? ActionResult.FAIL : ActionResult.PASS);
+    }
+
+    public ToolManager(List<ToolEntry.Tier> availableTiers)
+    {
         this.availableTiers = availableTiers;
         this.currentTier = -1;
-        activity.listen(SlotInteractionEvent.BEFORE, this::onInteract);
-        activity.listen(ItemThrowEvent.EVENT, this::onThrowItem);
-        activity.listen(BedwarsEvents.IS_STACK_THROWABLE, (stack, playerTested) ->
-        {
-            if(playerTested != player)
-                return ActionResult.PASS;
-            return stack.isItemEqual(currentTool) ? ActionResult.FAIL : ActionResult.PASS;
-        });
     }
 
-    public ItemStack concurrentTool()
-    {
-        return currentTool;
-    }
     public int concurrentTier()
     {
         return currentTier;
     }
-
 
     public ItemStack createTool()
     {
@@ -55,18 +50,35 @@ public class ToolManager {
             availableTiers.get(currentTier).enchantments().forEach(builder::addEnchantment);
             builder.setUnbreakable();
             currentTool = builder.build();
+            var nbt = currentTool.getOrCreateNbt();
+            nbt.putInt(TOOL_KEY, getAvailableTiers().get(currentTier).hashCode());
+            currentTool.setNbt(nbt);
         }
         return currentTool.copy();
     }
 
-    public void removeTool()
+    static public boolean isTool(ItemStack stack)
+    {
+        if(stack == null) return false;
+        if(stack.getNbt() == null) return false;
+        return stack.getNbt().contains(TOOL_KEY);
+    }
+    private boolean isThisTool(ItemStack stack)
+    {
+        if(currentTier == -1) return false;
+        if(stack == null) return false;
+        if(stack.getNbt() == null) return false;
+        if(!stack.getNbt().contains(TOOL_KEY)) return false;
+        return stack.getNbt().getInt(TOOL_KEY) == availableTiers.get(currentTier).hashCode();
+    }
+
+    public void removeTool(ServerPlayerEntity player)
     {
         var main = player.getInventory().main;
         for(int i = 0; i < main.size(); i++) {
-            if(main.get(i).isItemEqual(currentTool))
+            if(isThisTool(main.get(i)))
             {
-                main.set(i, ItemStack.EMPTY);
-                break;
+                main.set(i, ItemStack.EMPTY); //could break here but in case of multiple tools in the inventory, by duplication or what ever bug, we remove them all
             }
         }
     }
@@ -80,14 +92,14 @@ public class ToolManager {
         return currentTier == availableTiers.size() - 1;
     }
 
-    public ItemStack upgrade()
+    public ItemStack upgrade(ServerPlayerEntity player)
     {
-        removeTool();
+        removeTool(player);
         if(currentTier < availableTiers.size() - 1)
             currentTier++;
         else
         {
-            System.out.println("try to upgrade a tool that is already maxed");
+            Bedwars.LOGGER.warn("try to upgrade a tool that is already maxed");
         }
         return createTool();
     }
@@ -105,47 +117,44 @@ public class ToolManager {
         return availableTiers;
     }
 
-    private ActionResult onInteract(ServerPlayerEntity player, ScreenHandler handler, int slotIndex, int button, SlotActionType actionType)
+    private static ActionResult onInteract(ServerPlayerEntity player, ScreenHandler handler, int slotIndex, int button, SlotActionType actionType) //inventory click
     {
-        if(player != this.player) return ActionResult.PASS; //if it's not the player we're managing, we don't care
         var screenHandler = handler instanceof GenericContainerScreenHandler ? (GenericContainerScreenHandler)handler : null;
         if(screenHandler == null) return ActionResult.PASS; //if it's not a chest, we don't care
         var inventory = screenHandler.getInventory();
         if(inventory == player.getInventory()) return ActionResult.PASS; //if it's the player's inventory, we don't care
 
         if(actionType == SlotActionType.PICKUP &&
-                screenHandler.getCursorStack().isItemEqual(concurrentTool()) &&
+                isTool(screenHandler.getCursorStack()) &&
                 slotIndex < screenHandler.getRows() * 9) //prevent putting the tool in the chest
             return ActionResult.FAIL;
 
         if(actionType == SlotActionType.QUICK_MOVE &&
                 slotIndex >= screenHandler.getRows() * 9 &&
-                player.getInventory().getStack(convertIndexToPlayerInventory(slotIndex, screenHandler.getRows() * 9)).isItemEqual(concurrentTool())) //prevent quick move to put tool in chest
+                isTool(player.getInventory().getStack(convertIndexToPlayerInventory(slotIndex, screenHandler.getRows() * 9)))) //prevent quick move to put tool in chest
             return ActionResult.FAIL;
 
         if(actionType == SlotActionType.SWAP && slotIndex < screenHandler.getRows() * 9) //prevent swapping with the tool
         {
             var playerStack = player.getInventory().getStack(button);
-            if(playerStack.isItemEqual(concurrentTool()))
-            {
+            if(isTool(playerStack))
                 return ActionResult.FAIL;
-            }
+
         }
         return ActionResult.PASS;
     }
 
-    ActionResult onThrowItem(ServerPlayerEntity player, int slot, ItemStack stack)
+    private static ActionResult onThrowItem(ServerPlayerEntity player, int slot, ItemStack stack) //item throw protection
     {
-        if(player != this.player) return ActionResult.PASS; //if it's not the player we're managing, we don't care
         if(stack == null) return ActionResult.PASS;
-        if(stack.isItemEqual(concurrentTool()))
+        if(isTool(stack))
         {
             return ActionResult.FAIL;
         }
         return ActionResult.PASS;
     }
 
-    private int convertIndexToPlayerInventory(int index, int GenericHandlerSize)
+    private static int convertIndexToPlayerInventory(int index, int GenericHandlerSize)
     {
         if(index >= 27 && index <=53) return index - GenericHandlerSize + 9;
         if(index >= 54) return index - GenericHandlerSize - 27;

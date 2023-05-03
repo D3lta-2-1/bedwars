@@ -14,7 +14,7 @@ import xyz.nucleoid.stimuli.Stimuli;
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
 
-    @Inject(method = "onStatusEffectApplied", at = @At("HEAD"))
+    @Inject(method = "onStatusEffectApplied", at = @At("RETURN"))
     void onStatusEffectApplied(StatusEffectInstance effect, Entity source, CallbackInfo ci)
     {
         try(var invokers = Stimuli.select().forEntity((LivingEntity) (Object) this)) {
@@ -22,7 +22,7 @@ public class LivingEntityMixin {
         }
     }
 
-    @Inject(method = "onStatusEffectRemoved", at = @At("HEAD"))
+    @Inject(method = "onStatusEffectRemoved", at = @At("RETURN"))
     void onStatusEffectRemoved(StatusEffectInstance effect, CallbackInfo ci)
     {
         try(var invokers = Stimuli.select().forEntity((LivingEntity) (Object) this)) {

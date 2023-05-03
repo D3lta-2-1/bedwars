@@ -25,6 +25,16 @@ public final class BedwarsEvents {
         }
     });
 
+    public static final StimulusEvent<BedDestruction> BED_DESTRUCTION = StimulusEvent.create(BedDestruction.class, ctx -> () -> {
+        try {
+            for (var listener : ctx.getListeners()) {
+                listener.onDestruction();
+            }
+        } catch (Throwable t) {
+            ctx.handleException(t);
+        }
+    });
+
     public static final StimulusEvent<PlayerDeath> PLAYER_DEATH = StimulusEvent.create(PlayerDeath.class, ctx -> (player, source,  killer, isFinal) -> {
         try {
             for (var listener : ctx.getListeners()) {
@@ -111,6 +121,11 @@ public final class BedwarsEvents {
     public interface BedBroken
     {
         void onBreak(GameTeam owner, ServerPlayerEntity breaker);
+    }
+
+    public interface BedDestruction
+    {
+        void onDestruction();
     }
 
     public interface PlayerDeath
