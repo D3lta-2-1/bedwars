@@ -40,7 +40,7 @@ public class BedwarsSideBar {
                     var config = team.config();
                     var prefix = TextUtilities.getTranslation("prefix", dyeColor.name()).formatted(config.chatFormatting());
                     var teamName = TextUtilities.getTranslation("name", dyeColor.name());
-                    var mark =getMark(bed, manager, team);
+                    var mark = getMark(bed, manager, team);
                     var you = getYouMarker(player, team, manager);
                     return TextUtilities.concatenate(prefix, TextUtilities.SPACE, teamName, TextUtilities.DOTS, TextUtilities.SPACE, mark, TextUtilities.SPACE, you);
                 });

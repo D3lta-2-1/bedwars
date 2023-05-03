@@ -10,11 +10,9 @@ import com.mojang.serialization.JsonOps;
 import fr.delta.bedwars.Bedwars;
 import fr.delta.bedwars.StageEvent.StageEvent;
 import fr.delta.bedwars.StageEvent.GameEventConfig;
-import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.resourceGenerator.GeneratorBuilder;
 import fr.delta.bedwars.game.shop.data.ShopCategoriesConfig;
 import fr.delta.bedwars.game.shop.data.ShopEntryConfig;
-import fr.delta.bedwars.game.shop.entries.ForgeUpgradeEntry;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import fr.delta.bedwars.game.teamComponent.Forge;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -35,11 +33,11 @@ public class AdditionalDataLoader {
     public static final TinyRegistry<List<Forge.Tier>> FORGE_CONFIG_REGISTRY = TinyRegistry.create();
     public static final TinyRegistry<GeneratorBuilder> GENERATOR_TYPE_REGISTRY = TinyRegistry.create();
     public static final TinyRegistry<StageEvent> GAME_EVENT_REGISTRY = TinyRegistry.create();
-    private static final String ENTRIES_PATH = "bedwars_entries";
-    private static final String CATEGORY_PATH = "bedwars_categories";
-    private static final String FORGE_PATH = "bedwars_forges";
-    private static final String GENERATOR_PATH = "bedwars_generators";
-    private static final String GAME_EVENTS_PATH = "bedwars_events";
+    private static final String ENTRIES_PATH = getConfigPath("entries");
+    private static final String CATEGORY_PATH = getConfigPath("categories");
+    private static final String FORGE_PATH = getConfigPath("forges");
+    private static final String GENERATOR_PATH = getConfigPath("generators");
+    private static final String GAME_EVENTS_PATH = getConfigPath("events");
 
     private static void loadEntries(ResourceManager manager, DynamicOps<JsonElement> ops)
     {
@@ -55,9 +53,6 @@ public class AdditionalDataLoader {
 
                     result.result().ifPresent(EntriesAndIDs -> {
                                 TinyRegistry<ShopEntry> registry = TinyRegistry.create();
-                                //add defaulted entries
-                                registry.register(new Identifier(Bedwars.ID, "forge_upgrade"), ForgeUpgradeEntry.INSTANCE);
-
                                 for(var pair : EntriesAndIDs)
                                     registry.register(pair.getFirst(), pair.getSecond());
                                 SHOP_ENTRIES_REGISTRY.register(identifier, registry);
@@ -73,8 +68,6 @@ public class AdditionalDataLoader {
             } catch (JsonParseException e) {
                 Bedwars.LOGGER.error("Failed to parse game JSON at {}: {}", path, e);
             }
-            Bedwars.LOGGER.info("entries files loaded :");
-            SHOP_ENTRIES_REGISTRY.keySet().forEach(config -> Bedwars.LOGGER.info(config.toString()));
         });
     }
 
@@ -104,8 +97,6 @@ public class AdditionalDataLoader {
                 Bedwars.LOGGER.error("Failed to parse game JSON at {}: {}", path, e);
             }
         });
-        Bedwars.LOGGER.info("shop categories files loaded :");
-        SHOP_CATEGORIES_REGISTRY.keySet().forEach(config -> Bedwars.LOGGER.info(config.toString()));
     }
 
     private static void loadForgeConfig(ResourceManager manager, DynamicOps<JsonElement> ops)
@@ -134,8 +125,6 @@ public class AdditionalDataLoader {
                 Bedwars.LOGGER.error("Failed to parse game JSON at {}: {}", path, e);
             }
         });
-        Bedwars.LOGGER.info("forge config files loaded :");
-        FORGE_CONFIG_REGISTRY.keySet().forEach(config -> Bedwars.LOGGER.info(config.toString()));
     }
 
     private static void loadGeneratorTypes(ResourceManager manager, DynamicOps<JsonElement> ops)
@@ -215,18 +204,13 @@ public class AdditionalDataLoader {
         });
     }
 
+    public static String getConfigPath(String path) {
+        return Bedwars.ID + "/" + path;
+    }
+
     private static Identifier identifierFromPath(String path, Identifier location) {
         String fullPath = location.getPath();
         fullPath = fullPath.substring((path +"/").length(), fullPath.length() - ".json".length());
         return new Identifier(location.getNamespace(), fullPath);
-    }
-
-    public static void initialize(TinyRegistry<ShopEntry> entries, BedwarsActive game)
-    {
-        for(var entry : entries.values())
-        {
-            entry.setup(game);
-        }
-
     }
 }

@@ -19,8 +19,8 @@ public class LivingEntityMixin
         var gameSpace = GameSpaceManager.get().byWorld(((LivingEntity)(Object)this).getWorld());
         if(source.isOf(DamageTypes.FALL) && gameSpace != null && gameSpace.getBehavior().testRule(GameRules.REDUCED_FALL_DAMAGE) == ActionResult.SUCCESS)
         {
-            if(amount > 1)
-                amount-=1;
+            if(amount > 0)
+                amount = Math.min(0, amount - 1); //reduce fall damage by 1
         }
         return amount;
     }

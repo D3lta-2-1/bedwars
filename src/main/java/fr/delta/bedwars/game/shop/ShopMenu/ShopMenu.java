@@ -3,6 +3,7 @@ package fr.delta.bedwars.game.shop.ShopMenu;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
+import fr.delta.bedwars.data.ShopEntryGetter;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.shop.entries.EmptyEntry;
@@ -18,7 +19,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import xyz.nucleoid.plasmid.game.GameActivity;
-import xyz.nucleoid.plasmid.registry.TinyRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -194,7 +194,7 @@ public abstract class ShopMenu {
         }
     }
 
-    protected void buildListAt(SlotGuiInterface gui, List<Identifier> entriesIDs, TinyRegistry<ShopEntry> entries, int xOffset, int yOffset, int width, int height)
+    protected void buildListAt(SlotGuiInterface gui, List<Identifier> entriesIDs, ShopEntryGetter entries, int xOffset, int yOffset, int width, int height)
     {
         int x = 0;
         int y = 0;

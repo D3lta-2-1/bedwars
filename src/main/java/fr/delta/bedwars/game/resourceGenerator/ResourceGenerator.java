@@ -5,7 +5,6 @@ import eu.pb4.polymer.virtualentity.api.attachment.ChunkAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.BlockDisplayElement;
 import eu.pb4.polymer.virtualentity.api.elements.TextDisplayElement;
 import fr.delta.bedwars.Bedwars;
-import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.behaviour.ClaimManager;
 import net.minecraft.block.Block;
 import net.minecraft.entity.ItemEntity;
@@ -83,14 +82,12 @@ public class ResourceGenerator {
 
     private Text getTierText()
     {
-        return Text.translatable("generator.bedwars.tier").formatted(Formatting.YELLOW).append(Text.translatable("generator.bedwars." + currentTier).formatted(Formatting.RED));
+        return Text.translatable("generator.bedwars.tier", Text.translatable("generator.bedwars." + currentTier).formatted(Formatting.RED)).formatted(Formatting.YELLOW);
     }
 
     private Text getCountText(long time)
     {
-        return TextUtilities.concatenate(Text.translatable("generator.bedwars.spawnIn").formatted(Formatting.YELLOW),
-                Text.literal(String.valueOf(time / 20)).formatted(Formatting.RED),
-                Text.translatable("generator.bedwars.seconds").formatted(Formatting.YELLOW));
+        return Text.translatable("generator.bedwars.spawnIn", Text.literal(String.valueOf(time / 20)).formatted(Formatting.RED)).formatted(Formatting.YELLOW);
     }
 
     public Item getSpawnedItem() {

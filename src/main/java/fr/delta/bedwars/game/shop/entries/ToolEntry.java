@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import xyz.nucleoid.plasmid.util.PlayerRef;
@@ -51,6 +50,8 @@ public class ToolEntry extends ShopEntry{
                 return manager;
             }
         }
+
+        //should not happen but just in case
         var toolManager = new ToolManager(availableTiers);
         toolManagers.add(toolManager);
         return toolManager;
@@ -116,7 +117,7 @@ public class ToolEntry extends ShopEntry{
     @Override
     public BuyOffer canBeBough(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         var manager = getOrCreateManager(bedwarsGame, player);
-        return new BuyOffer(!manager.isMaxed(), Text.literal("tool Maxed").setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
+        return new BuyOffer(!manager.isMaxed(), Text.translatable("shop.bedwars.toolMaxed").formatted(Formatting.RED));
     }
 
     @Override

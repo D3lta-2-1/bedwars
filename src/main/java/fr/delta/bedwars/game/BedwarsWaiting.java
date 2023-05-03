@@ -2,10 +2,12 @@ package fr.delta.bedwars.game;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.world.GameRules;
 import xyz.nucleoid.plasmid.game.*;
 import xyz.nucleoid.plasmid.game.common.GameWaitingLobby;
@@ -63,14 +65,20 @@ public class BedwarsWaiting {
     private GameResult requestStart()
     {
         List<GameTeam> teams = new ArrayList<>();
-        for (var mapTeamData : map.teamData()) {
+        for (var mapTeamData : map.teamData())
+        {
+            var dyeColor = mapTeamData.color;
+            var color = GameTeamConfig.Colors.from(dyeColor);
+            var prefix = TextUtilities.concatenate(Text.of( "["), TextUtilities.getTranslation("prefix", dyeColor.name()), Text.of("] ")).formatted(color.chatFormatting());
+
             GameTeam team = new GameTeam(
-                    new GameTeamKey("bedwars_team_" + mapTeamData.color.name().toLowerCase()),
+                    new GameTeamKey("bedwars_team_" + dyeColor.name().toLowerCase()),
                     GameTeamConfig.builder()
+                            .setPrefix(prefix)
                             .setCollision(AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS)
                             .setFriendlyFire(true)
                             .setNameTagVisibility(AbstractTeam.VisibilityRule.ALWAYS)
-                            .setColors(GameTeamConfig.Colors.from(mapTeamData.color))
+                            .setColors(color)
                             .build()
             );
             teams.add(team);

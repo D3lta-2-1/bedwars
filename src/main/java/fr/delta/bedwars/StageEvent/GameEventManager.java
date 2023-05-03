@@ -1,6 +1,5 @@
 package fr.delta.bedwars.StageEvent;
 
-import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.BedwarsActive;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -36,10 +35,10 @@ public class GameEventManager {
     }
 
     public Text getStageStatue(BedwarsActive game) {
-        return events.isEmpty() ? Text.empty() : TextUtilities.concatenate(
-                events.peek().getStageName(game),
-                Text.translatable("events.bedwars.in"),
-                getTime(stageBeginTime + events.peek().getTimeToWait()  - world.getTime()));
+        return events.isEmpty() ? Text.empty() :
+                Text.translatable("events.bedwars.in",
+                        events.peek().getStageName(game),
+                        getTime(stageBeginTime + events.peek().getTimeToWait()  - world.getTime()));
     }
 
     private Text getTime(long time) {

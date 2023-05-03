@@ -1,9 +1,9 @@
 package fr.delta.bedwars.game.player;
+import fr.delta.bedwars.Bedwars;
 import fr.delta.bedwars.event.SlotInteractionEvent;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.shop.entries.ToolEntry;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
@@ -39,7 +39,6 @@ public class ToolManager {
         return currentTier;
     }
 
-
     public ItemStack createTool()
     {
         if(currentTier != -1)
@@ -48,7 +47,7 @@ public class ToolManager {
             availableTiers.get(currentTier).enchantments().forEach(builder::addEnchantment);
             builder.setUnbreakable();
             currentTool = builder.build();
-            var nbt = new NbtCompound();
+            var nbt = currentTool.getOrCreateNbt();
             nbt.putInt(TOOL_KEY, getAvailableTiers().get(currentTier).hashCode());
             currentTool.setNbt(nbt);
         }
@@ -76,8 +75,7 @@ public class ToolManager {
         for(int i = 0; i < main.size(); i++) {
             if(isThisTool(main.get(i)))
             {
-                main.set(i, ItemStack.EMPTY);
-                //could break here but in case of multiple tools in the inventory, by duplication or what ever bug, we remove them all
+                main.set(i, ItemStack.EMPTY); //could break here but in case of multiple tools in the inventory, by duplication or what ever bug, we remove them all
             }
         }
     }
@@ -98,7 +96,7 @@ public class ToolManager {
             currentTier++;
         else
         {
-            System.out.println("try to upgrade a tool that is already maxed");
+            Bedwars.LOGGER.warn("try to upgrade a tool that is already maxed");
         }
         return createTool();
     }

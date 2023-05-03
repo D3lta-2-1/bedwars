@@ -24,7 +24,7 @@ public record UpdateGeneratorTier(int time, String internalId, int tier) impleme
     public Text getStageName(BedwarsActive game) {
         var generator = game.getGeneratorsMap().get(internalId).stream().findAny();
         if(generator.isEmpty()) return Text.literal("! no generators with id name found !").formatted(Formatting.RED);
-        return TextUtilities.concatenate(Text.translatable(generator.get().getSpawnedItem().getTranslationKey()),
+        return TextUtilities.concatenate(Text.translatable(generator.get().getSpawnedItem().getTranslationKey()), //may need to be changed
                 TextUtilities.SPACE,
                 Text.translatable("generator.bedwars." + tier)
         );
@@ -37,12 +37,9 @@ public record UpdateGeneratorTier(int time, String internalId, int tier) impleme
         var generator = generators.stream().findAny();
         if(generator.isEmpty()) return;
 
-        var text = TextUtilities.concatenate(Text.translatable(generator.get().getSpawnedItem().getTranslationKey()).setStyle(Style.EMPTY.withColor(generator.get().getRgbColor())),
-                Text.translatable("generator.bedwars.hasBeenUpdatedTo"),
-                Text.translatable("generator.bedwars.tier").formatted(Formatting.YELLOW),
-                Text.translatable("generator.bedwars." + tier).formatted(Formatting.RED)
-
-        );
-        game.getActivity().getGameSpace().getPlayers().sendMessage(text);
+        var itemText = Text.translatable(generator.get().getSpawnedItem().getTranslationKey()).setStyle(Style.EMPTY.withColor(generator.get().getRgbColor()));
+        var tierText = Text.translatable("generator.bedwars.tier", Text.translatable("generator.bedwars." + tier).formatted(Formatting.RED)).formatted(Formatting.YELLOW);
+        var text = Text.translatable("generator.bedwars.hasBeenUpdatedTo", itemText, tierText);
+        game.getPlayers().sendMessage(text);
     }
 }

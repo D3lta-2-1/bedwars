@@ -3,22 +3,21 @@ package fr.delta.bedwars.game.shop.ShopMenu;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import eu.pb4.sgui.api.gui.SlotGuiInterface;
+import fr.delta.bedwars.data.ShopEntryGetter;
 import fr.delta.bedwars.game.BedwarsActive;
-import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import xyz.nucleoid.plasmid.game.GameActivity;
-import xyz.nucleoid.plasmid.registry.TinyRegistry;
 import java.util.List;
 
 public class TeamShopMenu extends ShopMenu {
     private final List<Identifier> teamUpgrade;
     private final List<Identifier> traps;
-    private final TinyRegistry<ShopEntry> entries;
-    public TeamShopMenu(BedwarsActive bedwarsActive, TinyRegistry<ShopEntry> entries, List<Identifier> teamUpgrade, List<Identifier> traps, GameActivity activity)
+    private final ShopEntryGetter entries;
+    public TeamShopMenu(BedwarsActive bedwarsActive, ShopEntryGetter entries, List<Identifier> teamUpgrade, List<Identifier> traps, GameActivity activity)
     {
         super(bedwarsActive, activity);
         this.teamUpgrade = teamUpgrade;
@@ -69,7 +68,7 @@ public class TeamShopMenu extends ShopMenu {
             else
             {
                 element = new GuiElementBuilder(Items.LIGHT_GRAY_STAINED_GLASS);
-                element.setName(Text.translatable("trap.bedwars.slot").append(Text.literal(String.valueOf(i + 1))));
+                element.setName(Text.translatable("trap.bedwars.slot", i + 1));
             }
             element.setCount(i + 1); //0 offset
             gui.setSlot(slot, element);

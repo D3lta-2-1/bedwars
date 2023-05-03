@@ -89,7 +89,7 @@ public class TrapHandler {
         playAlarmToTick = trap.trigger(teamManager, team.key(), player) + world.getTime();
         var players = teamManager.playersIn(team.key());
         players.showTitle(Text.translatable("trap.bedwars.triggered").formatted(Formatting.RED),
-                            Text.translatable("trap.bedwars.your").append(trap.getName()).append(Text.translatable("trap.bedwars.haveBeenSetOff")),
+                            Text.translatable("trap.bedwars.trapSetOff", trap.getName()),
                             0, 60, 20);
         players.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT);
         playerTrapMap.put(player, new Pair<>(trap, world.getTime()));

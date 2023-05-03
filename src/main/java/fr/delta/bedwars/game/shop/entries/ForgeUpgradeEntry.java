@@ -53,7 +53,7 @@ public class ForgeUpgradeEntry extends ShopEntry {
 
     @Override
     public List<MutableText> getLore(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        var forge = bedwarsGame.getTeamComponentsFor(player).forge;
+        var forge = bedwarsGame.getTeamComponentsFor(player).forge; //todo: use placeholder to parse the lore
         var tier = forge.getNextTier();
         if(tier == null) return null;
         var key = tier.descriptionKey();

@@ -1,17 +1,23 @@
 package fr.delta.bedwars;
 
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 
 public class TextUtilities {
     public static final MutableText CHECKMARK = Text.literal("✔").setStyle(Style.EMPTY.withColor(Formatting.GREEN));
     public static final MutableText X = Text.literal("✘").setStyle(Style.EMPTY.withColor(Formatting.RED));
     public static final MutableText SPACE = Text.literal(" ");
     public static final MutableText DOTS = Text.literal(":");
-    public static final MutableText GENERAL_PREFIX = Text.literal(">");
     public static Style WARNING = Style.EMPTY.withColor(Formatting.RED);
+
+    public static MutableText getFormattedPlayerName(ServerPlayerEntity player, TeamManager manager)
+    {
+        return player.getName().copy().formatted(manager.getTeamConfig(manager.teamFor(player)).chatFormatting());
+    }
 
     static public MutableText concatenate(Text... texts)
     {
@@ -22,6 +28,7 @@ public class TextUtilities {
         }
         return result;
     }
+
     static public MutableText getTranslation(String path, String namespace)
     {
         return Text.translatable(path + '.' + Bedwars.ID + '.' + namespace);

@@ -43,12 +43,10 @@ public class FeedbackMessager {
     {
         if(breaker != null)
         {
-            var messageMark = TextUtilities.concatenate(Text.translatable("bed.bedwars.bedDestruction"), TextUtilities.SPACE ,TextUtilities.GENERAL_PREFIX, TextUtilities.SPACE).setStyle(Style.EMPTY.withBold(true));
+            var messageMark = Text.translatable("bed.bedwars.bedDestruction").formatted(Formatting.BOLD);
             var teamName = TextUtilities.getTranslation("name", owner.config().blockDyeColor().name()).formatted(owner.config().chatFormatting());
-            //var personalContent = Text.empty();
-            //var generalContent = TextUtilities.concatenate(teamName, Text.translatable("bed.bedwars.anonymousBreak")).setStyle(Style.EMPTY.withBold(false));
-            var personalContent = Text.translatable("bed.bedwars.personalBreakContent").append(breaker.getDisplayName()).setStyle(Style.EMPTY.withBold(false));
-            var generalContent = TextUtilities.concatenate(teamName, Text.translatable("bed.bedwars.generalBreakContent"), breaker.getDisplayName().copy()).setStyle(Style.EMPTY.withBold(false));
+            var personalContent = Text.translatable("bed.bedwars.personalBreakContent", TextUtilities.getFormattedPlayerName(breaker, game.getTeamManager())).setStyle(Style.EMPTY.withBold(false));
+            var generalContent = Text.translatable("bed.bedwars.generalBreakContent", teamName, TextUtilities.getFormattedPlayerName(breaker, game.getTeamManager())).setStyle(Style.EMPTY.withBold(false));
             players.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL);
 
 
@@ -58,8 +56,8 @@ public class FeedbackMessager {
                 if(game.getTeamForPlayer(player) == owner)
                 {
 
-                    var title = Text.translatable("bed.bedwars.bedBrokenTitle").setStyle(Style.EMPTY.withColor(Formatting.RED));
-                    var subtitle = Text.translatable("bed.bedwars.bedBrokenSubtitle").setStyle(Style.EMPTY.withColor(Formatting.GRAY));
+                    var title = Text.translatable("bed.bedwars.bedBrokenTitle").formatted(Formatting.RED);
+                    var subtitle = Text.translatable("bed.bedwars.bedBrokenSubtitle").formatted(Formatting.GRAY);
                     PlayerCustomPacketsSender.showTitle(player, title, subtitle, 0, 60, 20);
                     player.sendMessage(messageMark.copy().append(personalContent));
                 }
@@ -90,7 +88,7 @@ public class FeedbackMessager {
         player.playSound(SoundEvents.ENTITY_SQUID_DEATH, SoundCategory.PLAYERS, 1.f, 1.f);
     }
 
-    private Text getDeathMessage(ServerPlayerEntity player, DamageSource source , boolean Final) {
+    private Text getDeathMessage(ServerPlayerEntity player, DamageSource source, boolean Final) {
         var deathMessage = source.getDeathMessage(player).copy();
         if(Final)
         {
@@ -101,8 +99,7 @@ public class FeedbackMessager {
 
     private void onBuy(ServerPlayerEntity player, Text name, ShopEntry entry)
     {
-        var text = Text.translatable("shop.bedwars.youPurchase").setStyle(Style.EMPTY.withFormatting(Formatting.GREEN));
-        text.append(name.copy().setStyle(Style.EMPTY.withFormatting(Formatting.YELLOW)));
+        var text = Text.translatable("shop.bedwars.youPurchase", name.copy().formatted(Formatting.YELLOW)).formatted(Formatting.GREEN);
         player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 1.f, 1.f);
         if(entry.shouldNotifyAllTeam())
             game.getPlayersInTeam(game.getTeamForPlayer(player)).sendMessage(text);
@@ -113,9 +110,7 @@ public class FeedbackMessager {
     private void onTeamWin(GameTeam team)
     {
         if(team == null) return;
-        var winMessage = TextUtilities.concatenate(TextUtilities.getTranslation("name", team.config().blockDyeColor().name()).formatted(team.config().chatFormatting()),
-                Text.translatable("win.bedwars.win").formatted(Formatting.GRAY));
-
+        var winMessage = Text.translatable("win.bedwars.win", TextUtilities.getTranslation("name", team.config().blockDyeColor().name()).formatted(team.config().chatFormatting()).formatted(Formatting.GRAY));
 
         players.sendMessage(winMessage);
         for(var entries : teamPlayersMap.entries())

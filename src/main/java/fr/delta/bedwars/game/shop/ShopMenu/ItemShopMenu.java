@@ -1,22 +1,21 @@
 package fr.delta.bedwars.game.shop.ShopMenu;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import fr.delta.bedwars.data.ShopEntryGetter;
 import fr.delta.bedwars.game.BedwarsActive;
-import fr.delta.bedwars.game.shop.entries.ShopEntry;
 import fr.delta.bedwars.game.shop.data.ShopCategoriesConfig;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import xyz.nucleoid.plasmid.game.GameActivity;
-import xyz.nucleoid.plasmid.registry.TinyRegistry;
 
 import java.util.List;
 
 public class ItemShopMenu extends ShopMenu {
     final List<ShopCategoriesConfig.Category> categories;
-    final TinyRegistry<ShopEntry> entries;
+    final ShopEntryGetter entries;
 
-    public ItemShopMenu(BedwarsActive bedwarsActive, TinyRegistry<ShopEntry> entries, List<ShopCategoriesConfig.Category> categories, GameActivity activity)
+    public ItemShopMenu(BedwarsActive bedwarsActive, ShopEntryGetter entries, List<ShopCategoriesConfig.Category> categories, GameActivity activity)
     {
         super(bedwarsActive, activity);
         this.categories = categories;

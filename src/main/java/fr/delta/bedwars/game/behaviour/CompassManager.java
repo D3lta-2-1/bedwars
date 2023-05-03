@@ -1,4 +1,5 @@
 package fr.delta.bedwars.game.behaviour;
+import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.event.SlotInteractionEvent;
@@ -7,7 +8,7 @@ import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.shop.ShopMenu.TrackerShopMenu;
 import fr.delta.bedwars.game.ui.PlayerCustomPacketsSender;
 import fr.delta.bedwars.mixin.PlayerInventoryAccessor;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -42,7 +43,7 @@ public class CompassManager {
         public ServerPlayerEntity player;
     }
 
-    private final Map<ServerPlayerEntity, target> playerTargetMap = new Object2ObjectArrayMap<>(); //same here
+    private final Map<ServerPlayerEntity, target> playerTargetMap = new Object2ObjectOpenHashMap<>(); //same here
     private final TrackerShopMenu trackerShopMenu;
     private final BedwarsActive game;
     public CompassManager(BedwarsActive game, GameActivity activity)
@@ -126,6 +127,7 @@ public class CompassManager {
 
     public void openTrackerSettings(ServerPlayerEntity player)
     {
+        //open gui
         var gui = new SimpleGui(ScreenHandlerType.GENERIC_9X2, player, false)
         {
             @Override
@@ -135,7 +137,24 @@ public class CompassManager {
         };
         gui.setAutoUpdate(false);
         gui.setTitle(Text.translatable("trackerSetting.bedwars.title"));
+        //add player icon
+        for(var target : game.getPlayersInTeam(playerTargetMap.get(player).team))
+        {
+            gui.addSlot(getPlayerIcon(target));
+        }
         gui.open();
+    }
+
+    private GuiElementBuilder getPlayerIcon(ServerPlayerEntity player)
+    {
+        var icon = new GuiElementBuilder(Items.PLAYER_HEAD);
+        icon.getOrCreateNbt().putString("SkullOwner", player.getEntityName());
+        icon.setName(player.getDisplayName());
+        icon.setCallback((index, type, action, gui) -> {
+            var user = gui.getPlayer();
+            playerTargetMap.get(user).player = player;
+        });
+        return icon;
     }
 
     private void tick()
@@ -144,10 +163,10 @@ public class CompassManager {
         this.playerTargetMap.forEach((player, target) ->
                 {
                     player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(target.player.getBlockPos(), 0));
-                    var text = TextUtilities.concatenate(target.player.getDisplayName(),
-                            Text.translatable("tracker.bedwars.is"),
-                            Text.literal(String.format("%.2f", player.distanceTo(target.player))),
-                            Text.translatable("tracker.bedwars.blocksAway")).formatted(Formatting.BOLD);
+                    var text = Text.translatable("tracker.bedwars.blockAway",
+                                    TextUtilities.getFormattedPlayerName(target.player, game.getTeamManager()),
+                                    (int)player.distanceTo(target.player))
+                            .formatted(Formatting.BOLD);
                     PlayerCustomPacketsSender.showOverlay(player, text);
                 }
         );
@@ -162,6 +181,7 @@ public class CompassManager {
         {
             var targetPlayer = entry.getValue().player;
             var targetTeam = entry.getValue().team;
+
             if(targetPlayer == player)
             {
                 var newTargetPlayer = game.getPlayersInTeam(targetTeam).stream().findAny();
@@ -171,11 +191,14 @@ public class CompassManager {
                 }
                 else
                 {
-                    playerTargetMap.remove(entry.getKey()); //if the team is dead, we remove the tracker
+                    playerTargetMap.forEach((key, value) ->{ //if the team is dead, we remove the tracker
+                        if(value.player == player)
+                            playerTargetMap.remove(key);
+                    });
+
                     PlayerCustomPacketsSender.showOverlay(player, Text.empty());
                 }
             }
-
         }
     }
 }

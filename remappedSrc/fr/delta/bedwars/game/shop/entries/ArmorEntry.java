@@ -4,6 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.player.PlayerArmorManager;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -14,6 +17,8 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class ArmorEntry extends ShopEntry {
 
@@ -47,7 +52,7 @@ public class ArmorEntry extends ShopEntry {
     }
 
     @Override
-    public Cost getCost(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public Cost getCost(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return cost;
     }
 
@@ -57,7 +62,7 @@ public class ArmorEntry extends ShopEntry {
     }
 
     @Override
-    public Item getDisplay(BedwarsActive BedwarsGame, ServerPlayerEntity player) {
+    public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return icon;
     }
 
@@ -69,18 +74,30 @@ public class ArmorEntry extends ShopEntry {
     }
 
     @Override
+    public Map<Enchantment, Integer> enchantment(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
+        var enchantment = bedwarsGame.getTeamComponentsFor(player).enchantments;
+        Map<Enchantment, Integer> suitableEnchantment = new Object2IntArrayMap<>();
+        for(var entry : enchantment.entrySet())
+        {
+            if(entry.getKey().target == EnchantmentTarget.ARMOR)
+                suitableEnchantment.put(entry.getKey(), entry.getValue());
+        }
+        return suitableEnchantment;
+    }
+
+    @Override
     public List<MutableText> getLore(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
         return null;
     }
 
     @Override
     public ItemStack onBuy(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        bedwarsGame.getInventoryManager().getArmorManager(player).setLevel(armorLevel);
+        bedwarsGame.getInventoryManager().getArmorManager(player).setLevel(player, armorLevel);
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void editNbt(NbtCompound nbt) {
-        nbt.putByte("HideFlags", (byte) 127); //hide specifity
+    public void editNbt(NbtCompound nbt, BedwarsActive bedwarsGame, ServerPlayerEntity player) {
+        nbt.putByte("HideFlags", (byte) 127); //hide specificity
     }
 }

@@ -85,7 +85,7 @@ public class DeathManager {
             activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, source, attacker, bed.isBroken());
 
             if(bed.isBroken()) {
-                //this is a final kill just remove it from the game, this may need to be moved to a dedicated listener
+                //this is a final kill just remove it from the game
                 bedwarsGame.removePlayerFromTeam(player);
             }
             else {
@@ -97,21 +97,6 @@ public class DeathManager {
         }
         spawnSpec(player);
         return ActionResult.FAIL;
-    }
-
-    private void onPlayerLeft(ServerPlayerEntity player)
-    {
-        if(isAlive(player))
-        {
-            ServerPlayerEntity attacker = null;
-            if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary && adversary != player) {
-                attacker = adversary;
-            }
-            var bed = bedwarsGame.getTeamComponentsFor(player).bed;
-            activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, player.getDamageSources().outOfWorld(), attacker, bed.isBroken());
-            activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, player.getDamageSources().outOfWorld(), attacker, bed.isBroken());
-            //no need to do anything to remove it, the player will be removed from the game by the team manager, we only need to fire the death event
-        }
     }
 
     private void tick()
@@ -138,12 +123,26 @@ public class DeathManager {
             //send a death message every second
             if(timeBeforeRespawn % 20 != 0) continue;
 
-            var subtitle = TextUtilities.concatenate(Text.translatable("death.bedwars.subtitleBeginning").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)),
-                                                                    Text.literal(String.valueOf(timeBeforeRespawn / 20 )).setStyle(Style.EMPTY.withColor(Formatting.RED)),
-                                                                    Text.translatable("death.bedwars.subtitleEnd").setStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
+            var subtitle = TextUtilities.concatenate(Text.translatable("death.bedwars.youWillRespawn", Text.literal(String.valueOf(timeBeforeRespawn / 20 )).formatted(Formatting.RED)).formatted(Formatting.YELLOW));
             PlayerCustomPacketsSender.changeSubtitle(deadPlayer.player, subtitle);
             deadPlayer.player.sendMessage(subtitle);
         }
+    }
+
+    private void onPlayerLeft(ServerPlayerEntity player)
+    {
+        if(isAlive(player))
+        {
+            ServerPlayerEntity attacker = null;
+            if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary && adversary != player) {
+                attacker = adversary;
+            }
+            var bed = bedwarsGame.getTeamComponentsFor(player).bed;
+            activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, player.getDamageSources().outOfWorld(), attacker, bed.isBroken());
+            activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, player.getDamageSources().outOfWorld(), attacker, bed.isBroken());
+            //no need to do anything to remove it, the player will be removed from the game by the team manager, we only need to fire the death event
+        }
+        bedwarsGame.removePlayerFromTeam(player);
     }
 
     public boolean isAlive(ServerPlayerEntity player)
@@ -170,7 +169,7 @@ public class DeathManager {
 
     public void respawnPlayer(ServerPlayerEntity player)
     {
-        PlayerCustomPacketsSender.showTitle(player, Text.translatable("death.bedwars.respawn").setStyle(Style.EMPTY.withColor(Formatting.GREEN)), 0 ,20 ,20);
+        PlayerCustomPacketsSender.showTitle(player, Text.translatable("death.bedwars.respawn").formatted(Formatting.GREEN), 0 ,20 ,20);
         PlayerCustomPacketsSender.changeSubtitle(player, Text.empty());
         var spawn = bedwarsGame.getTeamComponentsFor(player).spawn;
         spawn.spawnPlayer(player);
@@ -199,7 +198,7 @@ public class DeathManager {
         return offer.accept(world, respawnPos).and(() -> {
             spawnSpec(offeredPlayer);
             bedwarsGame.addPlayerToTeam(offeredPlayer, teamFinal);
-            var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
+            var title = Text.translatable("death.bedwars.title").formatted(Formatting.RED);
             PlayerCustomPacketsSender.showTitle(offeredPlayer, title, 0, 20 * 6, 1);
             deadPlayers.add(new DeadPlayer(offeredPlayer, world.getTime()));
         });
