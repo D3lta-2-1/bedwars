@@ -1,6 +1,7 @@
 package fr.delta.bedwars.game.shop.ShopMenu;
 
 import eu.pb4.sgui.api.gui.SimpleGui;
+import eu.pb4.sgui.api.gui.SlotGuiInterface;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
@@ -71,6 +72,11 @@ public class TrackerShopMenu extends ShopMenu{
     public TrackerShopMenu(BedwarsActive bedwarsGame, GameActivity activity)
     {
         super(bedwarsGame, activity);
+    }
+
+    @Override
+    protected void afterPurchase(SlotGuiInterface gui) {
+        gui.close();
     }
 
     @Override
