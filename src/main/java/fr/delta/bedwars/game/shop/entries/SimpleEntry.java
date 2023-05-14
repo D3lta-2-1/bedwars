@@ -6,7 +6,6 @@ import fr.delta.bedwars.game.BedwarsActive;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
@@ -83,14 +82,7 @@ public class SimpleEntry extends ShopEntry {
             enchantments.forEach(stack::addEnchantment);
         if(isUnbreakable)
             stack.setUnbreakable();
-        var out = stack.build();
-        out.getOrCreateNbt().putInt("Color", bedwarsGame.getTeamForPlayer(player).config().blockDyeColor().getFireworkColor()); //could be only added if the item supports it
-        return out;
-    }
-
-    @Override
-    public void editNbt(NbtCompound nbt, BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        nbt.putInt("Color", bedwarsGame.getTeamForPlayer(player).config().blockDyeColor().getFireworkColor());
+        return stack.build();
     }
 
     @Override

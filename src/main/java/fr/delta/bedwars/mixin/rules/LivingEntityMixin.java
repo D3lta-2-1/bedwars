@@ -20,7 +20,7 @@ public class LivingEntityMixin
         if(source.isOf(DamageTypes.FALL) && gameSpace != null && gameSpace.getBehavior().testRule(GameRules.REDUCED_FALL_DAMAGE) == ActionResult.SUCCESS)
         {
             if(amount > 0)
-                amount = Math.min(0, amount - 1); //reduce fall damage by 1
+                amount = Math.max(0, amount - 1); //reduce fall damage by 1
         }
         return amount;
     }

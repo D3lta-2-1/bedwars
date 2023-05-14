@@ -6,6 +6,7 @@ import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import fr.delta.bedwars.game.shop.ShopMenu.ShopMenu;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,6 +16,7 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import java.util.EnumSet;
@@ -95,7 +97,7 @@ public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
         super.tick();
 
         var box = this.getBoundingBox().expand(4.0D);
-        List<ServerPlayerEntity> players = this.world.getEntitiesByClass(ServerPlayerEntity.class, box, (empty) -> true);
+        List<ServerPlayerEntity> players = this.world.getEntitiesByClass(ServerPlayerEntity.class, box, LivingEntity::isPartOfGame);
         if(players.isEmpty()) return;
         if (this.lookTarget == null || this.distanceTo(this.lookTarget) > 5.0D || this.lookTarget.isDisconnected() || !this.lookTarget.isAlive()) {
             this.lookTarget = players.get(this.random.nextInt(players.size()));
@@ -104,7 +106,13 @@ public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
         this.setHeadYaw(this.getYaw());
     }
 
-   /* @Override
+    @Override
+    public void setVelocity(Vec3d velocity)
+    {
+        super.setVelocity(Vec3d.ZERO);
+    }
+
+    /* @Override
     public void modifyRawTrackedData(List<DataTracker.SerializedEntry<?>> data, ServerPlayerEntity player, boolean initial) {
         //data.add(DataTracker.SerializedEntry.of(EntityTrackedData.FLAGS, (byte) (1 << EntityTrackedData.INVISIBLE_FLAG_INDEX)));
         data.add(new DataTracker.SerializedEntry(EntityAccessor.getNO_GRAVITY().getId(), EntityAccessor.getNO_GRAVITY().getType(), true));

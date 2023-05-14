@@ -104,6 +104,7 @@
   "trap.bedwars.trapSetOff" : "Your %1$s as been set off",
 
   "item.bedwars.fire_ball" : "Fire Ball",
+  "item.bedwars.bridge_egg" : "Bridge Egg",
 
   "generator.bedwars.tier" : "Tier %1$s",
   "generator.bedwars.spawnIn" : "spawn in %1$s seconds",

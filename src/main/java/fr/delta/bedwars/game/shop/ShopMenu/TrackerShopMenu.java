@@ -1,7 +1,6 @@
 package fr.delta.bedwars.game.shop.ShopMenu;
 
 import eu.pb4.sgui.api.gui.SimpleGui;
-import fr.delta.bedwars.Constants;
 import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
@@ -15,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
+import xyz.nucleoid.plasmid.util.ColoredBlocks;
 
 public class TrackerShopMenu extends ShopMenu{
 
@@ -43,7 +43,7 @@ public class TrackerShopMenu extends ShopMenu{
         @Override
         public Item getDisplay(BedwarsActive bedwarsGame, ServerPlayerEntity player)
         {
-            return Constants.DYE_WOOL_MAP.get(targetTeam.config().blockDyeColor());
+            return ColoredBlocks.banner(targetTeam.config().blockDyeColor()).asItem();
         }
 
         @Override

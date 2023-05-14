@@ -1,5 +1,7 @@
 package fr.delta.bedwars;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -14,9 +16,16 @@ public class TextUtilities {
     public static final MutableText DOTS = Text.literal(":");
     public static Style WARNING = Style.EMPTY.withColor(Formatting.RED);
 
-    public static MutableText getFormattedPlayerName(ServerPlayerEntity player, TeamManager manager)
+    public static MutableText getFormattedPlayerName(Entity entity, TeamManager manager)
     {
-        return player.getName().copy().formatted(manager.getTeamConfig(manager.teamFor(player)).chatFormatting());
+        var entityName = entity.getName().copy();
+        if(entity instanceof ServerPlayerEntity player)
+        {
+            var team = manager.teamFor(player);
+            if(team == null) return entityName;
+            return entityName.formatted(manager.getTeamConfig(team).chatFormatting());
+        }
+        return entityName;
     }
 
     static public MutableText concatenate(Text... texts)

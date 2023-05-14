@@ -1,6 +1,5 @@
 package fr.delta.bedwars.game.player;
 
-import com.google.common.collect.Multimap;
 import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.data.AdditionalDataLoader;
 import fr.delta.bedwars.game.BedwarsActive;
@@ -15,7 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import xyz.nucleoid.plasmid.game.GameActivity;
-import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 
 import java.util.*;
@@ -46,6 +44,13 @@ public class InventoryManager
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
         activity.listen(BedwarsEvents.PLAYER_RESPAWN, this::onPlayerRespawn);
         ToolManager.init(activity);
+
+        for(var team : game.getTeamManager())
+        {
+            game.getPlayersInTeam(team).forEach(player -> playerManagerMap.put(PlayerRef.of(player), new Managers(
+                    new PlayerArmorManager(team.config().blockDyeColor(), game.getTeamComponentsFor(player).enchantments),
+                    new ArrayList<>())));
+        }
     }
 
     public Set<Item> getLootable(BedwarsConfig config)
@@ -61,14 +66,6 @@ public class InventoryManager
                 items.add(generatorBuilder.getItem());
         }
         return items;
-    }
-
-    public void init(Multimap<GameTeam, PlayerRef> teamPlayersMap)
-    {
-        for(var team : teamPlayersMap.keySet())
-        {
-            game.getPlayersInTeam(team).forEach(player -> playerManagerMap.put(PlayerRef.of(player), new Managers(new PlayerArmorManager(team.config().blockDyeColor(), game.getTeamComponentsFor(player).enchantments), new ArrayList<>())));
-        }
     }
 
     List<ItemStack> generateDrop(ServerPlayerEntity player)

@@ -9,12 +9,15 @@ import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.map.BedwarsMap;
 import fr.delta.bedwars.game.ui.PlayerCustomPacketsSender;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import xyz.nucleoid.plasmid.game.GameActivity;
@@ -26,13 +29,14 @@ import xyz.nucleoid.plasmid.game.player.PlayerOffer;
 import xyz.nucleoid.plasmid.game.player.PlayerOfferResult;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 import xyz.nucleoid.stimuli.event.player.PlayerDeathEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
 //in charge of death, final elimination, and reconnection, spec connection handling
 public class DeathManager {
     static final int RESPAWN_TIME = 5;
-    private final BedwarsActive bedwarsGame;
+    private final BedwarsActive game;
     private final ServerWorld world;
     private final GameSpacePlayers players;
     private final GameActivity activity;
@@ -53,7 +57,7 @@ public class DeathManager {
     private final List<DeadPlayer> deadPlayers = new ArrayList<>();
     public DeathManager(BedwarsActive bedwarsGame, Multimap<GameTeam, PlayerRef> teamPlayersMap, ServerWorld world, BedwarsMap map, BedwarsConfig config, GameActivity activity)
     {
-        this.bedwarsGame = bedwarsGame;
+        this.game = bedwarsGame;
         this.world = world;
         this.players = activity.getGameSpace().getPlayers();
         this.activity = activity;
@@ -65,35 +69,52 @@ public class DeathManager {
         activity.listen(GameActivityEvents.TICK, this::tick);
         activity.listen(GamePlayerEvents.LEAVE, this::onPlayerLeft);
         activity.listen(GamePlayerEvents.OFFER, this::onPlayerJoin);
+        activity.listen(BedwarsEvents.BED_BROKEN, this::onBedBroken);
+        activity.listen(BedwarsEvents.AFTER_PLAYER_DEATH, (player, source, killer, isFinal) -> checkForWin());
+    }
+
+    private Pair<DamageSource, ServerPlayerEntity> getDeathContext(ServerPlayerEntity player, DamageSource source)
+    {
+        ServerPlayerEntity attacker = null;
+
+        if (source.getAttacker() != null && source.getAttacker() instanceof ServerPlayerEntity adversary && adversary != player)
+            attacker = adversary;
+        else if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary && adversary != player)
+            attacker = adversary;
+
+        boolean shouldNotHaveAnAttacker = attacker != null && isAlive(attacker) && game.getTeamForPlayer(player) == game.getTeamForPlayer(attacker);
+        if(shouldNotHaveAnAttacker)
+            attacker = null;
+
+        return new Pair<>( shouldNotHaveAnAttacker ? overwriteSource(source, player.getDamageSources()) : source, attacker);
+    }
+
+    private DamageSource overwriteSource(DamageSource source, DamageSources sources)
+    {
+        if(source.isOf(DamageTypes.FIREBALL)) return sources.fireball((AbstractFireballEntity)source.getSource(), null);
+        return source;
     }
 
     public ActionResult onPlayerDeath(ServerPlayerEntity player, DamageSource source)
     {
         if(isAlive(player))
         {
-            var bed = bedwarsGame.getTeamComponentsFor(player).bed;
-            ServerPlayerEntity attacker = null;
+            var deathContext = getDeathContext(player, source);
 
-            if (source.getAttacker() != null && source.getAttacker() instanceof ServerPlayerEntity adversary && adversary != player)
-            {
-                attacker = adversary;
-            }
-            else if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary && adversary != player)
-            {
-                attacker = adversary;
-            }
-            activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, source, attacker, bed.isBroken());
+            var bed = game.getTeamComponentsFor(player).bed;
+
+            activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, deathContext.getLeft(), deathContext.getRight(), bed.isBroken());
 
             if(bed.isBroken()) {
                 //this is a final kill just remove it from the game
-                bedwarsGame.removePlayerFromTeam(player);
+                game.removePlayerFromTeam(PlayerRef.of(player));
             }
             else {
-                var title = Text.translatable("death.bedwars.title").setStyle(Style.EMPTY.withColor(Formatting.RED));
+                var title = Text.translatable("death.bedwars.title").formatted(Formatting.RED);
                 PlayerCustomPacketsSender.showTitle(player, title, 0, 20 * 6, 1);
                 deadPlayers.add(new DeadPlayer(player, world.getTime()));
             }
-            activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, source, attacker, bed.isBroken());
+            activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, deathContext.getLeft(), deathContext.getRight(), bed.isBroken());
         }
         spawnSpec(player);
         return ActionResult.FAIL;
@@ -133,16 +154,34 @@ public class DeathManager {
     {
         if(isAlive(player))
         {
-            ServerPlayerEntity attacker = null;
-            if (player.getPrimeAdversary() != null && player.getPrimeAdversary() instanceof ServerPlayerEntity adversary && adversary != player) {
-                attacker = adversary;
+            var deathContext = getDeathContext(player, player.getDamageSources().outOfWorld()); //TODO: implement a fancy damage source for this
+
+            var bed = game.getTeamComponentsFor(player).bed;
+            activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, deathContext.getLeft(), deathContext.getRight(), bed.isBroken());
+            if(bed.isBroken()) {
+                //this is a final kill just remove it from the game
+                game.removePlayerFromTeam(PlayerRef.of(player));
             }
-            var bed = bedwarsGame.getTeamComponentsFor(player).bed;
-            activity.invoker(BedwarsEvents.PLAYER_DEATH).onDeath(player, player.getDamageSources().outOfWorld(), attacker, bed.isBroken());
-            activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, player.getDamageSources().outOfWorld(), attacker, bed.isBroken());
-            //no need to do anything to remove it, the player will be removed from the game by the team manager, we only need to fire the death event
+            activity.invoker(BedwarsEvents.AFTER_PLAYER_DEATH).afterPlayerDeath(player, deathContext.getLeft(), deathContext.getRight(), bed.isBroken());
+            //no need to do anything to remove it, the player will be removed from the game by the team manager by the death event if needed
         }
-        bedwarsGame.removePlayerFromTeam(player);
+        else
+        {
+            deadPlayers.removeIf(deadPlayer -> deadPlayer.player == player);
+        }
+    }
+
+    private void onBedBroken(GameTeam team, ServerPlayerEntity $)
+    {
+        var players = game.getTeamManager().allPlayersIn(team.key());
+        for(var player : players)
+        {
+            if(!game.getPlayers().contains(player))
+            {
+                game.removePlayerFromTeam(player); //eliminate the player if he is not in the game
+            }
+        }
+        checkForWin();
     }
 
     public boolean isAlive(ServerPlayerEntity player)
@@ -152,7 +191,7 @@ public class DeathManager {
             if(deadPlayer.player == player)
                 return false;
         }
-        return bedwarsGame.getTeamForPlayer(player) != null;
+        return game.getTeamForPlayer(player) != null;
     }
 
     public void spawnSpec(ServerPlayerEntity player)
@@ -171,7 +210,7 @@ public class DeathManager {
     {
         PlayerCustomPacketsSender.showTitle(player, Text.translatable("death.bedwars.respawn").formatted(Formatting.GREEN), 0 ,20 ,20);
         PlayerCustomPacketsSender.changeSubtitle(player, Text.empty());
-        var spawn = bedwarsGame.getTeamComponentsFor(player).spawn;
+        var spawn = game.getTeamComponentsFor(player).spawn;
         spawn.spawnPlayer(player);
     }
 
@@ -190,17 +229,34 @@ public class DeathManager {
             }
         }
         //do the player was even in game? or have he a bed?
-        if(team == null || bedwarsGame.getTeamComponentsFor(team).bed.isBroken())
+        if(team == null || game.getTeamComponentsFor(team).bed.isBroken())
             return offer.accept(world, respawnPos).and(() -> spawnSpec(offeredPlayer)); //make him a spectator, we could also just deny him
 
         //he was in game, so we need to respawn him
-        final var teamFinal = team; //we need to make a final copy of the team because it's used in the lambda
+        //final var teamFinal = team; //we need to make a final copy of the team because it's used in the lambda
         return offer.accept(world, respawnPos).and(() -> {
             spawnSpec(offeredPlayer);
-            bedwarsGame.addPlayerToTeam(offeredPlayer, teamFinal);
+            //game.addPlayerToTeam(offeredPlayer, teamFinal); //team manager should do this by itself
             var title = Text.translatable("death.bedwars.title").formatted(Formatting.RED);
             PlayerCustomPacketsSender.showTitle(offeredPlayer, title, 0, 20 * 6, 1);
             deadPlayers.add(new DeadPlayer(offeredPlayer, world.getTime()));
         });
+    }
+    void checkForWin()
+    {
+        GameTeam lastTeam = null;
+        for(var team : game.getTeamManager())
+        {
+            if(game.getTeamManager().playersIn(team.key()).size() !=0)
+            {
+                if(lastTeam == null)
+                    lastTeam = team;
+                else
+                {
+                    return; //more than one team alive
+                }
+            }
+        }
+        activity.invoker(BedwarsEvents.TEAM_WIN).onTeamWin(lastTeam);
     }
 }

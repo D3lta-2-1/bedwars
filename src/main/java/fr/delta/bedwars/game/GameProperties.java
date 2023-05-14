@@ -12,11 +12,12 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.world.event.GameEvent;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.stimuli.event.block.BlockPlaceEvent;
-
+import xyz.nucleoid.stimuli.event.item.ItemThrowEvent;
 public class GameProperties {
     public static void add(GameActivity activity) {
         //avoid empty bottles
         activity.listen(PotionDrankEvent.EVENT, (stack, world, user) -> ItemStack.EMPTY);
+
         //avoid crafting
         activity.listen(SlotInteractionEvent.BEFORE, (player, handler, slotIndex, button, actionType)-> {
             var screenHandler = handler instanceof AbstractRecipeScreenHandler ? (AbstractRecipeScreenHandler<?>)handler : null;
@@ -36,6 +37,12 @@ public class GameProperties {
                 world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos);
                 world.setBlockState(pos, Blocks.AIR.getDefaultState());
             }
+        });
+
+        //cancel player who aren't on ground to drop items
+        activity.listen(ItemThrowEvent.EVENT, (player, slot, stack) -> {
+            if(player.fallDistance > 1.5) return ActionResult.FAIL; //should be secured by the AC since this value depends on the client
+            return ActionResult.PASS;
         });
     }
 }

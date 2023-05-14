@@ -11,12 +11,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.explosion.Explosion;
+import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.stimuli.event.block.BlockBreakEvent;
 import xyz.nucleoid.stimuli.event.block.BlockPlaceEvent;
+import xyz.nucleoid.stimuli.event.block.FluidPlaceEvent;
 import xyz.nucleoid.stimuli.event.world.ExplosionDetonatedEvent;
 
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ public class ClaimManager {
         activity.listen(BlockBreakEvent.EVENT, this::blockBreakEvent);
         activity.listen(ExplosionDetonatedEvent.EVENT, this::onExplosionDetonated);
         activity.listen(BlockPlaceEvent.BEFORE, this::onPlace);
+        activity.listen(FluidPlaceEvent.EVENT, this::onBucketUse);
     }
 
 
@@ -97,6 +101,35 @@ public class ClaimManager {
         {
             player.sendMessage(Text.translatable("warning.bedwars.buildLimit").setStyle(TextUtilities.WARNING));
             return ActionResult.FAIL;
+        }
+        return ActionResult.PASS;
+    }
+
+    public boolean isInMapLimits(BlockPos pos)
+    {
+        return pos.getY() < config.highLimit() && pos.getY() > config.downLimit() && map.template().getBounds().contains(pos);
+    }
+
+    public boolean isInClaimedRegion(BlockPos pos)
+    {
+        for(var region : claimedRegions)
+        {
+            if(region.contains(pos))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ActionResult onBucketUse(ServerWorld world, BlockPos pos, @Nullable ServerPlayerEntity player, @Nullable BlockHitResult result)
+    {
+        for(var region : claimedRegions)
+        {
+            if(region.contains(pos))
+            {
+                return ActionResult.FAIL;
+            }
         }
         return ActionResult.PASS;
     }

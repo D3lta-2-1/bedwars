@@ -40,8 +40,6 @@ public class BedwarsWaiting {
         this.gameSpace = activity.getGameSpace();
         this.config = config;
         this.registerEvents();
-
-        activity.listen(GameActivityEvents.REQUEST_START, this::requestStart);
     }
     static public GameOpenProcedure open(GameOpenContext<BedwarsConfig> context)
     {
@@ -60,6 +58,7 @@ public class BedwarsWaiting {
         var maxPlayerCount = this.map.teamData().size() * teamSize;
         GameWaitingLobby.addTo(activity,new PlayerConfig(1, maxPlayerCount, maxPlayerCount - 1, PlayerConfig.Countdown.DEFAULT));
         activity.listen(GamePlayerEvents.OFFER, offer -> offer.accept(world, map.waiting().centerTop()));
+        activity.listen(GameActivityEvents.REQUEST_START, this::requestStart);
     }
 
     private GameResult requestStart()

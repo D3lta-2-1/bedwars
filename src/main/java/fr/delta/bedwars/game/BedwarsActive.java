@@ -3,6 +3,7 @@ package fr.delta.bedwars.game;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import fr.delta.bedwars.Bedwars;
+import fr.delta.bedwars.BedwarsActiveTracker;
 import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.GameRules;
 import fr.delta.bedwars.StageEvent.StageEvent;
@@ -23,8 +24,11 @@ import fr.delta.bedwars.game.map.BedwarsMap;
 import fr.delta.notasword.NotASword;
 import fr.delta.notasword.OldAttackSpeed;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpace;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
@@ -34,6 +38,7 @@ import xyz.nucleoid.plasmid.game.common.team.TeamManager;
 import xyz.nucleoid.plasmid.game.player.PlayerSet;
 import xyz.nucleoid.plasmid.game.rule.GameRuleType;
 import xyz.nucleoid.plasmid.util.PlayerRef;
+import xyz.nucleoid.stimuli.event.player.PlayerDamageEvent;
 
 import java.util.*;
 
@@ -54,8 +59,6 @@ public class BedwarsActive {
     private InventoryManager inventoryManager;
     private Multimap<String, ResourceGenerator> middleGeneratorsMap;
 
-
-
     BedwarsActive(GameSpace gameSpace, BedwarsMap gameMap, ServerWorld world, Multimap<GameTeam, PlayerRef> teamPlayers, List<GameTeam> teamsInOrder, BedwarsConfig config)
     {
         //set members
@@ -70,46 +73,56 @@ public class BedwarsActive {
         //I saw in other game that a static function is used to create the activity, In my case, I can't do that because I need to ensure some priority in the event
         gameSpace.setActivity(activity -> {
             //set gameRules
-            setupGameRules(activity);
             this.activity = activity;
             //setup things that aren't related to teams
             this.claim = new ClaimManager(gameMap, config, activity);
             this.middleGeneratorsMap = addMiddleGenerator(activity);
             this.defaultSwordManager = new SwordManager(this, activity);
             this.compassManager = new CompassManager(this, activity);
-
-            //this must be setup before the teamManager to ensure event are fired in the right order
-            this.deathManager = new DeathManager(this, teamPlayers, world, gameMap, config, activity);
-            this.inventoryManager = new InventoryManager(deathManager, this, config, activity);
-            new FeedbackMessager(this, teamPlayers, world, activity);
-
-            //setup teamManager only here because of automated remove of player from team when leaving the gameSpace
             this.teamManager = TeamManager.addTo(activity);
-            TeamChat.addTo(activity, teamManager);
+            this.deathManager = new DeathManager(this, teamPlayers, world, gameMap, config, activity);
             setupTeam(teamPlayers); //populate teamManager
             this.teamComponentsMap = makeTeamComponents(activity); //forge bed, spawn ect
+            this.inventoryManager = new InventoryManager(deathManager, this, config, activity);
 
-            //split the inventory manager init in to part cause of event priority
-            this.inventoryManager.init(teamPlayers);
+            new FeedbackMessager(this, teamPlayers, world, activity);
+            TeamChat.addTo(activity, teamManager);
 
             var queue = loadEvents();
             //things that aren't store as private members
             var stageManager = new GameEventManager(world, queue, this, activity);
             BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
 
-            new WinChecker(teamsInOrder, teamManager, activity);
             new OldAttackSpeed(20D, activity);
             new InvisibilityArmorHider(teamManager, activity);
             new ChestLocker(teamComponentsMap, teamManager, activity);
+            activity.listen(PlayerDamageEvent.EVENT, (player, source, amount) -> { //disable friendly fire
+                var protectedFrom = List.of(DamageTypes.PLAYER_ATTACK, DamageTypes.ARROW); //could be extended to other damage type
+                for(var type : protectedFrom)
+                {
+                    if(!source.isOf(type)) continue;
+                    var attackerEntity = source.getAttacker();
+                    if(attackerEntity instanceof ServerPlayerEntity attacker)
+                    {
+                        var attackerTeam = teamManager.teamFor(attacker);
+                        var playerTeam = teamManager.teamFor(player);
+                        if(attackerTeam == playerTeam) return ActionResult.FAIL;
+                    }
+                }
+                return ActionResult.PASS;
+            });
+
             addShopkeepers(activity);
             destroySpawn();
             startGame();
             breakBedForEmptyTeam();
 
-            //should be the last thing registered to enforce the order of the events
             BedwarsStatistic.addTo(gameSpace.getStatistics().bundle(Bedwars.ID), activity);
+            setupGameRules(activity);
+            //should be the last thing registered to enforce the order of the events
             activity.listen(BedwarsEvents.TEAM_WIN, this::onTeamWin);
         });
+        BedwarsActiveTracker.getInstance().addGame(gameSpace, this);
     }
     private static void setupGameRules(GameActivity activity)
     {
@@ -251,7 +264,7 @@ public class BedwarsActive {
     }
 
     //accessors
-    public GameTeam getTeamForPlayer(ServerPlayerEntity player)
+    public GameTeam getTeamForPlayer(PlayerRef player)
     {
         var teamKey = teamManager.teamFor(player);
         for(var team : teamsInOrder)
@@ -262,6 +275,11 @@ public class BedwarsActive {
             }
         }
         return null;
+    }
+
+    public GameTeam getTeamForPlayer(ServerPlayerEntity player)
+    {
+       return getTeamForPlayer(PlayerRef.of(player));
     }
 
     public SwordManager getDefaultSwordManager() { return defaultSwordManager; }
@@ -289,15 +307,9 @@ public class BedwarsActive {
         return teamComponentsMap.get(team.key());
     }
 
-    public void addPlayerToTeam(ServerPlayerEntity player, GameTeam team)
+    public void removePlayerFromTeam(PlayerRef player)
     {
-        teamManager.addPlayerTo(player, team.key());
-    }
-
-    public void removePlayerFromTeam(ServerPlayerEntity player)
-    {
-        var team = teamManager.teamFor(player);
-        teamManager.removePlayerFrom(player, team);
+        teamManager.removePlayer(player);
     }
     public PlayerSet getPlayersInTeam(GameTeam team)
     {
@@ -333,4 +345,9 @@ public class BedwarsActive {
     {
         return activity;
     }
-}
+
+    public boolean couldABlockBePlacedHere(BlockPos pos)
+    {
+        return claim.isInMapLimits(pos) && !claim.isInClaimedRegion(pos);
+    }
+    }

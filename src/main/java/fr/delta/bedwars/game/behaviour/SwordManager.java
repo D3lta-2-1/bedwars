@@ -174,6 +174,7 @@ public class SwordManager {
         if(stack == null) return ActionResult.PASS;
         if(stack.isOf(defaultSword))
         {
+            BedwarsEvents.ensureInventoryIsNotFull(player, activity);
             return ActionResult.FAIL;
         }
         return ActionResult.PASS;

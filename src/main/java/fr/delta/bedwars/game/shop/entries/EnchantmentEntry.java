@@ -47,15 +47,9 @@ public class EnchantmentEntry extends ShopEntry{
 
     @Override
     public MutableText getName(BedwarsActive bedwarsGame, ServerPlayerEntity player) {
-        var level = bedwarsGame.getTeamComponentsFor(player).enchantments.getOrDefault(enchantment,0);
-        if(level + 1 >= this.costs.size()) //a List begins at 0, but 0 is the first upgrade
-            return TextUtilities.concatenate(Text.translatable(enchantment.getTranslationKey()),
-                    TextUtilities.SPACE,
-                    Text.translatable("generator.bedwars." + level));
-        else
-            return TextUtilities.concatenate(Text.translatable(enchantment.getTranslationKey()),
-                    TextUtilities.SPACE,
-                    Text.translatable("generator.bedwars." + (level + 1)));
+        return TextUtilities.concatenate(Text.translatable(enchantment.getTranslationKey()),
+                TextUtilities.SPACE,
+                Text.translatable("generator.bedwars." + displayCount(bedwarsGame,player)));
     }
 
     @Override

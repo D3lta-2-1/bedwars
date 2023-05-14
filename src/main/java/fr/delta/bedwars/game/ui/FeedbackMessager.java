@@ -5,11 +5,14 @@ import fr.delta.bedwars.TextUtilities;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.event.BedwarsEvents;
 import fr.delta.bedwars.game.shop.entries.ShopEntry;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -78,7 +81,7 @@ public class FeedbackMessager {
         players.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL);
     }
 
-    void onPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer,boolean isFinal)
+    void onPlayerDeath(ServerPlayerEntity player, DamageSource source, ServerPlayerEntity killer, boolean isFinal)
     {
         players.sendMessage(getDeathMessage(player, source, isFinal));
     }
@@ -88,13 +91,38 @@ public class FeedbackMessager {
         player.playSound(SoundEvents.ENTITY_SQUID_DEATH, SoundCategory.PLAYERS, 1.f, 1.f);
     }
 
-    private Text getDeathMessage(ServerPlayerEntity player, DamageSource source, boolean Final) {
-        var deathMessage = source.getDeathMessage(player).copy();
+    private Text getDeathMessage(ServerPlayerEntity player, DamageSource source, boolean Final)
+    {
+        var deathMessage = generateDeathMessage(player, source);
         if(Final)
         {
-            deathMessage.append(TextUtilities.SPACE).append(Text.translatable("death.bedwars.finalKill").setStyle(Style.EMPTY.withColor(Formatting.AQUA).withBold(true)));
+            deathMessage.append(TextUtilities.SPACE).append(Text.translatable("death.bedwars.finalKill").formatted(Formatting.AQUA, Formatting.BOLD));
         }
         return deathMessage;
+    }
+
+    private MutableText generateDeathMessage(ServerPlayerEntity killed, DamageSource damageSource)
+    {
+        var source = damageSource.getSource();
+        var attacker = damageSource.getAttacker();
+        var killedName = TextUtilities.getFormattedPlayerName(killed, game.getTeamManager());
+
+        String key = "death.attack." + damageSource.getType().msgId();
+        if (attacker == null && source == null)
+        {
+            LivingEntity primeAdversary = killed.getPrimeAdversary();
+            String keyWithPlayer = key + ".player";
+            return primeAdversary != null ? Text.translatable(keyWithPlayer, killedName, TextUtilities.getFormattedPlayerName(primeAdversary, game.getTeamManager())) : Text.translatable(key, killedName);
+        }
+        else {
+            Text text = attacker == null ? TextUtilities.getFormattedPlayerName(source, game.getTeamManager()) : TextUtilities.getFormattedPlayerName(attacker, game.getTeamManager());
+
+            ItemStack weapon = attacker instanceof LivingEntity livingEntity ?
+                    livingEntity.getMainHandStack() :
+                    ItemStack.EMPTY;
+
+            return !weapon.isEmpty() && weapon.hasCustomName() ? Text.translatable(key + ".item", killedName, text, weapon.toHoverableText()) : Text.translatable(key, killedName, text);
+        }
     }
 
     private void onBuy(ServerPlayerEntity player, Text name, ShopEntry entry)
