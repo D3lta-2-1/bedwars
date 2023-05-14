@@ -3,6 +3,7 @@ package fr.delta.bedwars.game.teamComponent;
 import fr.delta.bedwars.game.TeleporterLogic;
 import fr.delta.bedwars.game.behaviour.ClaimManager;
 import fr.delta.bedwars.game.event.BedwarsEvents;
+import fr.delta.bedwars.mixin.ServerPlayerEntityAccessor;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -48,6 +49,7 @@ public class Spawn {
         player.setHealth(20.0f);
         player.clearStatusEffects();
         TeleporterLogic.spawnPlayer(player, respawnPos, world, yaw, 0.F);
+        ((ServerPlayerEntityAccessor)player).setInvulnerabilityTicks(60);
         activity.invoker(BedwarsEvents.PLAYER_RESPAWN).onRespawn(player);
     }
 

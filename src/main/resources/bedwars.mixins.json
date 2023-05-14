@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "PlayerInventoryAccessor",
+    "ServerPlayerEntityAccessor",
     "itemThrowEvent.ScreenHandlerMixin",
     "itemThrowEvent.ServerPlayerEntityMixin",
     "potionDrankEvent.PotionItemMixin",
