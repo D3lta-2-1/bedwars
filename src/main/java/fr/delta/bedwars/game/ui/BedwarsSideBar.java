@@ -46,11 +46,9 @@ public class BedwarsSideBar {
                 });
             }
         });
-        for(var player : activity.getGameSpace().getPlayers())
-            sidebar.addPlayer(player);
         sidebar.show();
         //register events
-        activity.listen(GamePlayerEvents.JOIN, sidebar::addPlayer);
+        activity.listen(GamePlayerEvents.ADD, sidebar::addPlayer);
         activity.listen(GamePlayerEvents.REMOVE, sidebar::removePlayer);
         return sidebar;
     }

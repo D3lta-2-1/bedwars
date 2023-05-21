@@ -50,18 +50,25 @@ public class ClaimManager {
     public ActionResult blockBreakEvent(ServerPlayerEntity player, ServerWorld world, BlockPos pos)
     {
         var state = map.template().getBlockState(pos);
-        if(state.isAir())
+        if(isAirOrBreakableBlock(state))
             return ActionResult.PASS;
+        player.sendMessage(Text.translatable("warning.bedwars.cannotBreakThisBlock"  ).setStyle(TextUtilities.WARNING));
+        return ActionResult.FAIL;
+    }
+
+    public static boolean isAirOrBreakableBlock(BlockState state)
+    {
+        if(state.isAir())
+            return true;
         else
             for(var block : Constants.BreakableBlocks)
             {
                 if(state.isOf(block))
                 {
-                    return ActionResult.PASS;
+                    return true;
                 }
             }
-        player.sendMessage(Text.translatable("warning.bedwars.cannotBreakThisBlock"  ).setStyle(TextUtilities.WARNING));
-        return ActionResult.FAIL;
+        return false;
     }
 
     public void onExplosionDetonated(Explosion explosion, boolean particles)
@@ -70,7 +77,7 @@ public class ClaimManager {
         explosion.getAffectedBlocks().clear();
         for(var block : affectedBlocks)
         {
-            if(map.template().getBlockState(block).isAir())
+            if(isAirOrBreakableBlock(map.template().getBlockState(block)))
             {
                 explosion.getAffectedBlocks().add(block);
             }
@@ -122,6 +129,7 @@ public class ClaimManager {
         return false;
     }
 
+    //todo : make it work
     private ActionResult onBucketUse(ServerWorld world, BlockPos pos, @Nullable ServerPlayerEntity player, @Nullable BlockHitResult result)
     {
         for(var region : claimedRegions)

@@ -93,7 +93,7 @@ public class BedwarsActive {
             var stageManager = new GameEventManager(world, queue, this, activity);
             BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
 
-            new OldAttackSpeed(20D, activity);
+            OldAttackSpeed.add(20D, activity);
             new InvisibilityArmorHider(teamManager, activity);
             new ChestLocker(teamComponentsMap, teamManager, activity);
             activity.listen(PlayerDamageEvent.EVENT, (player, source, amount) -> { //disable friendly fire
@@ -133,9 +133,12 @@ public class BedwarsActive {
         activity.allow(GameRuleType.TRIDENTS_LOYAL_IN_VOID);
         activity.deny(GameRuleType.MODIFY_ARMOR);
         activity.deny(GameRuleType.SATURATED_REGENERATION);
+
         activity.deny(NotASword.ATTACK_SOUND);
         activity.allow(NotASword.OLD_KNOCKBACK);
         activity.allow(NotASword.FAST_ATTACK);
+        activity.deny(NotASword.SWEEPING_EDGE);
+
         activity.deny(GameRules.BED_INTERACTION);
         activity.allow(GameRules.BLAST_PROOF_GLASS_RULE);
         activity.deny(GameRules.ENDER_PEARL_DAMAGE);

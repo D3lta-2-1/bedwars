@@ -68,7 +68,7 @@ public class BedwarsWaiting {
         {
             var dyeColor = mapTeamData.color;
             var color = GameTeamConfig.Colors.from(dyeColor);
-            var prefix = TextUtilities.concatenate(Text.of( "["), TextUtilities.getTranslation("prefix", dyeColor.name()), Text.of("] ")).formatted(color.chatFormatting());
+            var prefix = TextUtilities.getTranslation("prefix", dyeColor.name()).append(Text.of(" ")).formatted(color.chatFormatting());
 
             GameTeam team = new GameTeam(
                     new GameTeamKey("bedwars_team_" + dyeColor.name().toLowerCase()),

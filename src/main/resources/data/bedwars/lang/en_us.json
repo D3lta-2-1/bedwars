@@ -105,6 +105,8 @@
 
   "item.bedwars.fire_ball" : "Fire Ball",
   "item.bedwars.bridge_egg" : "Bridge Egg",
+  "item.bedwars.popup_tower" : "Popup Tower",
+  "item.bedwars.popup_wall" : "Popup Wall",
 
   "generator.bedwars.tier" : "Tier %1$s",
   "generator.bedwars.spawnIn" : "spawn in %1$s seconds",

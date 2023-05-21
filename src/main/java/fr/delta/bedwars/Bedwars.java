@@ -3,6 +3,7 @@ package fr.delta.bedwars;
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import fr.delta.bedwars.codec.BedwarsConfig;
 import fr.delta.bedwars.custom.items.BridgeEgg;
+import fr.delta.bedwars.custom.items.PopupItem;
 import fr.delta.bedwars.game.BedwarsWaiting;
 import fr.delta.bedwars.data.AdditionalDataLoader;
 import fr.delta.bedwars.custom.items.FireBall;
@@ -28,6 +29,8 @@ public class Bedwars implements DedicatedServerModInitializer {
     public static final EntityType<ShopKeeperEntity> SHOP_ENTITY = Registry.register(Registries.ENTITY_TYPE, new Identifier(ID, "shop_entity"), FabricEntityTypeBuilder.create(SpawnGroup.MISC, ShopKeeperEntity::createEmpty).dimensions(EntityDimensions.fixed(0.6F, 1.8F)).build());
     public static Item FIRE_BALL = Registry.register(Registries.ITEM, new Identifier("bedwars:fire_ball"), new FireBall(new FabricItemSettings()));
     public static Item BRIDGE_EGG = Registry.register(Registries.ITEM, new Identifier("bedwars:bridge_egg"), new BridgeEgg(new FabricItemSettings()));
+    public static Item POPUP_TOWER = Registry.register(Registries.ITEM, new Identifier("bedwars:popup_tower"), new PopupItem(new FabricItemSettings(), new Identifier("bedwars", "popup_tower"), PopupItem::CircularIterable));
+    public static Item POPUP_WALL = Registry.register(Registries.ITEM, new Identifier("bedwars:popup_wall"), new PopupItem(new FabricItemSettings(), new Identifier("bedwars", "popup_wall"), PopupItem::LinearIterable));
 
     @Override
     public void onInitializeServer()
