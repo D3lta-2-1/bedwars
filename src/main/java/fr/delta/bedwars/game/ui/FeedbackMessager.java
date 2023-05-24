@@ -9,7 +9,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
@@ -26,14 +25,12 @@ public class FeedbackMessager {
     final BedwarsActive game;
     final private GameSpacePlayers players;
     final private Multimap<GameTeam, PlayerRef> teamPlayersMap;
-    final private ServerWorld world;
 
-    public FeedbackMessager(BedwarsActive game, Multimap<GameTeam, PlayerRef> teamPlayersMap, ServerWorld world, GameActivity activity)
+    public FeedbackMessager(BedwarsActive game, Multimap<GameTeam, PlayerRef> teamPlayersMap, GameActivity activity)
     {
         this.game = game;
         this.players = activity.getGameSpace().getPlayers();
         this.teamPlayersMap = teamPlayersMap;
-        this.world = world;
         activity.listen(BedwarsEvents.BED_BROKEN, this::onBedBreak);
         activity.listen(BedwarsEvents.BED_DESTRUCTION, this::onBedDestruction);
         activity.listen(BedwarsEvents.PLAYER_DEATH, this::onPlayerDeath);
@@ -145,7 +142,7 @@ public class FeedbackMessager {
         {
             var playerRef = entries.getValue();
             if(playerRef == null) continue;
-            var player = playerRef.getEntity(world);
+            var player = getPlayerFromRef(playerRef);
             if(player == null) continue;
             if(entries.getKey() == team)
             {
@@ -156,5 +153,10 @@ public class FeedbackMessager {
                 PlayerCustomPacketsSender.showTitle(player, Text.translatable("win.bedwars.gameOver").formatted(Formatting.RED, Formatting.BOLD), winMessage, 0, 100, 20);
             }
         }
+    }
+
+    private ServerPlayerEntity getPlayerFromRef(PlayerRef ref)
+    {
+        return players.getEntity(ref.id());
     }
 }

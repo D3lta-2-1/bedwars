@@ -31,6 +31,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.GameSpace;
+import xyz.nucleoid.plasmid.game.common.GlobalWidgets;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.common.team.TeamChat;
@@ -85,13 +86,14 @@ public class BedwarsActive {
             this.teamComponentsMap = makeTeamComponents(activity); //forge bed, spawn ect
             this.inventoryManager = new InventoryManager(deathManager, this, config, activity);
 
-            new FeedbackMessager(this, teamPlayers, world, activity);
+            new FeedbackMessager(this, teamPlayers, activity);
             TeamChat.addTo(activity, teamManager);
 
             var queue = loadEvents();
             //things that aren't store as private members
             var stageManager = new GameEventManager(world, queue, this, activity);
-            BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this, activity);
+            var sideBarWidget = BedwarsSideBar.build(teamComponentsMap, teamManager, teamsInOrder, stageManager, this);
+            GlobalWidgets.addTo(activity).addWidget(sideBarWidget);
 
             OldAttackSpeed.add(20D, activity);
             new InvisibilityArmorHider(teamManager, activity);

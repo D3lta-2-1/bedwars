@@ -1,6 +1,5 @@
 package fr.delta.bedwars.game.ui;
 
-import eu.pb4.sidebars.api.Sidebar;
 import fr.delta.bedwars.StageEvent.GameEventManager;
 import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.teamComponent.TeamComponents;
@@ -12,20 +11,19 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import xyz.nucleoid.plasmid.game.GameActivity;
 import xyz.nucleoid.plasmid.game.common.team.GameTeam;
 import xyz.nucleoid.plasmid.game.common.team.GameTeamKey;
 import xyz.nucleoid.plasmid.game.common.team.TeamManager;
-import xyz.nucleoid.plasmid.game.event.GamePlayerEvents;
+import xyz.nucleoid.plasmid.game.common.widget.SidebarWidget;
 import xyz.nucleoid.plasmid.util.PlayerRef;
 
 import java.util.List;
 import java.util.Map;
 
 public class BedwarsSideBar {
-    public static Sidebar build(Map<GameTeamKey, TeamComponents> teamComponents, TeamManager manager, List<GameTeam> teamsInOrder, GameEventManager gameEventManager, BedwarsActive game, GameActivity activity)
+    public static SidebarWidget build(Map<GameTeamKey, TeamComponents> teamComponents, TeamManager manager, List<GameTeam> teamsInOrder, GameEventManager gameEventManager, BedwarsActive game)
     {
-        var sidebar = new Sidebar(Sidebar.Priority.MEDIUM);
+        var sidebar = new SidebarWidget();
         sidebar.setTitle(Text.translatable("sidebar.bedwars.title").formatted(Formatting.GOLD, Formatting.BOLD));
 
         sidebar.set( b -> {
@@ -46,10 +44,6 @@ public class BedwarsSideBar {
                 });
             }
         });
-        sidebar.show();
-        //register events
-        activity.listen(GamePlayerEvents.ADD, sidebar::addPlayer);
-        activity.listen(GamePlayerEvents.REMOVE, sidebar::removePlayer);
         return sidebar;
     }
 
