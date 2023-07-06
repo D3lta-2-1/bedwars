@@ -74,7 +74,7 @@ public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
     }*/
 
     @Override
-    public void onBeforeSpawnPacket(Consumer<Packet<?>> packetConsumer) {
+    public void onBeforeSpawnPacket(ServerPlayerEntity player, Consumer<Packet<?>> packetConsumer) {
         var packet = PolymerEntityUtils.createMutablePlayerListPacket(EnumSet.of(PlayerListS2CPacket.Action.ADD_PLAYER, PlayerListS2CPacket.Action.UPDATE_LISTED));
         var gameProfile = new GameProfile(this.getUuid(), "Test NPC");
         gameProfile.getProperties().put("textures", new Property("textures",
@@ -97,7 +97,7 @@ public class ShopKeeperEntity extends PathAwareEntity implements PolymerEntity {
         super.tick();
 
         var box = this.getBoundingBox().expand(4.0D);
-        List<ServerPlayerEntity> players = this.world.getEntitiesByClass(ServerPlayerEntity.class, box, LivingEntity::isPartOfGame);
+        List<ServerPlayerEntity> players = this.getWorld().getEntitiesByClass(ServerPlayerEntity.class, box, LivingEntity::isPartOfGame);
         if(players.isEmpty()) return;
         if (this.lookTarget == null || this.distanceTo(this.lookTarget) > 5.0D || this.lookTarget.isDisconnected() || !this.lookTarget.isAlive()) {
             this.lookTarget = players.get(this.random.nextInt(players.size()));

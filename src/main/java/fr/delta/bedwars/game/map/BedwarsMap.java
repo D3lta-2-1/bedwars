@@ -31,8 +31,10 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
         }
         //get waiting spawn
         var waitingSpawn = template.getMetadata().getFirstRegionBounds(Constants.WAITING_SPAWN);
-        //get teamMetaData such as bed location and spawn location
+
         List<RawTeamData> dataList = new ArrayList<>();
+        /*
+        //get teamMetaData such as bed location and spawn location
         for(var color : Constants.TEAM_COLORS)
         {
             var spawn = getBoundsFor(color, Constants.SPAWN, template);
@@ -42,14 +44,62 @@ public record BedwarsMap (MapTemplate template, MinecraftServer server, BlockBou
             if(spawn == null || bed == null || forge == null) continue;
             dataList.add(new RawTeamData(color, spawn, bed, forge, effectPool));
         }
+         */
         //get item_shopkeepers
+
         var itemShopkeepers = template.getMetadata().getRegionBounds(Constants.ITEM_SHOPKEEPER).toList();
         var teamShopkeepers = template.getMetadata().getRegionBounds(Constants.TEAM_SHOPKEEPER).toList();
+
+        //attempt to rewrite how team are detected
+        var spawns = template.getMetadata().getRegionBounds(Constants.SPAWN).toList();
+        var beds = template.getMetadata().getRegionBounds(Constants.BED).toList();
+        var forges = template.getMetadata().getRegionBounds(Constants.FORGE).toList();
+
+        for(var color : Constants.TEAM_COLORS)
+        {
+            var base = template.getMetadata().getFirstRegionBounds(color.name().toLowerCase());
+            if(base == null) continue;
+            
+            BlockBounds spawn = null, bed = null, forge = null;
+            
+            for (var i : spawns) {
+                if (i.intersects(base)) {
+                    spawn = i;
+                    break;
+                }
+            }
+            if(spawn == null) throw new GameOpenException(Text.literal("no " + color.name().toLowerCase() + " spawn found"));
+            
+            for (var i : beds) {
+                if (i.intersects(base)) {
+                    bed = i;
+                    break;
+                }
+            }
+            if(bed == null) throw new GameOpenException(Text.literal("no " + color.name().toLowerCase() + " bed found"));
+            
+            for (var i : forges) {
+                if (i.intersects(base)) {
+                    forge = i;
+                    break;
+                }
+            }
+            if(forge == null) throw new GameOpenException(Text.literal("no " + color.name().toLowerCase() + " forge found"));
+            
+            /*var spawn = getBoundsFor(color, Constants.SPAWN, template);
+            var bed = getBoundsFor(color, Constants.BED, template);
+            var forge = getBoundsFor(color, Constants.FORGE, template);
+            var effectPool = getBoundsFor(color, Constants.EFFECT_POOL, template);
+            if(spawn == null || bed == null || forge == null) continue;*/
+            dataList.add(new RawTeamData(color, spawn, bed, forge, base));
+        }
+
         //check if correctly load the map
-        if(dataList.isEmpty())
-            throw new GameOpenException(Text.literal("no team spawn found"));
         if(waitingSpawn == null)
             throw new GameOpenException(Text.literal("no waiting spawn found"));
+        if(dataList.isEmpty())
+            throw new GameOpenException(Text.literal("no team found"));
+
 
         //get generators
         var generatorTypeList = config.generatorTypeIdList();

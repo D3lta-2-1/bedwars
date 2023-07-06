@@ -4,6 +4,7 @@ import fr.delta.bedwars.game.BedwarsActive;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.thrown.EggEntity;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -32,14 +33,14 @@ public class BridgeEggEntity extends EggEntity {
     {
         super.tick();
 
-        if (this.world.isClient()) {
+        if (this.getWorld().isClient()) {
             return;
         }
 
         BlockPos pos = this.getBlockPos();
         if(!game.couldABlockBePlacedHere(pos))
         {
-            this.world.sendEntityStatus(this, (byte)3);
+            this.getWorld().sendEntityStatus(this, (byte)3);
             this.discard();
         }
         else
@@ -53,13 +54,13 @@ public class BridgeEggEntity extends EggEntity {
 
     private void tryPlaceAt(BlockPos pos)
     {
-        if (this.world.getBlockState(pos).isAir() && game.couldABlockBePlacedHere(pos) && world.getEntitiesByClass(LivingEntity.class, new Box(pos), LivingEntity::isPartOfGame).isEmpty() && blockLeft > 0)
+        if (this.getWorld().getBlockState(pos).isAir() && game.couldABlockBePlacedHere(pos) && this.getWorld().getEntitiesByClass(LivingEntity.class, new Box(pos), LivingEntity::isPartOfGame).isEmpty() && blockLeft > 0)
         {
-            this.world.setBlockState(pos, this.trailBlock);
+            this.getWorld().setBlockState(pos, this.trailBlock);
             blockLeft--;
             if(blockLeft == 0)
             {
-                this.world.sendEntityStatus(this, (byte)3);
+                this.getWorld().sendEntityStatus(this, (byte)3);
                 this.discard();
             }
         }
@@ -311,5 +312,10 @@ public class BridgeEggEntity extends EggEntity {
                 listOfPoints.add(new BlockPos(x1, y1, z1));
             }
         }
+    }
+
+    @Override
+    protected void onCollision(HitResult hitResult) {
+        //disable chicken spawning
     }
 }

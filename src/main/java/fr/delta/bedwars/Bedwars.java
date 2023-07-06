@@ -9,6 +9,7 @@ import fr.delta.bedwars.data.AdditionalDataLoader;
 import fr.delta.bedwars.custom.items.FireBall;
 import fr.delta.bedwars.game.shop.npc.ShopKeeperEntity;
 import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;

@@ -34,7 +34,7 @@ public class ChestLocker {
         {
             for(var entry : teamComponentsMap.entrySet())
             {
-                if(entry.getValue().spawn.getBounds().contains(pos))
+                if(entry.getValue().effectPool.getBounds().contains(pos))
                 {
                     if(teamManager.teamFor(player) == entry.getKey())
                     {

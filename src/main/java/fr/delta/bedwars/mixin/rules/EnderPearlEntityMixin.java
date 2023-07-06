@@ -16,7 +16,7 @@ public class EnderPearlEntityMixin {
 	@Redirect(method = "onCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
 	private boolean applyEnderPearlDamageGameRule(Entity entity, DamageSource source, float amount) {
 		if (source == entity.getDamageSources().fall()) {
-			ManagedGameSpace gameSpace = GameSpaceManager.get().byWorld(entity.world);
+			ManagedGameSpace gameSpace = GameSpaceManager.get().byWorld(entity.getWorld());
 			if (gameSpace != null && gameSpace.getBehavior().testRule(GameRules.ENDER_PEARL_DAMAGE) == ActionResult.FAIL) {
 				return false;
 			}

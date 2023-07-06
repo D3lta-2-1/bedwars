@@ -71,4 +71,9 @@ public class StatusEffectPool {
     {
         effectGivenToPlayer.clear(); //clear the effect given to the player when he dies, the effect will be removed by the death manager
     }
+
+    public BlockBounds getBounds()
+    {
+        return bounds;
+    }
 }
