@@ -40,7 +40,7 @@ public class FireBall extends Item implements PolymerItem {
             float velZ = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F) * velocity;
             FireballEntity fireball = new FireballEntity(world, user, velX, velY, velZ, 2);
             fireball.addVelocity(playerVel);
-            fireball.setPos(user.getX(), user.getEyeY() - 0.2, user.getZ());
+            fireball.setPos(user.getX(), user.getEyeY(), user.getZ());
             fireball.tick();
             fireball.setItem(itemStack);
             fireball.setOnFire(false);

@@ -14,6 +14,7 @@ public class ShopKeeper {
         entity.setNoGravity(true);
         entity.setPos(pos.centerBottom().getX(), pos.centerBottom().getY(), pos.centerBottom().getZ());
         entity.setPersistent();
+        entity.setInvulnerable(true);
         world.getChunk(entity.getBlockPos());
         world.spawnEntity(entity);
         entity.refreshPositionAndAngles(pos.centerBottom().getX(), pos.centerBottom().getY(), pos.centerBottom().getZ(), 0, 0);

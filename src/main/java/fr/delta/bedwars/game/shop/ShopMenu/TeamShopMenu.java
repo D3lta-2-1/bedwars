@@ -8,6 +8,7 @@ import fr.delta.bedwars.game.BedwarsActive;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import xyz.nucleoid.plasmid.game.GameActivity;
@@ -73,5 +74,10 @@ public class TeamShopMenu extends ShopMenu {
             element.setCount(i + 1); //0 offset
             gui.setSlot(slot, element);
         }
+    }
+
+    @Override
+    public MutableText getShopKeeperName() {
+        return Text.translatable("shopkeeper.bedwars.teamUpgrade");
     }
 }

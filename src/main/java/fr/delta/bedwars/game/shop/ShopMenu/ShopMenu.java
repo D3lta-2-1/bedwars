@@ -14,6 +14,7 @@ import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -164,7 +165,7 @@ public abstract class ShopMenu {
     {
         var inventory = player.getInventory();
         var stackToGiveBack = ItemStack.EMPTY;
-        if(!inventory.getStack(slot).isItemEqual(stack))
+        if(!ItemStack.canCombine(inventory.getStack(slot), stack))
         {
             stackToGiveBack = inventory.removeStack(slot);
         }
@@ -189,6 +190,8 @@ public abstract class ShopMenu {
                 }
             }
             player.dropItem(stack, false);
+            if(stackToGiveBack.equals(ItemStack.EMPTY)) return;
+            BedwarsEvents.ensureInventoryIsNotFull(player, bedwarsGame.getActivity());
             inventory.offerOrDrop(stackToGiveBack);
             return;
         }
@@ -236,5 +239,10 @@ public abstract class ShopMenu {
 
     public BedwarsActive getBedwarsGame() {
         return bedwarsGame;
+    }
+
+    public MutableText getShopKeeperName()
+    {
+        return Text.literal("undefined");
     }
 }

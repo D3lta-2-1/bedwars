@@ -3,6 +3,7 @@ package fr.delta.bedwars.data;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.mojang.authlib.properties.Property;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -33,11 +34,13 @@ public class AdditionalDataLoader {
     public static final TinyRegistry<List<Forge.Tier>> FORGE_CONFIG_REGISTRY = TinyRegistry.create();
     public static final TinyRegistry<GeneratorBuilder> GENERATOR_TYPE_REGISTRY = TinyRegistry.create();
     public static final TinyRegistry<StageEvent> GAME_EVENT_REGISTRY = TinyRegistry.create();
+    public static final TinyRegistry<Property> SKIN_REGISTRY = TinyRegistry.create();
     private static final String ENTRIES_PATH = getConfigPath("entries");
     private static final String CATEGORY_PATH = getConfigPath("categories");
     private static final String FORGE_PATH = getConfigPath("forges");
     private static final String GENERATOR_PATH = getConfigPath("generators");
     private static final String GAME_EVENTS_PATH = getConfigPath("events");
+    private static final String SKINS_PATH = getConfigPath("skins");
 
     private static void loadEntries(ResourceManager manager, DynamicOps<JsonElement> ops)
     {
@@ -183,6 +186,35 @@ public class AdditionalDataLoader {
         });
     }
 
+    private static void loadSkin(ResourceManager manager)
+    {
+        SKIN_REGISTRY.clear();
+        var skinCache = SkinCache.load();
+
+        manager.findResources(SKINS_PATH, path -> path.getPath().endsWith(".png")).forEach((path, resource) -> {
+            try {
+                var identifier = identifierFromPath(SKINS_PATH, path);
+
+                var property = skinCache.get(identifier);
+
+                if(property == null){
+                    var input = resource.getInputStream();
+                    property = SkinFetcher.setSkinFromFile(identifier, input);
+
+                    if(property != null)
+                        skinCache.put(identifier, property);
+                }
+
+                if(property != null){
+                    SKIN_REGISTRY.register(identifier, property);
+                }
+            } catch (IOException e) {
+                Bedwars.LOGGER.error("Failed to load skin at {}", path, e);
+            }
+        });
+        SkinCache.save(skinCache);
+    }
+
     public static void register()
     {
         ResourceManagerHelper serverData = ResourceManagerHelper.get(ResourceType.SERVER_DATA);
@@ -200,6 +232,7 @@ public class AdditionalDataLoader {
                 loadForgeConfig(manager, ops);
                 loadGeneratorTypes(manager, ops);
                 loadGameEvent(manager, ops);
+                loadSkin(manager);
             }
         });
     }
@@ -210,7 +243,9 @@ public class AdditionalDataLoader {
 
     private static Identifier identifierFromPath(String path, Identifier location) {
         String fullPath = location.getPath();
-        fullPath = fullPath.substring((path +"/").length(), fullPath.length() - ".json".length());
+        var pointPos = fullPath.lastIndexOf('.');
+        pointPos = pointPos > -1 ? pointPos : fullPath.length();
+        fullPath = fullPath.substring((path +"/").length(), pointPos);
         return new Identifier(location.getNamespace(), fullPath);
     }
 }

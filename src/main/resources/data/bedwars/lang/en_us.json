@@ -55,6 +55,9 @@
   "bed.bedwars.generalBreakContent" : "%1$s bed was destroyed by %2$s",
   "bed.bedwars.personalBreakContent" : "Your bed got memed by %1$s",
 
+  "shopkeeper.bedwars.title" : "RIGHT CLICK",
+  "shopkeeper.bedwars.itemShop" : "ITEM SHOP",
+  "shopkeeper.bedwars.teamUpgrade" : "TEAM UPGRADE",
   "itemShop.bedwars.title" : "Item Shop",
   "teamShop.bedwars.title" : "Team Upgrade Shop",
   "trackerShop.bedwars.title" : "Tracker Shop",

@@ -66,18 +66,6 @@ public class BridgeEggEntity extends EggEntity {
         }
     }
 
-    /*@Override
-    protected void onCollision(HitResult hitResult) {
-        // ignore self-collisions
-        if (hitResult.getType() == HitResult.Type.BLOCK)
-        {
-            if(Arrays.asList(lastBlockPlaced).contains(((BlockHitResult)hitResult).getBlockPos()))
-                return;
-        }
-        this.world.sendEntityStatus(this, (byte)3);
-        this.discard();
-    }*/
-
     private Set<BlockPos> getBlockPositions()
     {
         var vel = this.getVelocity();

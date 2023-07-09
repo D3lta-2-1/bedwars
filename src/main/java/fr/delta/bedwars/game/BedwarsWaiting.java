@@ -74,8 +74,8 @@ public class BedwarsWaiting {
                     new GameTeamKey("bedwars_team_" + dyeColor.name().toLowerCase()),
                     GameTeamConfig.builder()
                             .setPrefix(prefix)
-                            .setCollision(AbstractTeam.CollisionRule.PUSH_OTHER_TEAMS)
-                            .setFriendlyFire(true)
+                            .setCollision(AbstractTeam.CollisionRule.PUSH_OWN_TEAM) //inverted ??
+                            .setFriendlyFire(false)
                             .setNameTagVisibility(AbstractTeam.VisibilityRule.ALWAYS)
                             .setColors(color)
                             .build()

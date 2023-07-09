@@ -15,6 +15,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import xyz.nucleoid.map_templates.BlockBounds;
 import xyz.nucleoid.plasmid.game.GameActivity;
@@ -26,10 +27,41 @@ import java.util.*;
 
 public class Forge {
 
-    public record SpawnData(int spawnTime, int maxInForge, boolean splittable)
+    public static class SpawnData
     {
+        private final float spawnTime;
+        private final int maxInForge;
+        private final boolean splittable;
+
+        SpawnData(float unit_per_second, int maxInForge, boolean splittable)
+        {
+            this.spawnTime = 1 / ( unit_per_second / 20);
+            this.maxInForge = maxInForge;
+            this.splittable = splittable;
+        }
+
+        public float spawnTime()
+        {
+            return spawnTime;
+        }
+
+        public float unitPerSecond()
+        {
+            return (1 / spawnTime) * 20;
+        }
+
+        public int maxInForge()
+        {
+            return maxInForge;
+        }
+
+        public boolean splittable()
+        {
+            return splittable;
+        }
+
         public static final Codec<SpawnData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.INT.fieldOf("spawn_time").forGetter(SpawnData::spawnTime),
+                Codec.FLOAT.fieldOf("unit_per_second").forGetter(SpawnData::unitPerSecond),
                 Codec.INT.optionalFieldOf("max_in_forge", 64).forGetter(SpawnData::maxInForge),
                 Codec.BOOL.optionalFieldOf("splittable", true).forGetter(SpawnData::splittable)
         ).apply(instance, SpawnData::new));
@@ -67,7 +99,7 @@ public class Forge {
     private final TeamManager teamManager;
     private final List<Tier> config;
     private Map<Item, SpawnData> itemSpawnData;
-    private final  Map<Item, Long> lastSpawnTime = new HashMap<>();
+    private final  Map<Item, Pair<Long, Float>> lastSpawnTime = new HashMap<>(); //to handle speed like 1.5 iron per tick
     private final DeathManager deathManager;
     int concurrentTier;
 
@@ -93,7 +125,7 @@ public class Forge {
         var concurrentTime = world.getTime();
         for(var item : itemSpawnData.keySet())
         {
-            lastSpawnTime.put(item, concurrentTime);
+            lastSpawnTime.put(item, new Pair<>(concurrentTime, 0f));
             this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getStack(item, itemSpawnData.get(item).splittable()),0,0,0));
         }
     }
@@ -178,11 +210,14 @@ public class Forge {
         {
             var item = resource.getKey();
             var data = resource.getValue();
-            if(lastSpawnTime.get(item) + data.spawnTime() <= concurrentTime)
+            var timeData = lastSpawnTime.get(item);
+            var timeBeforeNextSpawn = timeData.getLeft() + timeData.getRight() + data.spawnTime() - concurrentTime;
+
+            if(timeBeforeNextSpawn <= 0)
             {
                 if(!isFullOf(item, data.maxInForge()))
                     this.world.spawnEntity(new ItemEntity(world, X(), Y(), Z(), getStack(item, data.splittable()), 0,0,0));
-                lastSpawnTime.put(item, concurrentTime);
+                lastSpawnTime.put(item, new Pair<>(concurrentTime, timeBeforeNextSpawn)); //the float is used to adjuster half ticks speed
             }
         }
     }

@@ -6,6 +6,7 @@ import fr.delta.bedwars.game.BedwarsActive;
 import fr.delta.bedwars.game.shop.data.ShopCategoriesConfig;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import xyz.nucleoid.plasmid.game.GameActivity;
 
@@ -50,5 +51,11 @@ public class ItemShopMenu extends ShopMenu {
             gui.setSlot(slot, builder);
             slot++;
         }
+    }
+
+    @Override
+    public MutableText getShopKeeperName()
+    {
+        return Text.translatable("shopkeeper.bedwars.itemShop");
     }
 }
